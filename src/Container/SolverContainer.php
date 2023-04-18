@@ -18,6 +18,7 @@ use Vivarium\Container\Exception\KeyNotFound;
 
 class SolverContainer implements Container
 {
+    /** @var Map<Key, Provider> */
     private Map $providers;
 
     public function __construct(private Solver $solver)
