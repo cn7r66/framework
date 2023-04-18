@@ -22,26 +22,21 @@ final class RegistryStep implements SolverStep
         $this->registry = new Registry();
     }
 
-    public function request(Key $key): Response
+    public function solve(Key $key, callable $next): Provider
     {
         if (! $this->registry->has($key)) {
-            return Response::notSolved();
+            return $next($key);
         }
 
-        return Response::solved(
-            $this->registry->get($key)($key)
-        );
-    }
-
-    public function response(Key $key, Response $response): Response
-    {
-        return $response;
+        return $this->registry
+            ->get($key)($key);
     }
 
     public function addSolver(Key $key, callable $solver): self
     {
         $registry = clone $this;
-        $registry->registry = $registry->registry->add($key, $solver);
+        $registry->registry = $registry->registry
+            ->add($key, $solver);
 
         return $registry;
     }
