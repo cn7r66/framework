@@ -25,7 +25,7 @@ final class Linked implements Provider
         $this->target = $target;
     }
 
-    public function provide(Container $container): float|object|int|bool|array|string
+    public function provide(Container $container): mixed
     {
         return $container->get(new Key(
             $this->target->getType(),

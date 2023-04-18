@@ -23,7 +23,7 @@ class Service implements Provider
         $this->provider = $provider;
     }
 
-    public function provide(Container $container)
+    public function provide(Container $container): mixed
     {
         if ($this->instance === null) {
             $this->instance = $this->provider->provide($container);

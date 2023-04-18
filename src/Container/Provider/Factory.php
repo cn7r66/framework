@@ -25,7 +25,7 @@ final class Factory implements Provider
         $this->key   = $key;
     }
 
-    public function provide(Container $container)
+    public function provide(Container $container): mixed
     {
         $factory = $container->get(new Key($this->class));
 

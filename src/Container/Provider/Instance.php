@@ -21,7 +21,7 @@ final class Instance implements Provider
         $this->instance = $instance;
     }
 
-    public function provide(Container $container)
+    public function provide(Container $container): mixed
     {
         return $this->instance;
     }

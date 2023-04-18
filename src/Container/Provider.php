@@ -11,7 +11,7 @@ namespace Vivarium\Container;
 
 interface Provider
 {
-    public function provide(Container $container);
+    public function provide(Container $container): mixed;
 
     public function getKey(): Key;
 }

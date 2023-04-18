@@ -10,7 +10,7 @@ final class ContainerCall implements Provider
 {
     public function __construct(private Key $key) {}
 
-    public function provide(Container $container)
+    public function provide(Container $container): mixed
     {
         return $container->get($this->key);
     }
