@@ -6,14 +6,15 @@ declare(strict_types=1);
  * This file is part of Vivarium
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2023 Luca Cantoreggi
- *
  */
 
 namespace Vivarium\Container\Provider;
 
+use RuntimeException;
 use Vivarium\Collection\Sequence\ArraySequence;
 use Vivarium\Collection\Sequence\Sequence;
 use Vivarium\Container\Container;
+use Vivarium\Container\Key;
 use Vivarium\Container\Provider;
 
 final class Prototype implements Provider
@@ -27,7 +28,7 @@ final class Prototype implements Provider
         $this->arguments = new ArraySequence();
     }
 
-    public function provide(Container $container)
+    public function provide(Container $container): mixed
     {
         $arguments = [];
         foreach ($this->arguments as $argument) {
@@ -43,5 +44,10 @@ final class Prototype implements Provider
         $prototype->arguments = $prototype->arguments->add($provider);
 
         return $prototype;
+    }
+
+    public function getKey(): Key
+    {
+        throw new RuntimeException('Not implemented yet.');
     }
 }
