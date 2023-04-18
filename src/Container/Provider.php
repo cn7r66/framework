@@ -12,4 +12,6 @@ namespace Vivarium\Container;
 interface Provider
 {
     public function provide(Container $container);
+
+    public function getKey(): Key;
 }
