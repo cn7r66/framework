@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of Vivarium
  * SPDX-License-Identifier: MIT
@@ -8,6 +9,9 @@
 
 namespace Vivarium\Container\Installer;
 
+use Vivarium\Assertion\String\IsType;
+use Vivarium\Container\Key;
+
 final class Binder
 {
     private Installer $installer;
@@ -15,5 +19,21 @@ final class Binder
     public function __construct(Installer $installer)
     {
         $this->installer = $installer;
+    }
+
+    public function bind(string $type): ContextBinder
+    {
+        (new IsType())
+            ->assert($type);
+
+        return new ContextBinder(
+            $this->installer,
+            new Key($type)
+        );
+    }
+
+    public function getInstaller(): Installer
+    {
+        return $this->installer;
     }
 }
