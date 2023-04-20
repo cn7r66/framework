@@ -26,7 +26,7 @@ class SolverContainer implements Container
         $this->providers = new HashMap();
     }
 
-    public function get(Key $key): object|array|string|int|float|bool
+    public function get(Key $key): mixed
     {
         if (! $this->has($key)) {
             throw new EntryNotFound('');

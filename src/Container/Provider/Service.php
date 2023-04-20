@@ -10,17 +10,19 @@
 namespace Vivarium\Container\Provider;
 
 use Vivarium\Container\Container;
+use Vivarium\Container\Key;
 use Vivarium\Container\Provider;
 
 class Service implements Provider
 {
-    private Provider $provider;
+    private mixed $instance;
 
-    private $instance;
-
-    public function __construct(Provider $provider)
+    public function __construct(
+        private Key $key,
+        private Provider $provider
+    )
     {
-        $this->provider = $provider;
+        $this->instance = null;
     }
 
     public function provide(Container $container): mixed
@@ -35,5 +37,10 @@ class Service implements Provider
     public function getProvider(): Provider
     {
         return $this->provider;
+    }
+
+    public function getKey(): Key
+    {
+        return $this->key;
     }
 }

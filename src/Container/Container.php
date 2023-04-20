@@ -13,10 +13,8 @@ interface Container
 {
     /**
      * @param Key $key
-     *
-     * @return object|array|string|int|float|bool
      */
-    public function get(Key $key): object|array|string|int|float|bool;
+    public function get(Key $key): mixed;
 
     public function has(Key $key): bool;
 }

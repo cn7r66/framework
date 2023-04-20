@@ -15,10 +15,12 @@ use Vivarium\Container\Provider;
 
 final class Factory implements Provider
 {
+    /** @var class-string */
     private string $class;
 
     private Key $key;
 
+    /** @param class-string $class */
     public function __construct(string $class, Key $key)
     {
         $this->class = $class;
@@ -30,5 +32,10 @@ final class Factory implements Provider
         $factory = $container->get(new Key($this->class));
 
         return $factory->create($this->key);
+    }
+
+    public function getKey(): Key
+    {
+        return $this->key;
     }
 }

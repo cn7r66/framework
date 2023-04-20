@@ -10,6 +10,7 @@
 namespace Vivarium\Container\Solver;
 
 use Vivarium\Container\Key;
+use Vivarium\Container\Provider;
 
 final class DecoratorStep implements SolverStep
 {
@@ -20,13 +21,8 @@ final class DecoratorStep implements SolverStep
         $this->registry = new Registry();
     }
 
-    public function request(Key $key): Response
+    public function solve(Key $key, callable $next): Provider
     {
-        // TODO: Implement request() method.
-    }
-
-    public function response(Key $key, Response $response): Response
-    {
-        // TODO: Implement response() method.
+        throw new \RuntimeException('Not implemented yet.');
     }
 }

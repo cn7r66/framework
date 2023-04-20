@@ -10,19 +10,23 @@
 namespace Vivarium\Container\Provider;
 
 use Vivarium\Container\Container;
+use Vivarium\Container\Key;
 use Vivarium\Container\Provider;
 
 final class Instance implements Provider
 {
-    private $instance;
-
-    public function __construct($instance)
-    {
-        $this->instance = $instance;
-    }
+    public function __construct(
+        private Key $key,
+        private mixed $instance
+    ) {}
 
     public function provide(Container $container): mixed
     {
         return $this->instance;
+    }
+
+    public function getKey(): Key
+    {
+        return $this->key;
     }
 }

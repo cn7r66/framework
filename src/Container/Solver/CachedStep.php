@@ -35,6 +35,6 @@ final class CachedStep implements SolverStep
 
     private function hit(Key $key): Provider
     {
-
+        throw new \RuntimeException('Not implemented yet.');
     }
 }

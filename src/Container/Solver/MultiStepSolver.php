@@ -24,7 +24,7 @@ final class MultiStepSolver implements Solver
 
     public function __construct(SolverStep ...$steps)
     {
-        $this->steps = new ArraySequence(...$steps);
+        $this->steps = ArraySequence::fromArray($steps);
     }
 
     public function solve(Key $key): Provider

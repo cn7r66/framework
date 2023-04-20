@@ -33,8 +33,22 @@ final class Installer
 
     public function __construct()
     {
-        $this->steps     = new HashMap();
-        $this->priority  = new HashMap();
+        /**
+         * @psalm-var Map<class-string, SolverStep>
+         * @phpstan-ignore-next-line
+         */
+        $this->steps = new HashMap();
+
+        /**
+         * @psalm-var Map<class-string, int>
+         * @phpstan-ignore-next-line
+         */
+        $this->priority = new HashMap();
+
+        /**
+         * @psalm-var Map<class-string, callable(): SolverStep>
+         * @phpstan-ignore-next-line
+         */
         $this->factories = new HashMap();
     }
 
@@ -79,18 +93,20 @@ final class Installer
      *
      * @return T
      *
-     * @template T as SolverStep
+     * @template T of SolverStep
      */
-    public function getStep(string $class): SolverStep
+    public function getStep(string $class)
     {
         (new IsAssignableTo(SolverStep::class))
             ->assert($class);
 
         if ($this->steps->containsKey($class)) {
+            /** @var T */
             return $this->steps->get($class);
         }
 
         if ($this->factories->containsKey($class)) {
+            /** @var T */
             return $this->factories->get($class)();
         }
 
