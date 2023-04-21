@@ -2,6 +2,7 @@
 
 namespace Vivarium\Container\Installer;
 
+use Vivarium\Assertion\String\IsClass;
 use Vivarium\Container\Key;
 use Vivarium\Container\Provider\Factory;
 use Vivarium\Container\Provider\Instance;
@@ -30,7 +31,10 @@ final class ConcreteBinder
                 $this->installer
                     ->getStep(DirectStep::class)
                     ->withSolver($this->key, function() use ($instance) {
-                        return new Instance($instance);
+                        return new Instance(
+                            $this->key,
+                            $instance
+                        );
                     })
             ),
             $this->key
@@ -39,6 +43,9 @@ final class ConcreteBinder
 
     public function toFactory(string $factory): ScopeBinder
     {
+        (new IsClass())
+            ->assert($factory);
+
         return new ScopeBinder(
             $this->installer->withStep(
                 $this->installer
