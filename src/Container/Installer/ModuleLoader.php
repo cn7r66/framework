@@ -21,9 +21,12 @@ final class ModuleLoader
     /** @var Sequence<Module> */
     private Sequence $modules;
 
+    /**
+     * @no-named-arguments
+     */
     public function __construct(Module ...$modules)
     {
-        $this->modules = ArraySequence::fromArray($modules);
+        $this->modules = new ArraySequence(...$modules);
     }
 
     public function install(Module $module): ModuleLoader
