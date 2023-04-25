@@ -41,7 +41,7 @@ final class ConcreteBinder
         );
     }
 
-    public function toFactory(string $factory): ScopeBinder
+    public function toFactory(string $factory, string $method): ScopeBinder
     {
         (new IsClass())
             ->assert($factory);
@@ -50,10 +50,11 @@ final class ConcreteBinder
             $this->installer->withStep(
                 $this->installer
                     ->getStep(DirectStep::class)
-                    ->withSolver($this->key, function(Key $key) use ($factory) {
+                    ->withSolver($this->key, function(Key $key) use ($factory, $method) {
                         return new Factory(
+                            $key,
                             $factory,
-                            $key
+                            $method
                         );
                     })
             ),
