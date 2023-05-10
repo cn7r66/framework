@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Vivarium\Container\Installer;
 
@@ -11,8 +13,9 @@ final class ConcreteTagBinder
     public function __construct(
         private Installer $installer,
         private Key $source,
-        private Key $target
-    ) {}
+        private Key $target,
+    ) {
+    }
 
     public function withTag(string $tag): ScopeBinder
     {
@@ -20,17 +23,17 @@ final class ConcreteTagBinder
             $this->installer->withStep(
                 $this->installer
                     ->getStep(DirectStep::class)
-                    ->withSolver($this->source, function() use ($tag) {
+                    ->withSolver($this->source, function () use ($tag) {
                         return new ContainerCall(
                             new Key(
                                 $this->target->getType(),
                                 $this->target->getContext(),
-                                $tag
-                            )
+                                $tag,
+                            ),
                         );
-                    })
+                    }),
             ),
-            $this->source
+            $this->source,
         );
     }
 
@@ -40,11 +43,11 @@ final class ConcreteTagBinder
             $this->installer->withStep(
                 $this->installer
                     ->getStep(DirectStep::class)
-                    ->withSolver($this->source, function() {
+                    ->withSolver($this->source, function () {
                         return new ContainerCall($this->target);
-                    })
+                    }),
             ),
-            $this->source
+            $this->source,
         );
     }
 }
