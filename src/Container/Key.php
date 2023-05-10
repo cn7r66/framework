@@ -10,8 +10,10 @@
 namespace Vivarium\Container;
 
 use Vivarium\Assertion\Comparison\IsOneOf;
+use Vivarium\Assertion\Comparison\IsSameOf;
 use Vivarium\Assertion\Conditional\Either;
 use Vivarium\Assertion\String\IsClassOrInterface;
+use Vivarium\Assertion\String\IsType;
 use Vivarium\Equality\Equality;
 use Vivarium\Equality\EqualsBuilder;
 use Vivarium\Equality\HashBuilder;
@@ -20,7 +22,7 @@ final class Key implements Equality
 {
     const GLOBAL = '$GLOBAL';
 
-    const DEFAULT = 'DEFAULT';
+    const DEFAULT = '$DEFAULT';
 
     private string $type;
 
@@ -30,10 +32,13 @@ final class Key implements Equality
 
     public function __construct(string $type, string $context = Key::GLOBAL, string $tag = Key::DEFAULT)
     {
+        (new IsType())
+            ->assert($type);
+
         (new Either(
-            new IsOneOf('array','string','int','float','bool'),
+            new IsSameOf(self::GLOBAL),
             new IsClassOrInterface()
-        ))->assert($type);
+        ))->assert($context);
 
         $this->type    = $type;
         $this->context = $context;
