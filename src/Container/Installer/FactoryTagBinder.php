@@ -20,23 +20,19 @@ final class FactoryTagBinder
 
     public function withTag(string $tag): ScopeBinder
     {
-        $factory = new Key(
-            $this->factory->getType(),
-            $this->factory->getContext(),
-            $tag,
-        );
-
-        $method = $this->method;
-
         return new ScopeBinder(
             $this->installer->withStep(
                 $this->installer
                     ->getStep(DirectStep::class)
-                    ->withSolver($this->factory, static function (Key $key) use ($factory, $method) {
+                    ->withSolver($this->factory, function (Key $key) use ($tag) {
                         return new Factory(
                             $key,
-                            $factory,
-                            $method,
+                            new Key(
+                                $this->factory->getType(),
+                                $this->factory->getContext(),
+                                $tag,
+                            ),
+                            $this->method,
                         );
                     }),
             ),
