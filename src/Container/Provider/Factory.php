@@ -17,28 +17,16 @@ use Vivarium\Container\Provider;
 
 final class Factory implements Provider
 {
-    private Key $key;
-
-    /** @var class-string */
-    private string $class;
-
-    private string $method;
-
-    /** @param class-string $class */
-    public function __construct(Key $key, string $class, string $method)
-    {
-        (new IsClass())
-            ->assert($class);
-
-        $this->key    = $key;
-        $this->class  = $class;
-        $this->method = $method;
-    }
+    public function __construct(
+        private Key $key,
+        private Key $factory,
+        private string $method)
+    {}
 
     public function provide(Container $container): mixed
     {
         $callable = [
-            $container->get(new Key($this->class)),
+            $container->get($this->factory),
             $this->method
         ];
 
