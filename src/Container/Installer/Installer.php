@@ -54,12 +54,6 @@ final class Installer
 
     public function withStep(SolverStep $step): self
     {
-        (new IsTrue())
-            ->assert(
-                $this->steps->containsKey($step::class),
-                'Step %s is not registered in this installer.'
-            );
-
         $installer        = clone $this;
         $installer->steps = $installer->steps
             ->put($step::class, $step);
