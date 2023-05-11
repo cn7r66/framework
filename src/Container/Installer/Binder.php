@@ -23,9 +23,6 @@ final class Binder
 
     public function bind(string $type): ContextBinder
     {
-        (new IsType())
-            ->assert($type);
-
         return new ContextBinder(
             $this->installer,
             new Key($type)

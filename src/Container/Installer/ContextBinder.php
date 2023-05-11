@@ -22,9 +22,6 @@ final class ContextBinder
 
     public function for(string $class): TagBinder
     {
-        (new IsClassOrInterface())
-            ->assert($class);
-
         return new TagBinder(
             $this->installer,
             new Key(
