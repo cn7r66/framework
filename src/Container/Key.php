@@ -13,6 +13,7 @@ use Vivarium\Assertion\Comparison\IsOneOf;
 use Vivarium\Assertion\Comparison\IsSameOf;
 use Vivarium\Assertion\Conditional\Either;
 use Vivarium\Assertion\String\IsClassOrInterface;
+use Vivarium\Assertion\String\IsNamespace;
 use Vivarium\Assertion\String\IsType;
 use Vivarium\Equality\Equality;
 use Vivarium\Equality\EqualsBuilder;
@@ -37,8 +38,11 @@ final class Key implements Equality
 
         (new Either(
             new IsSameOf(self::GLOBAL),
-            new IsClassOrInterface()
-        ))->assert($context);
+            new Either(
+                new IsClassOrInterface(),
+                new IsNamespace()
+            )
+        ))->assert($context, 'Expected string to be $GLOBAL, class, interface or namespace. Got %s.');
 
         $this->type    = $type;
         $this->context = $context;
