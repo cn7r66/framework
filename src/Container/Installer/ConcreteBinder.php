@@ -36,7 +36,7 @@ final class ConcreteBinder
     public function toInstance(mixed $instance): ScopeBinder
     {
         (new IsAssignableTo($this->key->getType()))
-            ->assert($instance);
+            ->assert($instance::class);
 
         return new ScopeBinder(
             $this->installer->withStep(
