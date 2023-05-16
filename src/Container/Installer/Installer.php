@@ -52,11 +52,24 @@ final class Installer
         $this->factories = new HashMap();
     }
 
-    public function withStep(SolverStep $step): self
+    public function withStep(SolverStep $step, int|null $priority = null): self
     {
+        if ($priority === null) {
+            (new IsTrue())
+                ->assert(
+                    $this->priority->containsKey($step::class),
+                    'Must set priority for newly added steps.',
+                );
+        }
+
         $installer        = clone $this;
         $installer->steps = $installer->steps
             ->put($step::class, $step);
+
+        if ($priority !== null) {
+            $installer->priority = $installer->priority
+                ->put($step::class, $priority);
+        }
 
         return $installer;
     }
@@ -92,15 +105,18 @@ final class Installer
     public function getStep(string $class)
     {
         (new IsAssignableTo(SolverStep::class))
-            ->assert($class);
+            ->assert(
+                $class,
+                'Class must be of type %2$s.',
+            );
 
         if ($this->steps->containsKey($class)) {
-            /** @var T */
+            /** @psalm-var T */
             return $this->steps->get($class);
         }
 
         if ($this->factories->containsKey($class)) {
-            /** @var T */
+            /** @psalm-var T */
             return $this->factories->get($class)();
         }
 
@@ -124,6 +140,8 @@ final class Installer
             );
         }
 
-        return $queue->toArray();
+        return array_map(function (StepAndPriority $stepAndPriority) {
+            return $stepAndPriority->getStep();
+        },$queue->toArray());
     }
 }
