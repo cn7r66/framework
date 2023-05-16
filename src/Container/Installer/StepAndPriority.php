@@ -12,7 +12,7 @@ use Vivarium\Container\Key;
 use Vivarium\Container\Provider;
 use Vivarium\Container\Solver\SolverStep;
 
-final class StepAndPriority implements SolverStep
+final class StepAndPriority
 {
     private SolverStep $step;
 
@@ -32,10 +32,5 @@ final class StepAndPriority implements SolverStep
     public function getPriority(): int
     {
         return $this->priority;
-    }
-
-    public function solve(Key $key, callable $next): Provider
-    {
-        return $this->step->solve($key, $next);
     }
 }
