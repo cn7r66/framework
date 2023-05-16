@@ -16,6 +16,7 @@ final class InstanceTest extends TestCase
     /**
      * @dataProvider keyInstanceProvider()
      *
+     * @covers ::__construct()
      * @covers ::provide()
      * @covers ::getKey
      */
