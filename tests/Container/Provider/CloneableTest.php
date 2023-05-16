@@ -1,29 +1,35 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Vivarium\Test\Container\Provider;
 
 use PHPUnit\Framework\TestCase;
 use Vivarium\Container\Container;
+use Vivarium\Container\Key;
 use Vivarium\Container\Provider;
 use Vivarium\Container\Provider\Cloneable;
 use Vivarium\Test\Container\Stub\StubInterface;
 
+/** @coversDefaultClass \Vivarium\Container\Provider\Cloneable */
 final class CloneableTest extends TestCase
 {
+    /**
+     * @covers ::__construct()
+     * @covers ::provide()
+     */
     public function testProvide(): void
     {
         $container = static::createMock(Container::class);
-        $cloned    = static::createMock(StubInterface::class);
 
         $instance = static::getMockBuilder(StubInterface::class)
                           ->addMethods(['__clone'])
                           ->getMock();
 
         $instance->expects(static::exactly(2))
-                 ->method('__clone')
-                 ->willReturn($cloned);
+                 ->method('__clone');
 
-        $provider  = static::createMock(Provider::class);
+        $provider = static::createMock(Provider::class);
 
         $provider->expects(static::once())
                  ->method('provide')
@@ -32,9 +38,26 @@ final class CloneableTest extends TestCase
 
         $cloneable = new Cloneable($provider);
 
-        $a = $cloneable->provide($container);
+        $cloned1 = $cloneable->provide($container);
+        $cloned2 = $cloneable->provide($container);
 
-        static::assertSame($cloned, $a);
-        static::assertSame($cloned, $cloneable->provide($container));
+        static::assertNotSame($instance, $cloned1);
+        static::assertNotSame($cloned1, $cloned2);
+    }
+
+    /** @covers ::getKey() */
+    public function testGetKey(): void
+    {
+        $key = new Key('int');
+
+        $provider = static::createMock(Provider::class);
+
+        $provider->expects(static::once())
+                 ->method('getKey')
+                 ->willReturn($key);
+
+        $cloneable =  new Cloneable($provider);
+
+        static::assertSame($key, $cloneable->getKey());
     }
 }
