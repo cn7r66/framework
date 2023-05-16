@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of Vivarium
  * SPDX-License-Identifier: MIT
@@ -9,25 +11,27 @@
 
 namespace Vivarium\Container\Provider;
 
-use Vivarium\Assertion\String\IsClass;
 use Vivarium\Assertion\Type\IsCallable;
 use Vivarium\Container\Container;
 use Vivarium\Container\Key;
 use Vivarium\Container\Provider;
+
+use function call_user_func;
 
 final class Factory implements Provider
 {
     public function __construct(
         private Key $key,
         private Key $factory,
-        private string $method)
-    {}
+        private string $method,
+    ) {
+    }
 
     public function provide(Container $container): mixed
     {
         $callable = [
             $container->get($this->factory),
-            $this->method
+            $this->method,
         ];
 
         (new IsCallable())
@@ -35,7 +39,7 @@ final class Factory implements Provider
 
         return call_user_func(
             $callable,
-            $this->key
+            $this->key,
         );
     }
 
