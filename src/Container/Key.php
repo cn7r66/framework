@@ -25,10 +25,13 @@ final class Key implements Equality
 
     const DEFAULT = '$DEFAULT';
 
+    /** @psalm-var non-empty-string */
     private string $type;
 
+    /** @psalm-var non-empty-string */
     private string $context;
 
+    /** @psalm-var non-empty-string */
     private string $tag;
 
     public function __construct(string $type, string $context = Key::GLOBAL, string $tag = Key::DEFAULT)
@@ -49,16 +52,20 @@ final class Key implements Equality
         $this->tag     = $tag;
     }
 
+    /** @return non-empty-string|class-string
+     */
     public function getType(): string
     {
         return $this->type;
     }
 
+    /** @return non-empty-string|class-string */
     public function getContext(): string
     {
         return $this->context;
     }
 
+    /** @return non-empty-string */
     public function getTag(): string
     {
         return $this->tag;
