@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of Vivarium
  * SPDX-License-Identifier: MIT
@@ -17,11 +19,7 @@ class Service implements Provider
 {
     private mixed $instance;
 
-    public function __construct(
-        private Key $key,
-        private Provider $provider
-    )
-    {
+    public function __construct(private Provider $provider) {
         $this->instance = null;
     }
 
@@ -41,6 +39,6 @@ class Service implements Provider
 
     public function getKey(): Key
     {
-        return $this->key;
+        return $this->provider->getKey();
     }
 }
