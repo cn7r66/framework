@@ -1,13 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of Vivarium
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2023 Luca Cantoreggi
- *
  */
+
+declare(strict_types=1);
 
 namespace Vivarium\Container\Provider;
 
@@ -19,7 +18,8 @@ class Service implements Provider
 {
     private mixed $instance;
 
-    public function __construct(private Provider $provider) {
+    public function __construct(private Provider $provider)
+    {
         $this->instance = null;
     }
 

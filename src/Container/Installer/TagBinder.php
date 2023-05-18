@@ -1,4 +1,12 @@
-<?php declare(strict_types=1);
+<?php
+
+/*
+ * This file is part of Vivarium
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2023 Luca Cantoreggi
+ */
+
+declare(strict_types=1);
 
 namespace Vivarium\Container\Installer;
 
@@ -8,9 +16,9 @@ final class TagBinder
 {
     public function __construct(
         private Installer $installer,
-        private Key $key
-    )
-    {}
+        private Key $key,
+    ) {
+    }
 
     public function withTag(string $tag): ConcreteBinder
     {
@@ -19,8 +27,8 @@ final class TagBinder
             new Key(
                 $this->key->getType(),
                 $this->key->getContext(),
-                $tag
-            )
+                $tag,
+            ),
         );
     }
 
@@ -28,7 +36,7 @@ final class TagBinder
     {
         return new ConcreteBinder(
             $this->installer,
-            $this->key
+            $this->key,
         );
     }
 }

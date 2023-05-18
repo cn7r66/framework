@@ -4,8 +4,9 @@
  * This file is part of Vivarium
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2023 Luca Cantoreggi
- *
  */
+
+declare(strict_types=1);
 
 namespace Vivarium\Container\Solver;
 
@@ -36,14 +37,13 @@ final class DirectStep implements SolverStep
     }
 
     /**
-     * @param Key                     $key
      * @param callable(Key): Provider $solver
      *
      * @return $this
      */
     public function withSolver(Key $key, callable $solver): self
     {
-        $direct = clone $this;
+        $direct           = clone $this;
         $direct->registry = $direct->registry
             ->add($key, $solver);
 

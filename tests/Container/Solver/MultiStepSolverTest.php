@@ -1,4 +1,12 @@
-<?php declare(strict_types=1);
+<?php
+
+/*
+ * This file is part of Vivarium
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2023 Luca Cantoreggi
+ */
+
+declare(strict_types=1);
 
 namespace Vivarium\Test\Container\Solver;
 
@@ -26,7 +34,7 @@ final class MultiStepSolverTest extends TestCase
 
         $step1->expects(static::once())
               ->method('solve')
-              ->willReturnCallback(function (Key $key, callable $next): mixed {
+              ->willReturnCallback(static function (Key $key, callable $next): mixed {
                   return $next($key);
               });
 
@@ -69,13 +77,13 @@ final class MultiStepSolverTest extends TestCase
 
         $step1->expects(static::once())
             ->method('solve')
-            ->willReturnCallback(function (Key $key, callable $next): mixed {
+            ->willReturnCallback(static function (Key $key, callable $next): mixed {
                 return $next($key);
             });
 
         $step2->expects(static::once())
             ->method('solve')
-            ->willReturnCallback(function (Key $key, callable $next): mixed {
+            ->willReturnCallback(static function (Key $key, callable $next): mixed {
                 return $next($key);
             });
 

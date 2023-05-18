@@ -1,12 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of Vivarium
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2023 Luca Cantoreggi
  */
+
+declare(strict_types=1);
 
 namespace Vivarium\Test\Container\Provider;
 
@@ -15,8 +15,8 @@ use stdClass;
 use Vivarium\Container\Container;
 use Vivarium\Container\Key;
 use Vivarium\Container\Provider\Factory;
+use Vivarium\Test\Container\Stub\Stub;
 use Vivarium\Test\Container\Stub\StubImpl;
-use Vivarium\Test\Container\Stub\StubInterface;
 
 /** @coversDefaultClass \Vivarium\Container\Provider\Factory */
 final class FactoryTest extends TestCase
@@ -47,7 +47,7 @@ final class FactoryTest extends TestCase
                   ->with($factoryKey)
                   ->willReturn($factory);
 
-        $key = new Key(StubInterface::class);
+        $key = new Key(Stub::class);
 
         $provider = new Factory(
             $key,

@@ -1,13 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of Vivarium
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2023 Luca Cantoreggi
- *
  */
+
+declare(strict_types=1);
 
 namespace Vivarium\Test\Container\Solver;
 
@@ -16,8 +15,8 @@ use PHPUnit\Framework\TestCase;
 use stdClass;
 use Vivarium\Container\Key;
 use Vivarium\Container\Solver\Registry;
+use Vivarium\Test\Container\Stub\Stub;
 use Vivarium\Test\Container\Stub\StubImpl;
-use Vivarium\Test\Container\Stub\StubInterface;
 
 /** @coversDefaultClass \Vivarium\Container\Solver\Registry */
 final class RegistryTest extends TestCase
@@ -30,8 +29,8 @@ final class RegistryTest extends TestCase
     public function testHasExactly(): void
     {
         $key1 = new Key('int');
-        $key2 = new Key('int', StubInterface::class);
-        $key3 = new Key('int', StubInterface::class, 'test.int');
+        $key2 = new Key('int', Stub::class);
+        $key3 = new Key('int', Stub::class, 'test.int');
         $key4 = new Key('int', 'Vivarium\\Test\\Stub');
 
         $registry = (new Registry())
@@ -53,8 +52,8 @@ final class RegistryTest extends TestCase
     public function testGetExactly(): void
     {
         $key1 = new Key('int');
-        $key2 = new Key('int', StubInterface::class);
-        $key3 = new Key('int', StubInterface::class, 'test.int');
+        $key2 = new Key('int', Stub::class);
+        $key3 = new Key('int', Stub::class, 'test.int');
 
         $registry = (new Registry())
             ->add($key1, 1)
@@ -82,13 +81,13 @@ final class RegistryTest extends TestCase
      */
     public function testHas(): void
     {
-        $key1 = new Key('int', StubInterface::class);
-        $key2 = new Key('int', StubInterface::class, 'test.int');
+        $key1 = new Key('int', Stub::class);
+        $key2 = new Key('int', Stub::class, 'test.int');
         $key3 = new Key('int');
         $key4 = new Key('int', 'Vivarium\Test\Stub');
         $key5 = new Key('int', StubImpl::class);
         $key6 = new Key('int', stdClass::class);
-        $key7 = new Key('float', StubInterface::class);
+        $key7 = new Key('float', Stub::class);
 
         $registry = (new Registry())
             ->add($key1, 1)
@@ -110,8 +109,8 @@ final class RegistryTest extends TestCase
      */
     public function testGet(): void
     {
-        $key1 = new Key('int', StubInterface::class);
-        $key2 = new Key('int', StubInterface::class, 'test.int');
+        $key1 = new Key('int', Stub::class);
+        $key2 = new Key('int', Stub::class, 'test.int');
         $key3 = new Key('int');
         $key4 = new Key('int', 'Vivarium\Test\Container\Stub');
         $key5 = new Key('int', StubImpl::class);

@@ -1,17 +1,25 @@
-<?php declare(strict_types=1);
+<?php
+
+/*
+ * This file is part of Vivarium
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2023 Luca Cantoreggi
+ */
+
+declare(strict_types=1);
 
 namespace Vivarium\Test\Container\Solver;
 
-use Couchbase\Scope;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use stdClass;
 use Vivarium\Container\Key;
 use Vivarium\Container\Provider;
 use Vivarium\Container\Provider\Cloneable;
 use Vivarium\Container\Provider\Service;
 use Vivarium\Container\Solver\ScopeStep;
+use Vivarium\Test\Container\Stub\Stub;
 use Vivarium\Test\Container\Stub\StubImpl;
-use Vivarium\Test\Container\Stub\StubInterface;
 
 /** @coversDefaultClass \Vivarium\Container\Solver\ScopeStep */
 final class ScopeStepTest extends TestCase
@@ -32,7 +40,7 @@ final class ScopeStepTest extends TestCase
             ->willReturn($providerKey);
 
         /** @psalm-var MockObject&callable $next */
-        $next = static::getMockBuilder(\stdClass::class)
+        $next = static::getMockBuilder(stdClass::class)
                       ->addMethods(['__invoke'])
                       ->getMock();
 
@@ -40,7 +48,7 @@ final class ScopeStepTest extends TestCase
              ->method('__invoke')
              ->willReturn($provider);
 
-        $key = new Key(StubInterface::class);
+        $key = new Key(Stub::class);
 
         $step = (new ScopeStep())
             ->addService($key);
@@ -67,7 +75,7 @@ final class ScopeStepTest extends TestCase
                  ->willReturn($providerKey);
 
         /** @psalm-var MockObject&callable $next */
-        $next = static::getMockBuilder(\stdClass::class)
+        $next = static::getMockBuilder(stdClass::class)
                       ->addMethods(['__invoke'])
                       ->getMock();
 
@@ -75,7 +83,7 @@ final class ScopeStepTest extends TestCase
              ->method('__invoke')
              ->willReturn($provider);
 
-        $key = new Key(StubInterface::class);
+        $key = new Key(Stub::class);
 
         $step = (new ScopeStep())
             ->addCloneable($key);
@@ -95,7 +103,7 @@ final class ScopeStepTest extends TestCase
         $provider = static::createMock(Provider::class);
 
         /** @psalm-var MockObject&callable $next */
-        $next = static::getMockBuilder(\stdClass::class)
+        $next = static::getMockBuilder(stdClass::class)
                       ->addMethods(['__invoke'])
                       ->getMock();
 
@@ -103,7 +111,7 @@ final class ScopeStepTest extends TestCase
              ->method('__invoke')
              ->willReturn($provider);
 
-        $key = new Key(StubInterface::class);
+        $key = new Key(Stub::class);
 
         $provider = (new ScopeStep())
             ->solve($key, $next);

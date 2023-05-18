@@ -1,10 +1,12 @@
 <?php
+
 /*
  * This file is part of Vivarium
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2023 Luca Cantoreggi
- *
  */
+
+declare(strict_types=1);
 
 namespace Vivarium\Test\Container\Provider;
 
@@ -12,8 +14,8 @@ use PHPUnit\Framework\TestCase;
 use Vivarium\Container\Container;
 use Vivarium\Container\Key;
 use Vivarium\Container\Provider;
+use Vivarium\Test\Container\Stub\Stub;
 use Vivarium\Test\Container\Stub\StubImpl;
-use Vivarium\Test\Container\Stub\StubInterface;
 
 /** @coversDefaultClass \Vivarium\Container\Provider\Service */
 final class ServiceTest extends TestCase
@@ -28,7 +30,7 @@ final class ServiceTest extends TestCase
     {
         $container = static::createMock(Container::class);
         $instance  = new StubImpl();
-        $key       = new Key(StubInterface::class);
+        $key       = new Key(Stub::class);
 
         $provider = static::createMock(Provider::class);
         $provider->expects(static::once())
@@ -40,9 +42,8 @@ final class ServiceTest extends TestCase
             ->method('getKey')
             ->willReturn($key);
 
-
         $service = new Provider\Service(
-            $provider
+            $provider,
         );
 
         static::assertSame($instance, $service->provide($container));

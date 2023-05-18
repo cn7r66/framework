@@ -1,4 +1,12 @@
-<?php declare(strict_types=1);
+<?php
+
+/*
+ * This file is part of Vivarium
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2023 Luca Cantoreggi
+ */
+
+declare(strict_types=1);
 
 namespace Vivarium\Test\Container\Provider;
 
@@ -6,8 +14,8 @@ use PHPUnit\Framework\TestCase;
 use Vivarium\Container\Container;
 use Vivarium\Container\Key;
 use Vivarium\Container\Provider\ContainerCall;
+use Vivarium\Test\Container\Stub\Stub;
 use Vivarium\Test\Container\Stub\StubImpl;
-use Vivarium\Test\Container\Stub\StubInterface;
 
 /** @coversDefaultClass \Vivarium\Container\Provider\ContainerCall */
 final class ContainerCallTest extends TestCase
@@ -20,7 +28,7 @@ final class ContainerCallTest extends TestCase
     {
         $container = static::createMock(Container::class);
 
-        $key      = new Key(StubInterface::class);
+        $key      = new Key(Stub::class);
         $instance = new StubImpl();
 
         $container->expects(static::once())

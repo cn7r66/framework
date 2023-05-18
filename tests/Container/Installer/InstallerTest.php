@@ -1,13 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of Vivarium
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2023 Luca Cantoreggi
- *
  */
+
+declare(strict_types=1);
 
 namespace Vivarium\Test\Container\Installer;
 
@@ -17,7 +16,7 @@ use Vivarium\Assertion\Exception\AssertionFailed;
 use Vivarium\Container\Exception\StepNotFound;
 use Vivarium\Container\Installer\Installer;
 use Vivarium\Container\Solver\SolverStep;
-use Vivarium\Test\Container\Stub\StubInterface;
+use Vivarium\Test\Container\Stub\Stub;
 
 use function assert;
 use function is_callable;
@@ -103,7 +102,7 @@ final class InstallerTest extends TestCase
         static::expectExceptionMessage('Class must be of type "Vivarium\Container\Solver\SolverStep".');
 
         (new Installer())
-            ->getStep(StubInterface::class);
+            ->getStep(Stub::class);
     }
 
     /** @covers ::getStep() */

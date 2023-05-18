@@ -1,4 +1,12 @@
-<?php declare(strict_types=1);
+<?php
+
+/*
+ * This file is part of Vivarium
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2023 Luca Cantoreggi
+ */
+
+declare(strict_types=1);
 
 namespace Vivarium\Test\Container\Installer;
 
@@ -10,13 +18,11 @@ use Vivarium\Container\Installer\CoreSolvers;
 use Vivarium\Container\Installer\Installer;
 use Vivarium\Container\Key;
 use Vivarium\Test\Assertion\Stub\StubClass;
+use Vivarium\Test\Container\Stub\Stub;
 use Vivarium\Test\Container\Stub\StubFactory;
 use Vivarium\Test\Container\Stub\StubImpl;
-use Vivarium\Test\Container\Stub\StubInterface;
 
-/**
- * @coversDefaultClass \Vivarium\Container\Installer\ConcreteBinder
- */
+/** @coversDefaultClass \Vivarium\Container\Installer\ConcreteBinder */
 final class ConcreteBinderTest extends TestCase
 {
     /**
@@ -27,12 +33,12 @@ final class ConcreteBinderTest extends TestCase
     {
         static::expectException(AssertionFailed::class);
         static::expectExceptionMessage(
-            'Expected type "stdClass" to be assignable to "Vivarium\Test\Container\Stub\StubInterface".'
+            'Expected type "stdClass" to be assignable to "Vivarium\Test\Container\Stub\StubInterface".',
         );
 
         $binder = new ConcreteBinder(
             new Installer(),
-            new Key(StubInterface::class)
+            new Key(Stub::class),
         );
 
         $binder->to(StubImpl::class);
@@ -44,7 +50,7 @@ final class ConcreteBinderTest extends TestCase
     {
         static::expectException(AssertionFailed::class);
         static::expectExceptionMessage(
-            'Expected type "stdClass" to be assignable to "Vivarium\Test\Container\Stub\StubInterface".'
+            'Expected type "stdClass" to be assignable to "Vivarium\Test\Container\Stub\StubInterface".',
         );
 
         $installer = (new CoreSolvers())
@@ -52,7 +58,7 @@ final class ConcreteBinderTest extends TestCase
 
         $binder = new ConcreteBinder(
             $installer,
-            new Key(StubInterface::class)
+            new Key(Stub::class),
         );
 
         $binder->toInstance(new StubImpl());
@@ -67,7 +73,7 @@ final class ConcreteBinderTest extends TestCase
 
         $binder = new ConcreteBinder(
             new Installer(),
-            new Key(StubClass::class)
+            new Key(StubClass::class),
         );
 
         $binder->toFactory(StubFactory::class, 'create');

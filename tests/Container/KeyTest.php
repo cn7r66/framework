@@ -1,4 +1,12 @@
-<?php declare(strict_types=1);
+<?php
+
+/*
+ * This file is part of Vivarium
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2023 Luca Cantoreggi
+ */
+
+declare(strict_types=1);
 
 namespace Vivarium\Test\Container;
 
@@ -6,7 +14,7 @@ use PHPUnit\Framework\TestCase;
 use stdClass;
 use Vivarium\Assertion\Exception\AssertionFailed;
 use Vivarium\Container\Key;
-use Vivarium\Test\Container\Stub\StubInterface;
+use Vivarium\Test\Container\Stub\Stub;
 
 /** @coversDefaultClass \Vivarium\Container\Key */
 final class KeyTest extends TestCase
@@ -16,10 +24,10 @@ final class KeyTest extends TestCase
     {
         static::expectException(AssertionFailed::class);
         static::expectExceptionMessage(
-            'Expected string to be a primitive, class, interface, union or intersection. Got "random-string".'
+            'Expected string to be a primitive, class, interface, union or intersection. Got "random-string".',
         );
 
-        new Key(StubInterface::class);
+        new Key(Stub::class);
         new Key('int');
         new Key('array|stdClass');
 
@@ -31,11 +39,11 @@ final class KeyTest extends TestCase
     {
         static::expectException(AssertionFailed::class);
         static::expectExceptionMessage(
-            'Expected string to be $GLOBAL, class, interface or namespace. Got "random-string".'
+            'Expected string to be $GLOBAL, class, interface or namespace. Got "random-string".',
         );
 
-        new Key(StubInterface::class);
-        new Key('int', StubInterface::class);
+        new Key(Stub::class);
+        new Key('int', Stub::class);
         new Key('array|stdClass', 'Vivarium\Test\Container');
 
         new Key('array', 'random-string');
@@ -48,9 +56,9 @@ final class KeyTest extends TestCase
      */
     public function testGetters(): void
     {
-        $key = new Key(StubInterface::class);
+        $key = new Key(Stub::class);
 
-        static::assertSame(StubInterface::class, $key->getType());
+        static::assertSame(Stub::class, $key->getType());
         static::assertSame(KEY::GLOBAL, $key->getContext());
         static::assertSame(Key::DEFAULT, $key->getTag());
     }
@@ -61,8 +69,8 @@ final class KeyTest extends TestCase
      */
     public function testEquality(): void
     {
-        $first  = new Key('int', StubInterface::class, 'tag');
-        $second = new Key('int', StubInterface::class, 'tag');
+        $first  = new Key('int', Stub::class, 'tag');
+        $second = new Key('int', Stub::class, 'tag');
 
         static::assertFalse($first->equals(new stdClass()));
         static::assertTrue($first->equals($first));

@@ -1,16 +1,18 @@
 <?php
+
 /*
  * This file is part of Vivarium
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2023 Luca Cantoreggi
- *
  */
+
+declare(strict_types=1);
 
 namespace Vivarium\Container\Solver;
 
+use RuntimeException;
 use Vivarium\Container\Key;
 use Vivarium\Container\Provider;
-use Vivarium\Container\Solver;
 
 final class CachedStep implements SolverStep
 {
@@ -35,6 +37,6 @@ final class CachedStep implements SolverStep
 
     private function hit(Key $key): Provider
     {
-        throw new \RuntimeException('Not implemented yet.');
+        throw new RuntimeException('Not implemented yet.');
     }
 }

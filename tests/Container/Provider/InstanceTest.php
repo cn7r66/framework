@@ -1,5 +1,11 @@
 <?php
 
+/*
+ * This file is part of Vivarium
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2023 Luca Cantoreggi
+ */
+
 declare(strict_types=1);
 
 namespace Vivarium\Test\Container\Provider;
@@ -15,7 +21,6 @@ final class InstanceTest extends TestCase
 {
     /**
      * @dataProvider keyInstanceProvider()
-     *
      * @covers ::__construct()
      * @covers ::provide()
      * @covers ::getKey
@@ -26,27 +31,25 @@ final class InstanceTest extends TestCase
 
         $provider = new Instance(
             $key,
-            $instance
+            $instance,
         );
 
         static::assertSame($instance, $provider->provide($container));
         static::assertSame($key, $provider->getKey());
     }
 
-    /**
-     * @return array<array<Key, mixed>>
-     */
+    /** @return array<array<Key, mixed>> */
     public function keyInstanceProvider(): array
     {
         return [
             [
                 new Key('int'),
-                42
+                42,
             ],
             [
                 new Key(stdClass::class),
-                new stdClass()
-            ]
+                new stdClass(),
+            ],
         ];
     }
 }

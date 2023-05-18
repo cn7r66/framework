@@ -4,12 +4,12 @@
  * This file is part of Vivarium
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2023 Luca Cantoreggi
- *
  */
+
+declare(strict_types=1);
 
 namespace Vivarium\Container;
 
-use Vivarium\Assertion\Comparison\IsOneOf;
 use Vivarium\Assertion\Comparison\IsSameOf;
 use Vivarium\Assertion\Conditional\Either;
 use Vivarium\Assertion\String\IsClassOrInterface;
@@ -21,21 +21,15 @@ use Vivarium\Equality\HashBuilder;
 
 final class Key implements Equality
 {
-    const GLOBAL = '$GLOBAL';
+    public const GLOBAL = '$GLOBAL';
 
-    const DEFAULT = '$DEFAULT';
+    public const DEFAULT = '$DEFAULT';
 
-    /** @psalm-var non-empty-string */
-    private string $type;
-
-    /** @psalm-var non-empty-string */
-    private string $context;
-
-    /** @psalm-var non-empty-string */
-    private string $tag;
-
-    public function __construct(string $type, string $context = Key::GLOBAL, string $tag = Key::DEFAULT)
-    {
+    public function __construct(
+        private string $type,
+        private string $context = self::GLOBAL,
+        private string $tag = self::DEFAULT,
+    ) {
         (new IsType())
             ->assert($type);
 
@@ -43,17 +37,12 @@ final class Key implements Equality
             new IsSameOf(self::GLOBAL),
             new Either(
                 new IsClassOrInterface(),
-                new IsNamespace()
-            )
+                new IsNamespace(),
+            ),
         ))->assert($context, 'Expected string to be $GLOBAL, class, interface or namespace. Got %s.');
-
-        $this->type    = $type;
-        $this->context = $context;
-        $this->tag     = $tag;
     }
 
-    /** @return non-empty-string|class-string
-     */
+    /** @return non-empty-string|class-string */
     public function getType(): string
     {
         return $this->type;

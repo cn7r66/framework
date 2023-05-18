@@ -1,13 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of Vivarium
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2023 Luca Cantoreggi
- *
  */
+
+declare(strict_types=1);
 
 namespace Vivarium\Container\Installer;
 
@@ -21,9 +20,7 @@ final class ModuleLoader
     /** @var Sequence<Module> */
     private Sequence $modules;
 
-    /**
-     * @no-named-arguments
-     */
+    /** @no-named-arguments */
     public function __construct(Module ...$modules)
     {
         $this->modules = new ArraySequence(...$modules);
@@ -31,7 +28,7 @@ final class ModuleLoader
 
     public function install(Module $module): ModuleLoader
     {
-        $loader         = clone $this;
+        $loader          = clone $this;
         $loader->modules = $loader->modules
             ->add($module);
 

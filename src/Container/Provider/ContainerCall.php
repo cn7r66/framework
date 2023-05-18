@@ -1,4 +1,12 @@
-<?php declare(strict_types=1);
+<?php
+
+/*
+ * This file is part of Vivarium
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2023 Luca Cantoreggi
+ */
+
+declare(strict_types=1);
 
 namespace Vivarium\Container\Provider;
 
@@ -8,7 +16,9 @@ use Vivarium\Container\Provider;
 
 final class ContainerCall implements Provider
 {
-    public function __construct(private Key $key) {}
+    public function __construct(private Key $key)
+    {
+    }
 
     public function provide(Container $container): mixed
     {

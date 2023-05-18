@@ -1,4 +1,12 @@
-<?php declare(strict_types=1);
+<?php
+
+/*
+ * This file is part of Vivarium
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2023 Luca Cantoreggi
+ */
+
+declare(strict_types=1);
 
 namespace Vivarium\Container\Installer;
 
@@ -9,13 +17,14 @@ final class ScopeBinder
 {
     public function __construct(
         private Installer $installer,
-        private Key $key
-    ) {}
+        private Key $key,
+    ) {
+    }
 
     public function prototype(): Binder
     {
         return new Binder(
-            $this->installer
+            $this->installer,
         );
     }
 
@@ -25,8 +34,8 @@ final class ScopeBinder
             $this->installer->withStep(
                 $this->installer
                     ->getStep(ScopeStep::class)
-                    ->addService($this->key)
-            )
+                    ->addService($this->key),
+            ),
         );
     }
 
@@ -36,8 +45,8 @@ final class ScopeBinder
             $this->installer->withStep(
                 $this->installer
                     ->getStep(ScopeStep::class)
-                    ->addCloneable($this->key)
-            )
+                    ->addCloneable($this->key),
+            ),
         );
     }
 }

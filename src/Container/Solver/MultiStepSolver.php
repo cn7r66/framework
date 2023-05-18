@@ -4,8 +4,9 @@
  * This file is part of Vivarium
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2023 Luca Cantoreggi
- *
  */
+
+declare(strict_types=1);
 
 namespace Vivarium\Container\Solver;
 
@@ -31,12 +32,11 @@ final class MultiStepSolver implements Solver
     {
         return $this->next(
             $key,
-            $this->steps->getIterator()
+            $this->steps->getIterator(),
         )();
     }
 
     /**
-     * @param Key                  $key
      * @param Iterator<SolverStep> $iterator
      *
      * @return callable(): Provider
@@ -53,7 +53,7 @@ final class MultiStepSolver implements Solver
 
             return $step->solve(
                 $key,
-                $this->next($key, $iterator)
+                $this->next($key, $iterator),
             );
         };
     }

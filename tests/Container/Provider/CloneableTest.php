@@ -1,5 +1,11 @@
 <?php
 
+/*
+ * This file is part of Vivarium
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2023 Luca Cantoreggi
+ */
+
 declare(strict_types=1);
 
 namespace Vivarium\Test\Container\Provider;
@@ -9,7 +15,7 @@ use Vivarium\Container\Container;
 use Vivarium\Container\Key;
 use Vivarium\Container\Provider;
 use Vivarium\Container\Provider\Cloneable;
-use Vivarium\Test\Container\Stub\StubInterface;
+use Vivarium\Test\Container\Stub\Stub;
 
 /** @coversDefaultClass \Vivarium\Container\Provider\Cloneable */
 final class CloneableTest extends TestCase
@@ -22,7 +28,7 @@ final class CloneableTest extends TestCase
     {
         $container = static::createMock(Container::class);
 
-        $instance = static::getMockBuilder(StubInterface::class)
+        $instance = static::getMockBuilder(Stub::class)
                           ->addMethods(['__clone'])
                           ->getMock();
 

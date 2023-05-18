@@ -8,11 +8,8 @@
 
 declare(strict_types=1);
 
-namespace Vivarium\Container;
+namespace Vivarium\Test\Container\Stub;
 
-interface Provider
+interface Stub
 {
-    public function provide(Container $container): mixed;
-
-    public function getKey(): Key;
 }

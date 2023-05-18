@@ -4,8 +4,9 @@
  * This file is part of Vivarium
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2023 Luca Cantoreggi
- *
  */
+
+declare(strict_types=1);
 
 namespace Vivarium\Container\Solver;
 
@@ -15,10 +16,8 @@ use Vivarium\Container\Provider;
 interface SolverStep
 {
     /**
-     * @param Key      $key
+     * @param Key                 $key
      * @param callable():Provider $next
-     *
-     * @return Provider
      */
     public function solve(Key $key, callable $next): Provider;
 }

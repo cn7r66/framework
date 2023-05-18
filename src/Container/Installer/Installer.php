@@ -1,13 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of Vivarium
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2023 Luca Cantoreggi
- *
  */
+
+declare(strict_types=1);
 
 namespace Vivarium\Container\Installer;
 
@@ -19,6 +18,8 @@ use Vivarium\Collection\Queue\PriorityQueue;
 use Vivarium\Collection\Queue\Queue;
 use Vivarium\Container\Exception\StepNotFound;
 use Vivarium\Container\Solver\SolverStep;
+
+use function array_map;
 
 final class Installer
 {
@@ -140,8 +141,8 @@ final class Installer
             );
         }
 
-        return array_map(function (StepAndPriority $stepAndPriority) {
+        return array_map(static function (StepAndPriority $stepAndPriority) {
             return $stepAndPriority->getStep();
-        },$queue->toArray());
+        }, $queue->toArray());
     }
 }
