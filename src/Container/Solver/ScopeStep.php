@@ -22,11 +22,12 @@ final class ScopeStep implements SolverStep
 
     private const CLONEABLE = 2;
 
-    /** @var Registry<string> */
+    /** @var Registry<int> */
     private Registry $registry;
 
     public function __construct()
     {
+        /** @psalm-var Registry<int> */
         $this->registry = new Registry();
     }
 
