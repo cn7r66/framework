@@ -27,8 +27,8 @@ final class ServiceTest extends TestCase
     public function testProvide(): void
     {
         $container = static::createMock(Container::class);
-
-        $instance = new StubImpl();
+        $instance  = new StubImpl();
+        $key       = new Key(StubInterface::class);
 
         $provider = static::createMock(Provider::class);
         $provider->expects(static::once())
@@ -36,10 +36,12 @@ final class ServiceTest extends TestCase
                  ->with($container)
                  ->willReturn($instance);
 
-        $key = new Key(StubInterface::class);
+        $provider->expects(static::once())
+            ->method('getKey')
+            ->willReturn($key);
+
 
         $service = new Provider\Service(
-            $key,
             $provider
         );
 
