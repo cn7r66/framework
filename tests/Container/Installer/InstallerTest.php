@@ -25,7 +25,10 @@ use function is_callable;
 /** @coversDefaultClass \Vivarium\Container\Installer\Installer */
 final class InstallerTest extends TestCase
 {
-    /** @covers ::withStep() */
+    /**
+     * @covers ::__construct()
+     * @covers ::withStep()
+     */
     public function testWithStep(): void
     {
         $step = static::createMock(SolverStep::class);
