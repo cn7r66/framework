@@ -24,6 +24,7 @@ final class FactoryTagBinder
     ) {
     }
 
+    /** @param non-empty-string $tag */
     public function withTag(string $tag): ScopeBinder
     {
         return new ScopeBinder(

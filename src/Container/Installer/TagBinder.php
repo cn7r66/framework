@@ -20,6 +20,7 @@ final class TagBinder
     ) {
     }
 
+    /** @param non-empty-string $tag */
     public function withTag(string $tag): ConcreteBinder
     {
         return new ConcreteBinder(

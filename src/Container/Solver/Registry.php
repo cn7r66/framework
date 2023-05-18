@@ -28,7 +28,10 @@ final class Registry
 
     public function __construct()
     {
-        /** @psalm-var HashMap<Key, T> */
+        /**
+         * @psalm-var HashMap<Key, T>
+         * @phpstan-ignore-next-line
+         */
         $this->map = new HashMap();
     }
 
@@ -103,13 +106,13 @@ final class Registry
     {
         $context = explode('\\', $key->getContext());
 
-        if (count($context) === 1) {
-            return new Key($key->getType());
+        if (count($context) > 1) {
+            return new Key(
+                $key->getType(),
+                implode('\\', array_slice($context, 0, -1)),
+            );
         }
 
-        return new Key(
-            $key->getType(),
-            implode('\\', array_slice($context, 0, -1)),
-        );
+        return new Key($key->getType());
     }
 }

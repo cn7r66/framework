@@ -28,6 +28,7 @@ final class ContextBinder
         );
     }
 
+    /** @param non-empty-string|class-string $class */
     public function for(string $class): TagBinder
     {
         return new TagBinder(

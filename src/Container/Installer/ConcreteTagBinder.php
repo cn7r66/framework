@@ -23,6 +23,7 @@ final class ConcreteTagBinder
     ) {
     }
 
+    /** @param non-empty-string $tag */
     public function withTag(string $tag): ScopeBinder
     {
         return new ScopeBinder(

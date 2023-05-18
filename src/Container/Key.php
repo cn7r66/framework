@@ -25,6 +25,11 @@ final class Key implements Equality
 
     public const DEFAULT = '$DEFAULT';
 
+    /**
+     * @param non-empty-string|class-string $type
+     * @param non-empty-string|class-string $context
+     * @param non-empty-string              $tag
+     */
     public function __construct(
         private string $type,
         private string $context = self::GLOBAL,

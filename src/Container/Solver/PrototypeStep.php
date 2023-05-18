@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace Vivarium\Container\Solver;
 
 use ReflectionClass;
+use RuntimeException;
 use Vivarium\Container\Exception\ClassNotInstantiable;
 use Vivarium\Container\Key;
 use Vivarium\Container\Provider;
@@ -21,15 +22,6 @@ final class PrototypeStep implements SolverStep
 {
     public function solve(Key $key, callable $next): Provider
     {
-        if (! class_exists($key->getType())) {
-            return $next();
-        }
-
-        $reflector = new ReflectionClass($key->getType());
-        if (! $reflector->isInstantiable()) {
-            throw new ClassNotInstantiable(
-                '',
-            );
-        }
+        throw new RuntimeException('Not implemented yet.');
     }
 }

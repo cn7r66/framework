@@ -18,6 +18,7 @@ final class Binder
     {
     }
 
+    /** @param non-empty-string|class-string $type */
     public function bind(string $type): ContextBinder
     {
         return new ContextBinder(

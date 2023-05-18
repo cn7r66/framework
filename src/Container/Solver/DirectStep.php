@@ -21,7 +21,7 @@ final class DirectStep implements SolverStep
     public function __construct()
     {
         /**
-         * @psalm-var Registry<string>
+         * @psalm-var Registry<callable(Key):Provider>
          * @phpstan-ignore-next-line
          */
         $this->registry = new Registry();

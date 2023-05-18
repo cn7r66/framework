@@ -22,6 +22,10 @@ class SolverContainer implements Container
 
     public function __construct(private Solver $solver)
     {
+        /**
+         * @psalm-var Map<Key, Provider>
+         * @phpstan-ignore-next-line
+         */
         $this->providers = new HashMap();
     }
 
