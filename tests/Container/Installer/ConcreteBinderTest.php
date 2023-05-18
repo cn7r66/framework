@@ -33,7 +33,7 @@ final class ConcreteBinderTest extends TestCase
     {
         static::expectException(AssertionFailed::class);
         static::expectExceptionMessage(
-            'Expected type "stdClass" to be assignable to "Vivarium\Test\Container\Stub\StubInterface".',
+            'Expected type "stdClass" to be assignable to "Vivarium\Test\Container\Stub\Stub".',
         );
 
         $binder = new ConcreteBinder(
@@ -50,7 +50,7 @@ final class ConcreteBinderTest extends TestCase
     {
         static::expectException(AssertionFailed::class);
         static::expectExceptionMessage(
-            'Expected type "stdClass" to be assignable to "Vivarium\Test\Container\Stub\StubInterface".',
+            'Expected type "stdClass" to be assignable to "Vivarium\Test\Container\Stub\Stub".',
         );
 
         $installer = (new CoreSolvers())
