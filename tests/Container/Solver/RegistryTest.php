@@ -25,6 +25,7 @@ final class RegistryTest extends TestCase
     /**
      * @covers ::__construct()
      * @covers ::hasExactly()
+     * @covers ::add()
      */
     public function testHasExactly(): void
     {
@@ -47,6 +48,7 @@ final class RegistryTest extends TestCase
     /**
      * @covers ::__construct()
      * @covers ::getExactly()
+     * @covers ::add()
      */
     public function testGetExactly(): void
     {
@@ -74,7 +76,10 @@ final class RegistryTest extends TestCase
             ->get(new Key('int'));
     }
 
-    /** @covers ::has() */
+    /**
+     * @covers ::has()
+     * @covers ::widen()
+     */
     public function testHas(): void
     {
         $key1 = new Key('int', StubInterface::class);
@@ -99,7 +104,10 @@ final class RegistryTest extends TestCase
         static::assertFalse($registry->has($key7));
     }
 
-    /** @covers ::get() */
+    /**
+     * @covers ::get()
+     * @covers ::widen()
+     */
     public function testGet(): void
     {
         $key1 = new Key('int', StubInterface::class);
