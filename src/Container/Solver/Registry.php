@@ -32,7 +32,11 @@ final class Registry
         $this->map = new HashMap();
     }
 
-    /** @param T $entry */
+    /**
+     * @param T $entry
+     *
+     * @return Registry<T>
+     */
     public function add(Key $key, $entry): self
     {
         $registry      = clone $this;
