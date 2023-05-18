@@ -1,11 +1,12 @@
 <?xml version="1.0"?>
-<phpunit 
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-        xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd" 
-        bootstrap="vendor/autoload.php" 
-        colors="true" 
-        cacheDirectory="cache/phpunit/" 
+<phpunit
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
+        bootstrap="vendor/autoload.php"
+        colors="true"
+        cacheDirectory="cache/phpunit/"
         requireCoverageMetadata="true">
+
   <coverage>
     <report>
       <clover outputFile="tests-results/phpunit/clover.xml"/>
@@ -13,9 +14,11 @@
       <xml outputDirectory="tests-results/phpunit/coverage-xml"/>
     </report>
   </coverage>
+
   <logging>
     <junit outputFile="tests-results/phpunit/junit.xml"/>
   </logging>
+
   <testsuites>
     <testsuite name="Assertion Tests">
       <directory>tests/Assertion</directory>
@@ -25,6 +28,9 @@
     </testsuite>
     <testsuite name="Comparator Tests">
       <directory>tests/Comparator</directory>
+    </testsuite>
+    <testsuite name="Container Tests">
+      <directory>tests/Container</directory>
     </testsuite>
     <testsuite name="Dispatcher Tests">
       <directory>tests/Dispatcher</directory>
@@ -36,6 +42,7 @@
       <directory>tests/Float</directory>
     </testsuite>
   </testsuites>
+
   <source>
     <include>
       <directory suffix=".php">src</directory>
