@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace Vivarium\Test\Container\Installer;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 use Vivarium\Assertion\Exception\AssertionFailed;
@@ -73,6 +74,7 @@ final class InstallerTest extends TestCase
     /** @covers ::getStep() */
     public function testGetStepCallingFactory(): void
     {
+        /** @psalm-var SolverStep $step */
         $step = static::createMock(SolverStep::class);
 
         $shouldBeCalled = $this->getMockBuilder(stdClass::class)
@@ -83,8 +85,7 @@ final class InstallerTest extends TestCase
                        ->method('__invoke')
                        ->willReturn($step);
 
-        assert(is_callable($shouldBeCalled));
-
+        /** @psalm-var callable():SolverStep $shouldBeCalled */
         $installer = (new Installer())
             ->withStepFactory($step::class, $shouldBeCalled, 10);
 
@@ -101,8 +102,8 @@ final class InstallerTest extends TestCase
         static::expectException(AssertionFailed::class);
         static::expectExceptionMessage('Class must be of type "Vivarium\Container\Solver\SolverStep".');
 
-        (new Installer())
-            ->getStep(Stub::class);
+        /** @phpstan-ignore-next-line */
+        (new Installer())->getStep(Stub::class);
     }
 
     /** @covers ::getStep() */

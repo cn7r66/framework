@@ -38,7 +38,7 @@ final class InstanceTest extends TestCase
         static::assertSame($key, $provider->getKey());
     }
 
-    /** @return array<array<Key, mixed>> */
+    /** @return array<array{0:Key, 1:mixed}> */
     public function keyInstanceProvider(): array
     {
         return [

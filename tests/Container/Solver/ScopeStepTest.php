@@ -39,7 +39,6 @@ final class ScopeStepTest extends TestCase
             ->method('getKey')
             ->willReturn($providerKey);
 
-        /** @psalm-var MockObject&callable $next */
         $next = static::getMockBuilder(stdClass::class)
                       ->addMethods(['__invoke'])
                       ->getMock();
@@ -53,6 +52,7 @@ final class ScopeStepTest extends TestCase
         $step = (new ScopeStep())
             ->addService($key);
 
+        /** @psalm-var callable():Provider $next */
         $service = $step->solve($key, $next);
 
         static::assertInstanceOf(Service::class, $service);
@@ -74,7 +74,6 @@ final class ScopeStepTest extends TestCase
                  ->method('getKey')
                  ->willReturn($providerKey);
 
-        /** @psalm-var MockObject&callable $next */
         $next = static::getMockBuilder(stdClass::class)
                       ->addMethods(['__invoke'])
                       ->getMock();
@@ -88,6 +87,7 @@ final class ScopeStepTest extends TestCase
         $step = (new ScopeStep())
             ->addCloneable($key);
 
+        /** @psalm-var callable(): Provider $next */
         $cloneable = $step->solve($key, $next);
 
         static::assertInstanceOf(Cloneable::class, $cloneable);
@@ -102,7 +102,6 @@ final class ScopeStepTest extends TestCase
     {
         $provider = static::createMock(Provider::class);
 
-        /** @psalm-var MockObject&callable $next */
         $next = static::getMockBuilder(stdClass::class)
                       ->addMethods(['__invoke'])
                       ->getMock();
@@ -113,6 +112,7 @@ final class ScopeStepTest extends TestCase
 
         $key = new Key(Stub::class);
 
+        /** @psalm-var callable():Provider $next */
         $provider = (new ScopeStep())
             ->solve($key, $next);
 

@@ -44,7 +44,9 @@ final class CloneableTest extends TestCase
 
         $cloneable = new Cloneable($provider);
 
+        /** @psalm-suppress MixedAssignment */
         $cloned1 = $cloneable->provide($container);
+        /** @psalm-suppress MixedAssignment */
         $cloned2 = $cloneable->provide($container);
 
         static::assertNotSame($instance, $cloned1);
