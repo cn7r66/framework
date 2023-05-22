@@ -21,7 +21,7 @@ use Vivarium\Container\Solver\SolverStep;
 final class MultiStepSolverTest extends TestCase
 {
     /**
-     * @covers ::__container()
+     * @covers ::__construct()
      * @covers ::solve()
      * @covers ::next()
      */
