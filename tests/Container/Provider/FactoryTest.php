@@ -22,7 +22,7 @@ use Vivarium\Test\Container\Stub\StubImpl;
 final class FactoryTest extends TestCase
 {
     /**
-     * @covers ::_construct()
+     * @covers ::__construct()
      * @covers ::provide()
      * @covers ::getKey()
      */
