@@ -14,6 +14,7 @@ use Vivarium\Assertion\Comparison\IsSameOf;
 use Vivarium\Assertion\Conditional\Either;
 use Vivarium\Assertion\String\IsClassOrInterface;
 use Vivarium\Assertion\String\IsNamespace;
+use Vivarium\Assertion\String\IsNotEmpty;
 use Vivarium\Assertion\String\IsType;
 use Vivarium\Equality\Equality;
 use Vivarium\Equality\EqualsBuilder;
@@ -25,19 +26,20 @@ final class Key implements Equality
 
     public const DEFAULT = '$DEFAULT';
 
-    /**
-     * @param non-empty-string|class-string $type
-     * @param non-empty-string|class-string $context
-     * @param non-empty-string              $tag
-     */
-    public function __construct(
-        private string $type,
-        private string $context = self::GLOBAL,
-        private string $tag = self::DEFAULT,
-    ) {
+    /** @var non-empty-string|class-string */
+    private string $type;
+
+    /** @var Key::GLOBAL|non-empty-string|class-string */
+    private string $context;
+
+    /** @var non-empty-string */
+    private string $tag;
+
+    public function __construct(string $type, string $context = self::GLOBAL, string $tag = self::DEFAULT) {
         (new IsType())
             ->assert($type);
 
+        /** @phpstan-var non-empty-string|class-string $context */
         (new Either(
             new IsSameOf(self::GLOBAL),
             new Either(
@@ -45,6 +47,13 @@ final class Key implements Equality
                 new IsNamespace(),
             ),
         ))->assert($context, 'Expected string to be $GLOBAL, class, interface or namespace. Got %s.');
+
+        (new IsNotEmpty())
+            ->assert($tag);
+
+        $this->type    = $type;
+        $this->context = $context;
+        $this->tag     = $tag;
     }
 
     /** @return non-empty-string|class-string */
