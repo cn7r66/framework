@@ -21,6 +21,7 @@ use Vivarium\Test\Container\Stub\StubImpl;
 final class ContainerCallTest extends TestCase
 {
     /**
+     * @covers ::__construct()
      * @covers ::provide()
      * @covers ::getKey()
      */
