@@ -23,7 +23,7 @@ final class ModuleLoader
     /** @no-named-arguments */
     public function __construct(Module ...$modules)
     {
-        $this->modules = new ArraySequence(...$modules);
+        $this->modules = ArraySequence::fromArray($modules);
     }
 
     public function install(Module $module): ModuleLoader
