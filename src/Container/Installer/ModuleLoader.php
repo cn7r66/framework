@@ -35,9 +35,8 @@ final class ModuleLoader
         return $loader;
     }
 
-    public function getSolver(): Solver
+    public function getSolver(Installer $installer): Solver
     {
-        $installer = new Installer();
         foreach ($this->modules as $module) {
             $installer = $module->install($installer);
         }

@@ -13,7 +13,7 @@ namespace Vivarium\Test\Container\Installer;
 use PHPUnit\Framework\TestCase;
 use Vivarium\Assertion\Exception\AssertionFailed;
 use Vivarium\Container\Installer\Binder;
-use Vivarium\Container\Installer\Installer;
+use Vivarium\Container\Installer\ConfigurableInstaller;
 use Vivarium\Test\Container\Stub\Stub;
 
 /** @coversDefaultClass \Vivarium\Container\Installer\Binder */
@@ -30,7 +30,7 @@ final class BinderTest extends TestCase
             'Expected string to be a primitive, class, interface, union or intersection. Got "random-string".',
         );
 
-        $binder = new Binder(new Installer());
+        $binder = new Binder(new ConfigurableInstaller());
 
         $binder->bind('int');
         $binder->bind('array|stdClass');
@@ -41,7 +41,7 @@ final class BinderTest extends TestCase
     /** @covers ::getInstaller */
     public function testBinderImmutability(): void
     {
-        $installer = new Installer();
+        $installer = new ConfigurableInstaller();
 
         $binder = new Binder($installer);
 

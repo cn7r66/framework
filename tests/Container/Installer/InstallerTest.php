@@ -15,6 +15,7 @@ use PHPUnit\Framework\TestCase;
 use stdClass;
 use Vivarium\Assertion\Exception\AssertionFailed;
 use Vivarium\Container\Exception\StepNotFound;
+use Vivarium\Container\Installer\ConfigurableInstaller;
 use Vivarium\Container\Installer\Installer;
 use Vivarium\Container\Solver\SolverStep;
 use Vivarium\Test\Container\Stub\Stub;
@@ -22,7 +23,7 @@ use Vivarium\Test\Container\Stub\Stub;
 use function assert;
 use function is_callable;
 
-/** @coversDefaultClass \Vivarium\Container\Installer\Installer */
+/** @coversDefaultClass Installer */
 final class InstallerTest extends TestCase
 {
     /**
@@ -33,7 +34,7 @@ final class InstallerTest extends TestCase
     {
         $step = static::createMock(SolverStep::class);
 
-        $installer = (new Installer())
+        $installer = (new ConfigurableInstaller())
             ->withStep($step, 10);
 
         static::assertSame($step, $installer->getStep($step::class));
@@ -47,7 +48,7 @@ final class InstallerTest extends TestCase
 
         $step = static::createMock(SolverStep::class);
 
-        (new Installer())
+        (new ConfigurableInstaller())
             ->withStep($step);
     }
 
@@ -56,7 +57,7 @@ final class InstallerTest extends TestCase
     {
         $step = static::createMock(SolverStep::class);
 
-        $installer = (new Installer())
+        $installer = (new ConfigurableInstaller())
             ->withStepFactory(
                 $step::class,
                 static function () use ($step) {
@@ -86,7 +87,7 @@ final class InstallerTest extends TestCase
                        ->willReturn($step);
 
         /** @psalm-var callable():SolverStep $shouldBeCalled */
-        $installer = (new Installer())
+        $installer = (new ConfigurableInstaller())
             ->withStepFactory($step::class, $shouldBeCalled, 10);
 
         static::assertSame($step, $installer->getStep($step::class));
@@ -103,7 +104,7 @@ final class InstallerTest extends TestCase
         static::expectExceptionMessage('Class must be of type "Vivarium\Container\Solver\SolverStep".');
 
         /** @phpstan-ignore-next-line */
-        (new Installer())->getStep(Stub::class);
+        (new ConfigurableInstaller())->getStep(Stub::class);
     }
 
     /** @covers ::getStep() */
@@ -114,7 +115,7 @@ final class InstallerTest extends TestCase
 
         $step = static::createMock(SolverStep::class);
 
-        (new Installer())
+        (new ConfigurableInstaller())
             ->getStep($step::class);
     }
 
@@ -129,7 +130,7 @@ final class InstallerTest extends TestCase
                        ->setMockClassName('SolverStep2')
                        ->getMock();
 
-        $installer = (new Installer())
+        $installer = (new ConfigurableInstaller())
             ->withStep($step2, 10)
             ->withStep($step1, 1);
 

@@ -15,7 +15,7 @@ use stdClass;
 use Vivarium\Assertion\Exception\AssertionFailed;
 use Vivarium\Container\Installer\ConcreteBinder;
 use Vivarium\Container\Installer\CoreSolvers;
-use Vivarium\Container\Installer\Installer;
+use Vivarium\Container\Installer\ConfigurableInstaller;
 use Vivarium\Container\Key;
 use Vivarium\Test\Assertion\Stub\StubClass;
 use Vivarium\Test\Container\Stub\Stub;
@@ -37,7 +37,7 @@ final class ConcreteBinderTest extends TestCase
         );
 
         $binder = new ConcreteBinder(
-            new Installer(),
+            new ConfigurableInstaller(),
             new Key(Stub::class),
         );
 
@@ -54,7 +54,7 @@ final class ConcreteBinderTest extends TestCase
         );
 
         $installer = (new CoreSolvers())
-            ->install(new Installer());
+            ->install(new ConfigurableInstaller());
 
         $binder = new ConcreteBinder(
             $installer,
@@ -72,7 +72,7 @@ final class ConcreteBinderTest extends TestCase
         static::expectExceptionMessage('Expected "stdClass" to have a method named "create".');
 
         $binder = new ConcreteBinder(
-            new Installer(),
+            new ConfigurableInstaller(),
             new Key(StubClass::class),
         );
 

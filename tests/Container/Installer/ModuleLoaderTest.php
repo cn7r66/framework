@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace Vivarium\Test\Container\Installer;
 
 use PHPUnit\Framework\TestCase;
+use Vivarium\Container\Installer\Installer;
 use Vivarium\Container\Installer\Module;
 use Vivarium\Container\Installer\ModuleLoader;
 
@@ -29,10 +30,14 @@ final class ModuleLoaderTest extends TestCase
                ->method('install')
                ->willReturnArgument(0);
 
+        $installer = static::createMock(Installer::class);
+        $installer->expects(static::once())
+                  ->method('getSteps');
+
         $loader1 = new ModuleLoader();
         $loader2 = $loader1->install($module);
 
-        $loader2->getSolver();
+        $loader2->getSolver($installer);
 
         static::assertNotSame($loader1, $loader2);
     }
