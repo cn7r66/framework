@@ -11,12 +11,11 @@ declare(strict_types=1);
 namespace Vivarium\Test\Container\Installer;
 
 use PHPUnit\Framework\TestCase;
-use Vivarium\Container\Installer\Binder;
-use Vivarium\Container\Installer\BinderModule;
-use Vivarium\Container\Installer\ConfigurableInstaller;
+use Vivarium\Container\Installer\Binder\Binder;
+use Vivarium\Container\Installer\FluentModule;
 use Vivarium\Container\Installer\Installer;
 
-/** @coversDefaultClass \Vivarium\Container\Installer\BinderModule */
+/** @coversDefaultClass \Vivarium\Container\Installer\FluentModule */
 final class BinderModuleTest extends TestCase
 {
     /** @covers ::install() */
@@ -24,7 +23,7 @@ final class BinderModuleTest extends TestCase
     {
         $installer = static::createMock(Installer::class);
 
-        $module = $this->getMockBuilder(BinderModule::class)
+        $module = $this->getMockBuilder(FluentModule::class)
             ->onlyMethods(['configure'])
             ->getMock();
 

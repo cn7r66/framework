@@ -13,7 +13,7 @@ namespace Vivarium\Test\Container\Installer;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 use Vivarium\Assertion\Exception\AssertionFailed;
-use Vivarium\Container\Installer\ConcreteBinder;
+use Vivarium\Container\Installer\Binder\ConcreteBinder;
 use Vivarium\Container\Installer\CoreSolvers;
 use Vivarium\Container\Installer\ConfigurableInstaller;
 use Vivarium\Container\Key;
@@ -22,7 +22,7 @@ use Vivarium\Test\Container\Stub\Stub;
 use Vivarium\Test\Container\Stub\StubFactory;
 use Vivarium\Test\Container\Stub\StubImpl;
 
-/** @coversDefaultClass \Vivarium\Container\Installer\ConcreteBinder */
+/** @coversDefaultClass \Vivarium\Container\Installer\Binder\ConcreteBinder */
 final class ConcreteBinderTest extends TestCase
 {
     /**

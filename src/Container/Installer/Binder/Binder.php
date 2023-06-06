@@ -8,8 +8,9 @@
 
 declare(strict_types=1);
 
-namespace Vivarium\Container\Installer;
+namespace Vivarium\Container\Installer\Binder;
 
+use Vivarium\Container\Installer\Installer;
 use Vivarium\Container\Key;
 
 final class Binder

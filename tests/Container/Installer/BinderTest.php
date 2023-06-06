@@ -12,11 +12,11 @@ namespace Vivarium\Test\Container\Installer;
 
 use PHPUnit\Framework\TestCase;
 use Vivarium\Assertion\Exception\AssertionFailed;
-use Vivarium\Container\Installer\Binder;
+use Vivarium\Container\Installer\Binder\Binder;
 use Vivarium\Container\Installer\ConfigurableInstaller;
 use Vivarium\Test\Container\Stub\Stub;
 
-/** @coversDefaultClass \Vivarium\Container\Installer\Binder */
+/** @coversDefaultClass \Vivarium\Container\Installer\Binder\Binder */
 final class BinderTest extends TestCase
 {
     /**

@@ -10,7 +10,9 @@ declare(strict_types=1);
 
 namespace Vivarium\Container\Installer;
 
-abstract class BinderModule implements Module
+use Vivarium\Container\Installer\Binder\Binder;
+
+abstract class FluentModule implements Module
 {
     public function install(Installer $installer): Installer
     {

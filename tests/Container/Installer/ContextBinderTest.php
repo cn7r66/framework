@@ -12,12 +12,12 @@ namespace Vivarium\Test\Container\Installer;
 
 use PHPUnit\Framework\TestCase;
 use Vivarium\Assertion\Exception\AssertionFailed;
-use Vivarium\Container\Installer\ContextBinder;
+use Vivarium\Container\Installer\Binder\ContextBinder;
 use Vivarium\Container\Installer\ConfigurableInstaller;
 use Vivarium\Container\Key;
 use Vivarium\Test\Container\Stub\Stub;
 
-/** @coversDefaultClass \Vivarium\Container\Installer\ContextBinder */
+/** @coversDefaultClass \Vivarium\Container\Installer\Binder\ContextBinder */
 final class ContextBinderTest extends TestCase
 {
     /**
