@@ -22,25 +22,37 @@ final class Prototype implements Provider
     /** @var Sequence<Provider> */
     private Sequence $arguments;
 
-    /** @param class-string $class */
-    public function __construct(private string $class)
+    public function __construct(private Key $key)
     {
-        /** @psalm-var ArraySequence<Provider> */
         $this->arguments = new ArraySequence();
     }
 
     public function provide(Container $container): mixed
     {
-        throw new RuntimeException('Not implemented yet.');
+        $injections = [];
+        foreach ($this->arguments as $argument) {
+            $injections[] = $argument->provide($container);
+        }
+
+        return new ($this->key->getType())(...$injections);
     }
 
-    public function addParameter(Provider $provider): self
+    public function withArgument(Provider $provider): self
     {
-        throw new RuntimeException('Not implemented yet.');
+        $prototype = clone $this;
+        $prototype->arguments = $prototype->arguments->add($provider);
+
+        return $prototype;
+    }
+
+    /** @return Sequence<Provider> */
+    public function getArguments(): Sequence
+    {
+        return $this->arguments;
     }
 
     public function getKey(): Key
     {
-        throw new RuntimeException('Not implemented yet.');
+        return $this->key;
     }
 }
