@@ -22,8 +22,10 @@ use Vivarium\Equality\HashBuilder;
 
 final class Key implements Equality
 {
+    /** @var string */
     public const GLOBAL = '$GLOBAL';
 
+    /** @var string */
     public const DEFAULT = '$DEFAULT';
 
     /** @var non-empty-string|class-string */
