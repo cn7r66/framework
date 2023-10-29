@@ -15,4 +15,6 @@ interface Interceptor
     public function intercept(Provider $provider): Provider;
 
     public function isInjectable(): bool;
+
+    public function getPriority(): int;
 }

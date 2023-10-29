@@ -12,5 +12,7 @@ namespace Vivarium\Container;
 
 interface Injection
 {
-    public function inject(mixed $instance): mixed;
+    public function inject(Container $container, mixed $instance): mixed;
+
+    public function getPriority(): int;
 }
