@@ -14,7 +14,12 @@ use PHPUnit\Framework\TestCase;
 use stdClass;
 use Vivarium\Assertion\Exception\AssertionFailed;
 use Vivarium\Container\Key;
+use Vivarium\Equality\Equal;
+use Vivarium\Test\Container\Stub\Foo;
 use Vivarium\Test\Container\Stub\Stub;
+use Vivarium\Test\Container\Stub\StubImpl;
+
+use function var_dump;
 
 /** @coversDefaultClass \Vivarium\Container\Key */
 final class KeyTest extends TestCase
@@ -77,5 +82,55 @@ final class KeyTest extends TestCase
         static::assertTrue($first->equals($second));
         static::assertTrue($second->equals($first));
         static::assertSame($first->hash(), $second->hash());
+    }
+
+    /**
+     * @covers ::couldBeWidened()
+     * @covers ::widen()
+     */
+    public function testWiden(): void
+    {
+        $key = new Key(
+            StubImpl::class,
+            Foo::class,
+            'Stub.Impl',
+        );
+
+        $key = $key->widen();
+        static::assertTrue(
+            Equal::areEquals(
+                new Key(
+                    StubImpl::class,
+                    Foo::class,
+                ),
+                $key,
+            ),
+        );
+
+        $expected = [
+            'Vivarium\Test\Container\Stub',
+            'Vivarium\Test\Container',
+            'Vivarium\Test',
+            'Vivarium',
+            Key::GLOBAL,
+        ];
+
+        foreach ($expected as $current) {
+            static::assertTrue($key->couldBeWidened());
+
+            $key = $key->widen();
+
+            static::assertTrue(
+                Equal::areEquals(
+                    new Key(
+                        StubImpl::class,
+                        $current,
+                    ),
+                    $key,
+                ),
+            );
+        }
+
+        static::assertFalse($key->couldBeWidened());
     }
 }
