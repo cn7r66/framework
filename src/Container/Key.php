@@ -19,7 +19,6 @@ use Vivarium\Assertion\String\IsNotEmpty;
 use Vivarium\Assertion\String\IsType;
 use Vivarium\Collection\Sequence\ArraySequence;
 use Vivarium\Collection\Sequence\Sequence;
-use Vivarium\Equality\Equality;
 use Vivarium\Equality\EqualsBuilder;
 use Vivarium\Equality\HashBuilder;
 
@@ -32,47 +31,11 @@ use function str_contains;
 use function strrpos;
 use function substr;
 
-final class Key implements Equality
+final class Key implements Binding
 {
-    public const GLOBAL = '$GLOBAL';
 
-    public const DEFAULT = '$DEFAULT';
 
-    public function __construct(private string $type, private string $context = self::GLOBAL, private string $tag = self::DEFAULT)
-    {
-        (new IsType())
-            ->assert($type);
 
-        /** @phpstan-var non-empty-string|class-string $context */
-        (new Either(
-            new IsSameOf(self::GLOBAL),
-            new Either(
-                new IsClassOrInterface(),
-                new IsNamespace(),
-            ),
-        ))->assert($context, 'Expected string to be $GLOBAL, class, interface or namespace. Got %s.');
-
-        (new IsNotEmpty())
-            ->assert($tag);
-    }
-
-    /** @return non-empty-string|class-string */
-    public function getType(): string
-    {
-        return $this->type;
-    }
-
-    /** @return non-empty-string|class-string */
-    public function getContext(): string
-    {
-        return $this->context;
-    }
-
-    /** @return non-empty-string */
-    public function getTag(): string
-    {
-        return $this->tag;
-    }
 
     public function widen(): Key
     {
@@ -130,31 +93,7 @@ final class Key implements Equality
         return $hierarchy;
     }
 
-    public function equals(object $object): bool
-    {
-        if ($object === $this) {
-            return true;
-        }
 
-        if (! $object instanceof Key) {
-            return false;
-        }
-
-        return (new EqualsBuilder())
-            ->append($this->type, $object->type)
-            ->append($this->context, $object->context)
-            ->append($this->tag, $object->tag)
-            ->isEquals();
-    }
-
-    public function hash(): string
-    {
-        return (new HashBuilder())
-            ->append($this->type)
-            ->append($this->context)
-            ->append($this->tag)
-            ->getHashCode();
-    }
 
     private function extends(): array
     {

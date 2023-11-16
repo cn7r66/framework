@@ -6,13 +6,9 @@
  * Copyright (c) 2023 Luca Cantoreggi
  */
 
-declare(strict_types=1);
-
 namespace Vivarium\Container;
 
 interface Provider
 {
-    public function provide(Container $container): mixed;
-
-    public function getKey(): Key;
+    public function provide(Container $container, string|null $requester = null): mixed;
 }

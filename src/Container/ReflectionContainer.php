@@ -10,83 +10,115 @@ declare(strict_types=1);
 
 namespace Vivarium\Container;
 
-use Vivarium\Collection\Collection;
+use Iterator;
+use ReflectionClass;
+use ReflectionException;
+use RuntimeException;
 use Vivarium\Collection\Map\HashMap;
 use Vivarium\Collection\Map\Map;
-use Vivarium\Collection\MultiMap\MultiMap;
-use Vivarium\Collection\MultiMap\MultiValueMap;
-use Vivarium\Collection\Queue\PriorityQueue;
-use Vivarium\Collection\Set\SortedSet;
-use Vivarium\Container\Injection\InjectionComparator;
-use Vivarium\Container\Provider\Injector;
+use Vivarium\Collection\Queue\ArrayQueue;
+use Vivarium\Collection\Queue\Queue;
+use Vivarium\Comparator\Priority;
+use Vivarium\Comparator\ValueAndPriority;
 use Vivarium\Container\Provider\Prototype;
+
+use function class_exists;
 
 final class ReflectionContainer implements Container
 {
+    /** @var Queue<ValueAndPriority<Solver>> */
+    private Queue $solvers;
+
     /** @var Map<Key, Provider> */
     private Map $solved;
 
-    /** @var Map<Key, Provider> */
-    private Map $providers;
-
-    /** @var MultiMap<Key, Injection> */
-    private MultiMap $injections;
-
-    /** @var MultiMap<Key, Injection> */
-    private MultiMap $globalInjections;
-
     public function __construct()
     {
-        $this->solved     = new HashMap();
-        $this->providers  = new HashMap();
-        $this->injections = new MultiValueMap(static function () {
-            return new PriorityQueue(new InjectionComparator());
-        });
-        $this->globalInjections = new MultiValueMap(static function () {
-            return new SortedSet(new InjectionComparator());
-        });
+        $this->solvers = new ArrayQueue();
+        $this->solved  = new HashMap();
     }
 
-    public function get(Key $key): mixed
+    public function get(Key $request): mixed
     {
-        if ($this->solved->containsKey($key)) {
-            return $this->solved
-                ->get($key)
-                ->provide($this);
+        if (! $this->has($request)) {
+            throw new RuntimeException();
         }
 
-        $provider = $this->inject(
-            $this->getProvider($key),
-            $key,
-        );
+        return $this->solved
+            ->get($request)
+            ->provide($this);
     }
 
-    public function has(Key $key): bool
+    public function has(Key $request): bool
     {
-        return $this->providers->containsKey($key);
-    }
-
-    private function getProvider(Key $key): Provider
-    {
-        while (! $this->providers->containsKey($key)) {
-            if (! $key->couldBeWidened()) {
-                return new Prototype(
-                    new Key($key->getType()),
+        try {
+            if (! $this->solved->containsKey($request)) {
+                $this->solved = $this->solved->put(
+                    $request,
+                    $this->solve($request),
                 );
             }
 
-            $key = $key->widen();
+            return true;
+        } catch (RuntimeException) {
+            return false;
         }
-
-        return $this->providers->get($key);
     }
 
-    private function inject(Provider $provider, Key|null $source = null): Provider
+    public function withSolver(Solver $solver, int $priority = Priority::NORMAL): self
     {
-        $key = $source ?? $provider->getKey();
+        $container          = clone $this;
+        $container->solvers = $container->solvers->enqueue(
+            new ValueAndPriority($solver, $priority),
+        );
 
-        $injector = new Injector($provider);
+        return $container;
+    }
 
-        $injections = $this->injections->get($key);
+    private function solve(Key $request): Provider
+    {
+        return $this->next(
+            $request,
+            $this->solvers->getIterator(),
+        )();
+    }
+
+    /**
+     * @param Iterator<ValueAndPriority<Solver>> $iterator
+     *
+     * @return callable(): Provider
+     */
+    private function next(Key $request, Iterator $iterator): callable
+    {
+        if ($iterator->valid()) {
+            return function () use ($request, $iterator): Provider {
+                $solver = $iterator->current()
+                                   ->getValue();
+
+                $iterator->next();
+
+                return $solver->solve(
+                    $request,
+                    $this->next($request, $iterator),
+                );
+            };
+        }
+
+        return static function () use ($request): Provider {
+            if (! class_exists($request->getType())) {
+                throw new RuntimeException();
+            }
+
+            try {
+                $reflector = new ReflectionClass($request->getType());
+                if (! $reflector->isInstantiable()) {
+                    throw new RuntimeException();
+                }
+
+                return new Prototype($request);
+            } catch (ReflectionException) {
+                  throw new RuntimeException();
+            }
+        };
     }
 }

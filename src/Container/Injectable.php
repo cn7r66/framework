@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of Vivarium
  * SPDX-License-Identifier: MIT
@@ -10,9 +8,9 @@ declare(strict_types=1);
 
 namespace Vivarium\Container;
 
-interface Container
+interface Injectable
 {
-    public function get(Binding $request): mixed;
+    public function withInjection(Injection $injection): self;
 
-    public function has(Binding $request): bool;
+    public function withUniqueInjection(Injection $injection): self;
 }

@@ -10,9 +10,8 @@ declare(strict_types=1);
 
 namespace Vivarium\Container;
 
-interface Container
+interface Solver
 {
-    public function get(Binding $request): mixed;
-
-    public function has(Binding $request): bool;
+    /** @param callable(): Provider $next */
+    public function solve(Key $request, callable $next ): Provider;
 }
