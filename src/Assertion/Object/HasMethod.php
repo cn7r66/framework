@@ -22,6 +22,7 @@ final class HasMethod implements Assertion
     {
     }
 
+    /** @psalm-assert class-string $value */
     public function assert(mixed $value, string $message = ''): void
     {
         if (! $this($value)) {
@@ -36,6 +37,7 @@ final class HasMethod implements Assertion
         }
     }
 
+    /** @psalm-assert-if-true class-string $value */
     public function __invoke(mixed $value): bool
     {
         (new Either(
