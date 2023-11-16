@@ -6,39 +6,35 @@
  * Copyright (c) 2023 Luca Cantoreggi
  */
 
-declare(strict_types=1);
-
 namespace Vivarium\Container\Provider;
 
 use Vivarium\Container\Container;
 use Vivarium\Container\Key;
 use Vivarium\Container\Provider;
 
-class Service implements Provider
+final class Service implements Provider
 {
+    private Provider $provider;
+
     private mixed $instance;
 
-    public function __construct(private Provider $provider)
+    public function __construct(Provider $provider)
     {
+        $this->provider = $provider;
         $this->instance = null;
     }
 
-    public function provide(Container $container): mixed
+    public function provides(): Key
+    {
+        return $this->provider->provides();
+    }
+
+    public function provide(Container $container, ?string $requester = null): mixed
     {
         if ($this->instance === null) {
-            $this->instance = $this->provider->provide($container);
+            $this->instance = $this->provider->provide($container, $requester);
         }
 
         return $this->instance;
-    }
-
-    public function getProvider(): Provider
-    {
-        return $this->provider;
-    }
-
-    public function getKey(): Key
-    {
-        return $this->provider->getKey();
     }
 }

@@ -1,49 +1,67 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of Vivarium
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2023 Luca Cantoreggi
  */
 
-declare(strict_types=1);
-
 namespace Vivarium\Container\Provider;
 
-use Vivarium\Assertion\Type\IsCallable;
+use Vivarium\Container\Binding;
+use Vivarium\Container\Binding\ClassBinding;
 use Vivarium\Container\Container;
-use Vivarium\Container\Key;
+use Vivarium\Container\Injection\MethodCall;
 use Vivarium\Container\Provider;
-
-use function call_user_func;
+use Vivarium\Container\Reflection\InstanceMethod;
 
 final class Factory implements Provider
 {
+    private Binding $factory;
+
+    private InstanceMethod $method;
+
+    private string|null $requester;
+
     public function __construct(
-        private Key $key,
-        private Key $factory,
-        private string $method,
+        string $class,
+        string $method,
+        string $tag = Binding::DEFAULT,
+        string $context = Binding::GLOBAL,
     ) {
+        $this->factory = new ClassBinding(
+            $class,
+            $context,
+            $tag,
+        );
+
+        $this->method    = new MethodCall($class, $method);
+        $this->requester = null;
     }
 
-    public function provide(Container $container): mixed
+    public function provide(Container $container, string|null $requester = null): mixed
     {
-        $callable = [
+        return $this->getMethod($requester)->invoke(
+            $container,
             $container->get($this->factory),
-            $this->method,
-        ];
-
-        (new IsCallable())
-            ->assert($callable);
-
-        return call_user_func(
-            $callable,
-            $this->key,
         );
     }
 
-    public function getKey(): Key
+    public function requesterOn(string $parameter): self
     {
-        return $this->key;
+        $factory            = clone $this;
+        $factory->requester = $parameter;
+
+        return $factory;
+    }
+
+    private function getMethod(string $requester): InstanceMethod
+    {
+        return $this->requester === null ?
+            $this->method : $this->method
+                ->bindParameter($this->requester)
+                ->toInstance($requester);
     }
 }

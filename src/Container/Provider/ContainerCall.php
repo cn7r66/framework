@@ -1,32 +1,28 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of Vivarium
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2023 Luca Cantoreggi
  */
 
-declare(strict_types=1);
-
 namespace Vivarium\Container\Provider;
 
+use Vivarium\Container\Binding;
 use Vivarium\Container\Container;
 use Vivarium\Container\Key;
 use Vivarium\Container\Provider;
 
 final class ContainerCall implements Provider
 {
-    public function __construct(private Key $key)
+    public function __construct(private Binding $target)
     {
     }
 
-    public function provide(Container $container): mixed
+    public function provide(Container $container, string|null $requester = null): mixed
     {
-        return $container->get($this->key);
-    }
-
-    public function getKey(): Key
-    {
-        return $this->key;
+        return $container->get($this->target);
     }
 }

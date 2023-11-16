@@ -1,58 +1,73 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of Vivarium
  * SPDX-License-Identifier: MIT
  * Copyright (c) 2023 Luca Cantoreggi
  */
 
-declare(strict_types=1);
-
 namespace Vivarium\Container\Provider;
 
-use RuntimeException;
-use Vivarium\Collection\Sequence\ArraySequence;
-use Vivarium\Collection\Sequence\Sequence;
+use Vivarium\Collection\Map\HashMap;
+use Vivarium\Collection\Map\Map;
+use Vivarium\Container\Binder;
 use Vivarium\Container\Container;
-use Vivarium\Container\Key;
+use Vivarium\Container\GenericBinder;
+use Vivarium\Container\Injectable;
+use Vivarium\Container\Injection;
 use Vivarium\Container\Provider;
+use Vivarium\Container\Reflection\Constructor;
+use Vivarium\Container\Reflection\StaticMethod;
+
+use function is_string;
 
 final class Prototype implements Provider
 {
-    /** @var Sequence<Provider> */
-    private Sequence $arguments;
+    private StaticMethod $constructor;
 
-    public function __construct(private Key $key)
+    /** @var Map<string, Provider> */
+    private Map $properties;
+
+    public function __construct(StaticMethod|string $constructor)
     {
-        $this->arguments = new ArraySequence();
+        $this->constructor = is_string($constructor) ?
+            new Constructor($constructor) : $constructor;
+
+        $this->properties = new HashMap();
     }
 
-    public function provide(Container $container): mixed
+    public function provide(Container $container, string|null $requester = null): mixed
     {
-        $injections = [];
-        foreach ($this->arguments as $argument) {
-            $injections[] = $argument->provide($container);
-        }
-
-        return new ($this->key->getType())(...$injections);
+        return $this->constructor->invoke($container);
     }
 
-    public function withArgument(Provider $provider): self
+    public function getConstructor(): StaticMethod
     {
-        $prototype = clone $this;
-        $prototype->arguments = $prototype->arguments->add($provider);
-
-        return $prototype;
+        return $this->constructor;
     }
 
-    /** @return Sequence<Provider> */
-    public function getArguments(): Sequence
+    /** @return Binder<Prototype> */
+    public function bindParameter(string $parameter): Binder
     {
-        return $this->arguments;
+        return new GenericBinder(function (Provider $provider) use ($parameter) {
+            $prototype              = clone $this;
+            $prototype->constructor = $this->constructor
+                ->bindParameter($parameter)
+                ->toProvider($provider);
+
+            return $prototype;
+        });
     }
 
-    public function getKey(): Key
+    public function bindProperty(string $property): Binder
     {
-        return $this->key;
+        return new GenericBinder(function (Provider $provider) use ($property) {
+            $prototype             = clone $this;
+            $prototype->properties = $prototype->properties->put($property, $provider);
+
+            return $prototype;
+        });
     }
 }
