@@ -18,12 +18,13 @@ interface Binding extends Equality
 
     public const DEFAULT = '$DEFAULT';
 
-    /** @return non-empty-string */
     public function getId(): string;
 
-    /** @return non-empty-string */
     public function getTag(): string;
 
-    /** @return non-empty-string */
     public function getContext(): string;
+
+    public function widen(): Binding;
+
+    public function couldBeWidened(): bool;
 }

@@ -14,23 +14,19 @@ use Vivarium\Assertion\String\IsClassOrInterface;
 use Vivarium\Assertion\String\IsNamespace;
 use Vivarium\Assertion\String\IsNotEmpty;
 use Vivarium\Container\Binding;
-use Vivarium\Container\Key;
 use Vivarium\Equality\EqualsBuilder;
 use Vivarium\Equality\HashBuilder;
 
 abstract class BaseBinding implements Binding
 {
-    /**
-     * @param non-empty-string|class-string $id
-     * @param non-empty-string|class-string $tag
-     * @param non-empty-string|class-string $context
-     */
     public function __construct(
         private string $id,
         private string $tag = self::DEFAULT,
         private string $context = self::GLOBAL,
     ) {
-        /** @phpstan-var non-empty-string|class-string $context */
+        (new IsNotEmpty())
+            ->assert($id);
+
         (new Either(
             new IsSameOf(self::GLOBAL),
             new Either(
@@ -43,22 +39,49 @@ abstract class BaseBinding implements Binding
             ->assert($tag);
     }
 
-    /** @return non-empty-string|class-string */
     public function getId(): string
     {
         return $this->id;
     }
 
-    /** @return non-empty-string|class-string */
     public function getContext(): string
     {
         return $this->context;
     }
 
-    /** @return non-empty-string */
     public function getTag(): string
     {
         return $this->tag;
+    }
+
+    public function widen(): Binding
+    {
+        if (! $this->couldBeWidened()) {
+            throw new \RuntimeException();
+        }
+
+        if ($this->tag !== self::DEFAULT) {
+            $binding      = clone $this;
+            $binding->tag = Binding::DEFAULT;
+
+            return $binding;
+        }
+
+        $pos = strrpos($this->context, '\\');
+
+        $parent =  $pos !== false ?
+            substr($this->context, 0, $pos) : self::GLOBAL;
+
+        $binding          = clone $this;
+        $binding->context = $parent;
+
+        return $binding;
+    }
+
+    public function couldBeWidened(): bool
+    {
+        return $this->tag !== self::DEFAULT ||
+               $this->context !== self::GLOBAL;
     }
 
     public function equals(object $object): bool
@@ -67,7 +90,7 @@ abstract class BaseBinding implements Binding
             return true;
         }
 
-        if (! $object instanceof Key) {
+        if (! $object instanceof Binding) {
             return false;
         }
 
