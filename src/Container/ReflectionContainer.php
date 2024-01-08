@@ -20,6 +20,7 @@ use Vivarium\Collection\Queue\ArrayQueue;
 use Vivarium\Collection\Queue\Queue;
 use Vivarium\Comparator\Priority;
 use Vivarium\Comparator\ValueAndPriority;
+use Vivarium\Container\Binding\ClassBinding;
 use Vivarium\Container\Provider\Prototype;
 
 use function class_exists;
@@ -38,7 +39,7 @@ final class ReflectionContainer implements Container
         $this->solved  = new HashMap();
     }
 
-    public function get(Key $request): mixed
+    public function get(Binding $request): mixed
     {
         if (! $this->has($request)) {
             throw new RuntimeException();
@@ -49,7 +50,7 @@ final class ReflectionContainer implements Container
             ->provide($this);
     }
 
-    public function has(Key $request): bool
+    public function has(Binding $request): bool
     {
         try {
             if (! $this->solved->containsKey($request)) {
@@ -88,7 +89,7 @@ final class ReflectionContainer implements Container
      *
      * @return callable(): Provider
      */
-    private function next(Key $request, Iterator $iterator): callable
+    private function next(Binding $request, Iterator $iterator): callable
     {
         if ($iterator->valid()) {
             return function () use ($request, $iterator): Provider {
@@ -105,17 +106,14 @@ final class ReflectionContainer implements Container
         }
 
         return static function () use ($request): Provider {
-            if (! class_exists($request->getType())) {
-                throw new RuntimeException();
-            }
-
             try {
-                $reflector = new ReflectionClass($request->getType());
+                $binding   = ClassBinding::fromBinding($request);
+                $reflector = new ReflectionClass($binding->getId());
                 if (! $reflector->isInstantiable()) {
                     throw new RuntimeException();
                 }
 
-                return new Prototype($request);
+                return new Prototype($binding->getId());
             } catch (ReflectionException) {
                   throw new RuntimeException();
             }
