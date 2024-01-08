@@ -14,11 +14,11 @@ use PHPUnit\Framework\TestCase;
 use stdClass;
 use Vivarium\Container\Container;
 use Vivarium\Container\Key;
-use Vivarium\Container\Provider\Factory;
+use Vivarium\Container\Definition\Factory;
 use Vivarium\Test\Container\Stub\Stub;
 use Vivarium\Test\Container\Stub\StubImpl;
 
-/** @coversDefaultClass \Vivarium\Container\Provider\Factory */
+/** @coversDefaultClass \Vivarium\Container\Definition\Factory */
 final class FactoryTest extends TestCase
 {
     /**

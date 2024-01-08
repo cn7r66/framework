@@ -17,7 +17,7 @@ use Vivarium\Container\Provider;
 use Vivarium\Test\Container\Stub\Stub;
 use Vivarium\Test\Container\Stub\StubImpl;
 
-/** @coversDefaultClass \Vivarium\Container\Provider\Service */
+/** @coversDefaultClass \Vivarium\Container\Definition\Service */
 final class ServiceTest extends TestCase
 {
     /**

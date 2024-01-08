@@ -14,9 +14,9 @@ use PHPUnit\Framework\TestCase;
 use stdClass;
 use Vivarium\Container\Container;
 use Vivarium\Container\Key;
-use Vivarium\Container\Provider\Instance;
+use Vivarium\Container\Definition\Instance;
 
-/** @coversDefaultClass \Vivarium\Container\Provider\Instance */
+/** @coversDefaultClass \Vivarium\Container\Definition\Instance */
 final class InstanceTest extends TestCase
 {
     /**

@@ -13,11 +13,11 @@ namespace Vivarium\Test\Container\Provider;
 use PHPUnit\Framework\TestCase;
 use Vivarium\Container\Container;
 use Vivarium\Container\Key;
-use Vivarium\Container\Provider\ContainerCall;
+use Vivarium\Container\Definition\ContainerCall;
 use Vivarium\Test\Container\Stub\Stub;
 use Vivarium\Test\Container\Stub\StubImpl;
 
-/** @coversDefaultClass \Vivarium\Container\Provider\ContainerCall */
+/** @coversDefaultClass \Vivarium\Container\Definition\ContainerCall */
 final class ContainerCallTest extends TestCase
 {
     /**

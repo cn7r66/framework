@@ -14,10 +14,10 @@ use PHPUnit\Framework\TestCase;
 use Vivarium\Container\Container;
 use Vivarium\Container\Key;
 use Vivarium\Container\Provider;
-use Vivarium\Container\Provider\Cloneable;
+use Vivarium\Container\Definition\Cloneable;
 use Vivarium\Test\Container\Stub\Stub;
 
-/** @coversDefaultClass \Vivarium\Container\Provider\Cloneable */
+/** @coversDefaultClass \Vivarium\Container\Definition\Cloneable */
 final class CloneableTest extends TestCase
 {
     /**

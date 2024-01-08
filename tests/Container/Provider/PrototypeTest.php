@@ -12,11 +12,11 @@ use PHPUnit\Framework\TestCase;
 use Vivarium\Container\Container;
 use Vivarium\Container\Key;
 use Vivarium\Container\Provider;
-use Vivarium\Container\Provider\Prototype;
+use Vivarium\Container\Definition\Prototype;
 use Vivarium\Test\Container\Stub\Foo;
 use Vivarium\Test\Container\Stub\StubImpl;
 
-/** @coversDefaultClass \Vivarium\Container\Provider\Prototype */
+/** @coversDefaultClass \Vivarium\Container\Definition\Prototype */
 final class PrototypeTest extends TestCase
 {
     /**
