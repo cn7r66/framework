@@ -13,5 +13,5 @@ namespace Vivarium\Container;
 interface Solver
 {
     /** @param callable(): Provider $next */
-    public function solve(Key $request, callable $next ): Provider;
+    public function solve(Binding $request, callable $next ): Provider;
 }

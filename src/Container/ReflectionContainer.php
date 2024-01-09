@@ -23,8 +23,6 @@ use Vivarium\Comparator\ValueAndPriority;
 use Vivarium\Container\Binding\ClassBinding;
 use Vivarium\Container\Provider\Prototype;
 
-use function class_exists;
-
 final class ReflectionContainer implements Container
 {
     /** @var Queue<ValueAndPriority<Solver>> */
@@ -76,7 +74,7 @@ final class ReflectionContainer implements Container
         return $container;
     }
 
-    private function solve(Key $request): Provider
+    private function solve(Binding $request): Provider
     {
         return $this->next(
             $request,
