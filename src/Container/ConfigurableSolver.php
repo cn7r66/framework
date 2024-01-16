@@ -8,7 +8,7 @@
 
 namespace Vivarium\Container;
 
-interface ConfigurableSolver extends Solver
+interface ConfigurableSolver extends Step
 {
     /** @return Binder<self> */
     public function bind(string $type, string $tag, string $context): Binder;

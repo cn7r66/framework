@@ -11,8 +11,6 @@ declare(strict_types=1);
 namespace Vivarium\Container;
 
 use Iterator;
-use ReflectionClass;
-use ReflectionException;
 use RuntimeException;
 use Vivarium\Collection\Map\HashMap;
 use Vivarium\Collection\Map\Map;
@@ -20,25 +18,27 @@ use Vivarium\Collection\Queue\ArrayQueue;
 use Vivarium\Collection\Queue\Queue;
 use Vivarium\Comparator\Priority;
 use Vivarium\Comparator\ValueAndPriority;
-use Vivarium\Container\Binding\ClassBinding;
-use Vivarium\Container\Provider\Prototype;
+use Vivarium\Container\Binding\SimpleBinding;
 
-final class ReflectionContainer implements Container
+final class MultiStepContainer implements Container
 {
-    /** @var Queue<ValueAndPriority<Solver>> */
-    private Queue $solvers;
+    /** @var Queue<ValueAndPriority<Step>> */
+    private Queue $steps;
 
     /** @var Map<Key, Provider> */
     private Map $solved;
 
     public function __construct()
     {
-        $this->solvers = new ArrayQueue();
-        $this->solved  = new HashMap();
+        $this->steps  = new ArrayQueue();
+        $this->solved = new HashMap();
     }
 
-    public function get(Binding $request): mixed
+    public function get(string|Binding $request): mixed
     {
+        $request = $request instanceof Binding ?
+            $request : new SimpleBinding($request);
+
         if (! $this->has($request)) {
             throw new RuntimeException();
         }
@@ -48,7 +48,7 @@ final class ReflectionContainer implements Container
             ->provide($this);
     }
 
-    public function has(Binding $request): bool
+    public function has(string|Binding $request): bool
     {
         try {
             if (! $this->solved->containsKey($request)) {
@@ -64,11 +64,11 @@ final class ReflectionContainer implements Container
         }
     }
 
-    public function withSolver(Solver $solver, int $priority = Priority::NORMAL): self
+    public function withStep(Step $step, int $priority = Priority::NORMAL): self
     {
-        $container          = clone $this;
-        $container->solvers = $container->solvers->enqueue(
-            new ValueAndPriority($solver, $priority),
+        $container        = clone $this;
+        $container->steps = $container->steps->enqueue(
+            new ValueAndPriority($step, $priority),
         );
 
         return $container;
@@ -78,7 +78,7 @@ final class ReflectionContainer implements Container
     {
         return $this->next(
             $request,
-            $this->solvers->getIterator(),
+            $this->steps->getIterator(),
         )();
     }
 
@@ -103,18 +103,6 @@ final class ReflectionContainer implements Container
             };
         }
 
-        return static function () use ($request): Provider {
-            try {
-                $binding   = ClassBinding::fromBinding($request);
-                $reflector = new ReflectionClass($binding->getId());
-                if (! $reflector->isInstantiable()) {
-                    throw new RuntimeException();
-                }
-
-                return new Prototype($binding->getId());
-            } catch (ReflectionException) {
-                  throw new RuntimeException();
-            }
-        };
+        throw new RuntimeException('');
     }
 }
