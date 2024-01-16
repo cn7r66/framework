@@ -10,9 +10,11 @@ declare(strict_types=1);
 
 namespace Vivarium\Container;
 
-interface Container
-{
-    public function get(Binding $request): mixed;
+use Psr\Container\ContainerInterface;
 
-    public function has(Binding $request): bool;
+interface Container extends ContainerInterface
+{
+    public function get(string|Binding $request): mixed;
+
+    public function has(string|Binding $request): bool;
 }
