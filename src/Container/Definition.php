@@ -12,7 +12,7 @@ namespace Vivarium\Container;
 
 use Vivarium\Comparator\Priority;
 
-interface Definition
+interface Definition extends Provider
 {
     public function bindConstructorFactory(string $class, string $method, string $tag, string $context): self;
 
@@ -23,7 +23,7 @@ interface Definition
 
     /** @return Binder<self> */
     public function bindProperty(string $property): Binder;
- 
+
     /** callable(InstanceMethod): InstanceMethod */
     public function bindMethod(string $method, callable|null $define = null, int $priority = Priority::NORMAL): self;
 
