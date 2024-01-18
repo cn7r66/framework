@@ -13,5 +13,5 @@ namespace Vivarium\Container;
 interface Step
 {
     /** @param callable(): Provider $next */
-    public function solve(Binding $request, callable $next ): Provider;
+    public function solve(Binding $request, callable $next): Provider;
 }

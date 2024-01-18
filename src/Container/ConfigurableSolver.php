@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of Vivarium
  * SPDX-License-Identifier: MIT
@@ -23,11 +25,11 @@ interface ConfigurableSolver extends Step
     public function inject(string $type, callable $inject, string $tag, string $context): self;
 
     /**
-     * @template T of Provider
-     *
      * @param callable(T): Provider $extend
+     *
+     * @template T of Provider
      */
     public function extend(string $type, callable $extend, string $tag, string $context): self;
 
-    public function decorate();
+    public function decorate(): void;
 }

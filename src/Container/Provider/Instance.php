@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of Vivarium
  * SPDX-License-Identifier: MIT
@@ -9,19 +11,15 @@
 namespace Vivarium\Container\Provider;
 
 use Vivarium\Container\Container;
-use Vivarium\Container\Key;
 use Vivarium\Container\Provider;
 
 final class Instance implements Provider
 {
-    private mixed $instance;
-
-    public function __construct( mixed $instance)
+    public function __construct(private mixed $instance)
     {
-        $this->instance = $instance;
     }
 
-    public function provide(Container $container, ?string $requester = null): mixed
+    public function provide(Container $container, string|null $requester = null): mixed
     {
         return $this->instance;
     }

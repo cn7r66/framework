@@ -27,7 +27,6 @@ use Vivarium\Container\Binder;
 use Vivarium\Container\Container;
 use Vivarium\Container\Definition;
 use Vivarium\Container\GenericBinder;
-use Vivarium\Container\Injection;
 use Vivarium\Container\Injection\ImmutableMethodCall;
 use Vivarium\Container\Injection\MethodCall;
 use Vivarium\Container\Provider;
@@ -67,11 +66,11 @@ final class Prototype implements Definition
     public function provide(Container $container): mixed
     {
         $instance = $this->constructor->invoke($container);
-        
+
         $reflector = new ReflectionClass($instance);
         foreach ($this->properties as $property => $provider) {
             if (! $reflector->hasProperty($property)) {
-                throw new RuntimeException("");
+                throw new RuntimeException('');
             }
 
             $reflector->getProperty($property)

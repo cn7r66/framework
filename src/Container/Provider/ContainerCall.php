@@ -12,7 +12,6 @@ namespace Vivarium\Container\Provider;
 
 use Vivarium\Container\Binding;
 use Vivarium\Container\Container;
-use Vivarium\Container\Key;
 use Vivarium\Container\Provider;
 
 final class ContainerCall implements Provider

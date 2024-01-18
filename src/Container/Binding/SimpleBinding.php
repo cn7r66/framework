@@ -10,4 +10,6 @@ declare(strict_types=1);
 
 namespace Vivarium\Container\Binding;
 
-final class SimpleBinding extends BaseBinding {}
+final class SimpleBinding extends BaseBinding
+{
+}

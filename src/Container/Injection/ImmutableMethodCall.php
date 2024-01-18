@@ -18,7 +18,7 @@ use Vivarium\Container\Reflection\InstanceMethod;
 
 final class ImmutableMethodCall extends BaseMethod implements InstanceMethod, Injection
 {
-    public function __construct(string $class,string $method)
+    public function __construct(string $class, string $method)
     {
         parent::__construct($class, $method);
 

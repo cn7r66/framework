@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of Vivarium
  * SPDX-License-Identifier: MIT
@@ -9,22 +11,18 @@
 namespace Vivarium\Container\Provider;
 
 use Vivarium\Container\Container;
-use Vivarium\Container\Key;
 use Vivarium\Container\Provider;
 
 final class Cloneable implements Provider
 {
-    private Provider $provider;
-
     private mixed $instance;
 
-    public function __construct(Provider $provider)
+    public function __construct(private Provider $provider)
     {
-        $this->provider = $provider;
         $this->instance = null;
     }
 
-    public function provide(Container $container, ?string $requester = null): mixed
+    public function provide(Container $container, string|null $requester = null): mixed
     {
         if ($this->instance === null) {
             $this->instance = $this->provider->provide($container, $requester);

@@ -10,11 +10,6 @@ declare(strict_types=1);
 
 namespace Vivarium\Container;
 
-use Vivarium\Container\Binding;
-use Vivarium\Container\Provider;
-use Vivarium\Container\Solver;
-use Vivarium\Container\Step;
-
 final class LazySolver implements Step
 {
     private Step $solver;
@@ -22,14 +17,12 @@ final class LazySolver implements Step
     /** @var callable():Step */
     private $init;
 
-    /**
-     * @param callable():iterable<Module> $modules;
-     */
+    /** @param callable():iterable<Module> $modules; */
     public function __construct(callable $modules, ConfigurableSolver|null $solver = null)
     {
         $this->solver = null;
-        $this->init   = function () use ($modules, $solver) {
-            $solver = $solver === null ? new Solver() : $solver;
+        $this->init   = static function () use ($modules, $solver) {
+            $solver ??= new Solver();
             foreach ($modules() as $module) {
                 $solver = $module->install($solver);
             }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of Vivarium
  * SPDX-License-Identifier: MIT
@@ -8,6 +10,7 @@
 
 namespace Vivarium\Container\Binding;
 
+use RuntimeException;
 use Vivarium\Assertion\Comparison\IsSameOf;
 use Vivarium\Assertion\Conditional\Either;
 use Vivarium\Assertion\String\IsClassOrInterface;
@@ -16,6 +19,9 @@ use Vivarium\Assertion\String\IsNotEmpty;
 use Vivarium\Container\Binding;
 use Vivarium\Equality\EqualsBuilder;
 use Vivarium\Equality\HashBuilder;
+
+use function strrpos;
+use function substr;
 
 abstract class BaseBinding implements Binding
 {
@@ -57,7 +63,7 @@ abstract class BaseBinding implements Binding
     public function widen(): Binding
     {
         if (! $this->couldBeWidened()) {
-            throw new \RuntimeException();
+            throw new RuntimeException();
         }
 
         if ($this->tag !== self::DEFAULT) {

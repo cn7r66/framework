@@ -19,8 +19,6 @@ interface Binder
     /** @return T */
     public function toInstance(mixed $instance);
 
-    /**
-     * @return T
-     */
+    /** @return T */
     public function toProvider(Provider $provider);
 }

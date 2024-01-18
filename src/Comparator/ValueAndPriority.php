@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of Vivarium
  * SPDX-License-Identifier: MIT
@@ -8,29 +10,15 @@
 
 namespace Vivarium\Comparator;
 
-/**
- * @template T
- */
+/** @template T */
 final class ValueAndPriority implements Sortable
 {
-    /** @var T */
-    private $value;
-
-    private int $priority;
-
-    /**
-     * @param T $value
-     * @param int $priority
-     */
-    public function __construct($value, int $priority = Priority::NORMAL)
+    /** @param T $value */
+    public function __construct(private $value, private int $priority = Priority::NORMAL)
     {
-        $this->value    = $value;
-        $this->priority = $priority;
     }
 
-    /**
-     * @return T
-     */
+    /** @return T */
     public function getValue()
     {
         return $this->value;

@@ -31,11 +31,11 @@ final class ReflectionContainer implements MultiStepContainer
 
     public function __construct()
     {
-        $this->steps  = (new ArrayQueue())->enqueue(
+        $this->steps = (new ArrayQueue())->enqueue(
             new ValueAndPriority(
-                new ReflectionSolver(), 
-                Priority::VERY_VERY_LOW
-            )
+                new ReflectionSolver(),
+                Priority::VERY_VERY_LOW,
+            ),
         );
 
         $this->solved = new HashMap();
@@ -90,10 +90,10 @@ final class ReflectionContainer implements MultiStepContainer
     }
 
     /**
-    * @param Iterator<ValueAndPriority<Solver>> $iterator
-    *
-    * @return callable(): Provider
-    */
+     * @param Iterator<ValueAndPriority<Solver>> $iterator
+     *
+     * @return callable(): Provider
+     */
     private function next(Binding $request, Iterator $iterator): callable
     {
         if ($iterator->valid()) {
@@ -110,6 +110,6 @@ final class ReflectionContainer implements MultiStepContainer
             };
         }
 
-        throw new RuntimeException("");
+        throw new RuntimeException('');
     }
 }

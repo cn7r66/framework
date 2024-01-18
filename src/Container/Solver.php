@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of Vivarium
  * SPDX-License-Identifier: MIT
@@ -8,6 +10,7 @@
 
 namespace Vivarium\Container;
 
+use RuntimeException;
 use Vivarium\Collection\Map\HashMap;
 use Vivarium\Collection\Map\Map;
 use Vivarium\Container\Binding\ClassBinding;
@@ -28,7 +31,7 @@ final class Solver implements ConfigurableSolver
         $binding = new TypeBinding($type, $tag, $context);
 
         if ($this->providers->containsKey($binding)) {
-            throw new \RuntimeException();
+            throw new RuntimeException();
         }
 
         return $this->rebind($type, $tag, $context);
@@ -39,7 +42,7 @@ final class Solver implements ConfigurableSolver
         $binding = new TypeBinding($type, $tag, $context);
 
         return new GenericBinder(function (Provider $provider) use ($binding) {
-            $solver = clone $this;
+            $solver            = clone $this;
             $solver->providers = $solver->providers->put($binding, $provider);
 
             return $solver;
@@ -47,22 +50,22 @@ final class Solver implements ConfigurableSolver
     }
 
     /**
-     * @param class-string $class
+     * @param class-string                     $class
      * @param callable(Definition): Definition $define
-     * @param non-empty-string $tag
-     * @param non-empty-string $context
+     * @param non-empty-string                 $tag
+     * @param non-empty-string                 $context
      */
     public function define(string $class, callable $define, string $tag, string $context): self
     {
         $binding = new ClassBinding($class, $tag, $context);
         if ($this->providers->containsKey($binding)) {
-            throw new \RuntimeException();
+            throw new RuntimeException();
         }
 
-        $solver = clone $this;
+        $solver            = clone $this;
         $solver->providers = $solver->providers->put(
             $binding,
-            $define(new Prototype($class))
+            $define(new Prototype($class)),
         );
 
         return $solver;
@@ -78,7 +81,7 @@ final class Solver implements ConfigurableSolver
         // TODO: Implement extend() method.
     }
 
-    public function decorate()
+    public function decorate(): void
     {
         // TODO: Implement decorate() method.
     }

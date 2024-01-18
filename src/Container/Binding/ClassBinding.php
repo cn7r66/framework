@@ -10,10 +10,15 @@ declare(strict_types=1);
 
 namespace Vivarium\Container\Binding;
 
-use Vivarium\Container\Binding;
 use Vivarium\Assertion\String\IsClassOrInterface;
-use Vivarium\Collection\Sequence\Sequence;
 use Vivarium\Collection\Sequence\ArraySequence;
+use Vivarium\Collection\Sequence\Sequence;
+use Vivarium\Container\Binding;
+
+use function array_merge;
+use function class_implements;
+use function count;
+use function get_parent_class;
 
 final class ClassBinding extends BaseBinding
 {
@@ -29,7 +34,7 @@ final class ClassBinding extends BaseBinding
         return new ClassBinding(
             $binding->getId(),
             $binding->getContext(),
-            $binding->getTag()
+            $binding->getTag(),
         );
     }
 
@@ -45,7 +50,7 @@ final class ClassBinding extends BaseBinding
     }
 
     /** @return class-string */
-    public function getId() : string
+    public function getId(): string
     {
         return $this->class;
     }
