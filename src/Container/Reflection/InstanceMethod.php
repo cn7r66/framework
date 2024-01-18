@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of Vivarium
  * SPDX-License-Identifier: MIT
@@ -8,8 +11,9 @@
 namespace Vivarium\Container\Reflection;
 
 use Vivarium\Container\Container;
+use Vivarium\Container\Injection;
 
-interface InstanceMethod extends Method
+interface InstanceMethod extends Method, Injection
 {
     public function invoke(Container $container, object $instance): mixed;
 }

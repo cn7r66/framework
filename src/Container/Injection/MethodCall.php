@@ -12,11 +12,10 @@ namespace Vivarium\Container\Injection;
 
 use ReflectionClass;
 use Vivarium\Container\Container;
-use Vivarium\Container\Injection;
 use Vivarium\Container\Reflection\BaseMethod;
 use Vivarium\Container\Reflection\InstanceMethod;
 
-final class MethodCall extends BaseMethod implements InstanceMethod, Injection
+final class MethodCall extends BaseMethod implements InstanceMethod
 {
     public function inject(Container $container, object $instance): object
     {
