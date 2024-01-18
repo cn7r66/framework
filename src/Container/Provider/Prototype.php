@@ -66,7 +66,19 @@ final class Prototype implements Definition
 
     public function provide(Container $container): mixed
     {
-        return $this->constructor->invoke($container);
+        $instance = $this->constructor->invoke($container);
+        
+        $reflector = new ReflectionClass($instance);
+        foreach ($this->properties as $property => $provider) {
+            if (! $reflector->hasProperty($property)) {
+                throw new RuntimeException("");
+            }
+
+            $reflector->getProperty($property)
+                      ->setValue($instance, $provider->provide($container));
+        }
+
+        return $instance;
     }
 
     public function bindConstructorFactory(string $class, string $method, string $tag, string $context): self
