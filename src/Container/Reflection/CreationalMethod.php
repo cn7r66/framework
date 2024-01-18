@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of Vivarium
  * SPDX-License-Identifier: MIT
@@ -10,7 +12,7 @@ namespace Vivarium\Container\Reflection;
 
 use Vivarium\Container\Container;
 
-interface StaticMethod extends Method
+interface CreationalMethod extends Method
 {
     public function invoke(Container $container): mixed;
 }

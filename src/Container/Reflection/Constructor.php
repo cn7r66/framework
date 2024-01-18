@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of Vivarium
  * SPDX-License-Identifier: MIT
@@ -8,20 +10,22 @@
 
 namespace Vivarium\Container\Reflection;
 
+use ReflectionClass;
 use Vivarium\Container\Container;
 
-final class Constructor extends BaseMethod implements StaticMethod
+final class Constructor extends BaseMethod implements CreationalMethod
 {
-    public function __construct(string $class) {
+    public function __construct(string $class)
+    {
         parent::__construct($class, '__construct');
     }
 
     public function invoke(Container $container): mixed
     {
-        return (new \ReflectionClass($this->getClass()))
+        return (new ReflectionClass($this->getClass()))
             ->newInstanceArgs(
                 $this->getArgumentsValue($container)
-                     ->toArray()
+                     ->toArray(),
             );
     }
 }
