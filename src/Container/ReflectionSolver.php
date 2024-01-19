@@ -8,7 +8,7 @@ declare(strict_types=1);
  * Copyright (c) 2023 Luca Cantoreggi
  */
 
-namespace Vivarium\Container\Step;
+namespace Vivarium\Container;
 
 use ReflectionClass;
 use ReflectionException;
