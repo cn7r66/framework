@@ -31,6 +31,7 @@ use Vivarium\Container\Injection\ImmutableMethodCall;
 use Vivarium\Container\Injection\MethodCall;
 use Vivarium\Container\Provider;
 use Vivarium\Container\Reflection\Constructor;
+use Vivarium\Container\Reflection\CreationalMethod;
 use Vivarium\Container\Reflection\Method;
 use Vivarium\Container\Reflection\StaticMethod;
 
@@ -38,7 +39,7 @@ use function array_map;
 
 final class Prototype implements Definition
 {
-    private StaticMethod $constructor;
+    private CreationalMethod $constructor;
 
     /** @var Map<string, Provider> */
     private Map $properties;
@@ -154,7 +155,7 @@ final class Prototype implements Definition
         return $prototype;
     }
 
-    public function getConstructor(): StaticMethod
+    public function getConstructor(): CreationalMethod
     {
         return $this->constructor;
     }
