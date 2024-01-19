@@ -11,6 +11,8 @@ declare(strict_types=1);
 namespace Vivarium\Container;
 
 use Iterator;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use RuntimeException;
 use Vivarium\Collection\Map\HashMap;
 use Vivarium\Collection\Map\Map;
@@ -19,7 +21,7 @@ use Vivarium\Collection\Queue\Queue;
 use Vivarium\Comparator\Priority;
 use Vivarium\Comparator\ValueAndPriority;
 use Vivarium\Container\Binding\SimpleBinding;
-use Vivarium\Container\Step\ReflectionSolver;
+use Vivarium\Container\Exception\BindingNotFound;
 
 final class ReflectionContainer implements MultiStepContainer
 {
@@ -31,11 +33,11 @@ final class ReflectionContainer implements MultiStepContainer
 
     public function __construct()
     {
-        $this->steps = (new ArrayQueue())->enqueue(
+        $this->steps = new ArrayQueue(
             new ValueAndPriority(
                 new ReflectionSolver(),
                 Priority::VERY_VERY_LOW,
-            ),
+            )
         );
 
         $this->solved = new HashMap();
@@ -43,11 +45,10 @@ final class ReflectionContainer implements MultiStepContainer
 
     public function get(string|Binding $request): mixed
     {
-        $request = $request instanceof Binding ?
-            $request : new SimpleBinding($request);
+        $request = $this->makeBinding($request);
 
         if (! $this->has($request)) {
-            throw new RuntimeException();
+            throw new BindingNotFound($request);
         }
 
         return $this->solved
@@ -58,6 +59,8 @@ final class ReflectionContainer implements MultiStepContainer
     public function has(string|Binding $request): bool
     {
         try {
+            $request = $this->makeBinding($request);
+
             if (! $this->solved->containsKey($request)) {
                 $this->solved = $this->solved->put(
                     $request,
@@ -66,7 +69,7 @@ final class ReflectionContainer implements MultiStepContainer
             }
 
             return true;
-        } catch (RuntimeException) {
+        } catch (ContainerExceptionInterface) {
             return false;
         }
     }
@@ -110,6 +113,12 @@ final class ReflectionContainer implements MultiStepContainer
             };
         }
 
-        throw new RuntimeException('');
+        throw new BindingNotFound($request);
+    }
+
+    private function makeBinding(string|Binding $request): Binding
+    {
+        return $request instanceof Binding ?
+            $request : new SimpleBinding($request);
     }
 }
