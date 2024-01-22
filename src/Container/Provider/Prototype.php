@@ -33,7 +33,6 @@ use Vivarium\Container\Provider;
 use Vivarium\Container\Reflection\Constructor;
 use Vivarium\Container\Reflection\CreationalMethod;
 use Vivarium\Container\Reflection\Method;
-use Vivarium\Container\Reflection\StaticMethod;
 
 use function array_map;
 

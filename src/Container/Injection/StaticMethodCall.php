@@ -13,9 +13,10 @@ namespace Vivarium\Container\Injection;
 use ReflectionClass;
 use Vivarium\Comparator\Priority;
 use Vivarium\Container\Container;
+use Vivarium\Container\Reflection\CreationalMethod;
 use Vivarium\Container\Reflection\StaticMethod;
 
-final class StaticMethodCall extends MethodInjection implements StaticMethod
+final class StaticMethodCall extends MethodInjection implements CreationalMethod
 {
     private string|null $parameter;
 

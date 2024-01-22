@@ -17,10 +17,10 @@ use Vivarium\Container\Binding\ClassBinding;
 use Vivarium\Container\Container;
 use Vivarium\Container\Injection\MethodCall;
 use Vivarium\Container\Provider;
+use Vivarium\Container\Reflection\CreationalMethod;
 use Vivarium\Container\Reflection\InstanceMethod;
-use Vivarium\Container\Reflection\StaticMethod;
 
-final class Factory implements StaticMethod, Provider
+final class Factory implements CreationalMethod, Provider
 {
     private Binding $factory;
 
