@@ -11,9 +11,6 @@ declare(strict_types=1);
 namespace Vivarium\Container;
 
 use Iterator;
-use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\NotFoundExceptionInterface;
-use RuntimeException;
 use Vivarium\Collection\Map\HashMap;
 use Vivarium\Collection\Map\Map;
 use Vivarium\Collection\Queue\ArrayQueue;
@@ -28,7 +25,7 @@ final class ReflectionContainer implements MultiStepContainer
     /** @var Queue<ValueAndPriority<Step>> */
     private Queue $steps;
 
-    /** @var Map<Key, Provider> */
+    /** @var Map<Binding, Provider> */
     private Map $solved;
 
     public function __construct()
@@ -69,7 +66,7 @@ final class ReflectionContainer implements MultiStepContainer
             }
 
             return true;
-        } catch (ContainerExceptionInterface) {
+        } catch (BindingNotFound) {
             return false;
         }
     }
@@ -113,7 +110,9 @@ final class ReflectionContainer implements MultiStepContainer
             };
         }
 
-        throw new BindingNotFound($request);
+        return static function () use ($request) {
+            throw new BindingNotFound($request);
+        };
     }
 
     private function makeBinding(string|Binding $request): Binding
