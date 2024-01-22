@@ -13,6 +13,8 @@ namespace Vivarium\Test\Container;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 use Vivarium\Container\ReflectionContainer;
+use Vivarium\Test\Container\Stub\ConcreteStub;
+use Vivarium\Test\Container\Stub\SimpleStub;
 
 /** @coversDefaultClass Vivarium\Container\ReflectionContainer */
 final class ReflectionContainerTest extends TestCase
@@ -28,13 +30,16 @@ final class ReflectionContainerTest extends TestCase
         static::assertSame($container->has($id), $result);
     }
 
+    /** @covers ::get() */
     public function testGet()
     {
         $container = new ReflectionContainer();
-        $container->get(stdClass::class);
+        $instance  = $container->get(stdClass::class);
+
+        static::assertInstanceOf(stdClass::class, $instance);
     }
 
-    /** @return array<array-key, array{0: scalar, 1: scalar, 2: bool}> */
+    /** @return array<array-key, array<string, bool>> */
     public function getContainerIds(): array
     {
         return [
@@ -42,8 +47,16 @@ final class ReflectionContainerTest extends TestCase
                 'theId',
                 false
             ],
-            'Non registered existing class' => [
+            'Class without contructor' => [
                 stdClass::class,
+                true
+            ],
+            'Class with empty constructor' => [
+                ConcreteStub::class,
+                true
+            ],
+            'Class with constructor' => [
+                SimpleStub::class,
                 true
             ]
         ];
