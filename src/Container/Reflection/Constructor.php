@@ -11,21 +11,33 @@ declare(strict_types=1);
 namespace Vivarium\Container\Reflection;
 
 use ReflectionClass;
+use Vivarium\Assertion\String\IsClass;
 use Vivarium\Container\Container;
 
 final class Constructor extends BaseMethod implements CreationalMethod
 {
+    private string $class;
+
     public function __construct(string $class)
     {
-        parent::__construct($class, '__construct');
+        (new IsClass())
+            ->assert($class);
+
+        $this->class = $class;
+
+        parent::__construct('__construct');
     }
 
     public function invoke(Container $container): mixed
     {
-        return (new ReflectionClass($this->getClass()))
-            ->newInstanceArgs(
-                $this->getArgumentsValue($container)
-                     ->toArray(),
-            );
+        $reflector = new ReflectionClass($this->class);
+        
+        $args = [];
+        if ($reflector->hasMethod($this->getName())) {
+            $args = $this->getArgumentsValue($this->class, $container)
+                         ->toArray();
+        }
+
+        return $reflector->newInstanceArgs($args);
     }
 }
