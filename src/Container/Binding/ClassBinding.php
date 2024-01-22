@@ -33,8 +33,8 @@ final class ClassBinding extends BaseBinding
 
         return new ClassBinding(
             $binding->getId(),
-            $binding->getContext(),
             $binding->getTag(),
+            $binding->getContext()
         );
     }
 
