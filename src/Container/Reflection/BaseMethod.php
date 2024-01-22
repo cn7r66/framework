@@ -30,20 +30,9 @@ abstract class BaseMethod implements Method
     private Map $parameters;
 
     /** @psalm-assert class-string $class */
-    public function __construct(private string $class, private string $method)
+    public function __construct(private string $method)
     {
-        (new IsClassOrInterface())
-            ->assert($class);
-
-        (new HasMethod($method))
-            ->assert($class);
-
         $this->parameters = new HashMap();
-    }
-
-    public function getClass(): string
-    {
-        return $this->class;
     }
 
     public function getName(): string
@@ -76,9 +65,12 @@ abstract class BaseMethod implements Method
     }
 
     /** @return Sequence<Provider> */
-    public function getArguments(): Sequence
+    protected function getArguments(string $class): Sequence
     {
-        $method = (new ReflectionClass($this->class))
+        (new HasMethod($this->method))
+            ->assert($class);
+
+        $method = (new ReflectionClass($class))
             ->getMethod($this->method);
 
         $arguments = [];
@@ -90,11 +82,11 @@ abstract class BaseMethod implements Method
         return ArraySequence::fromArray($arguments);
     }
 
-    public function getArgumentsValue(Container $container): Sequence
+    protected function getArgumentsValue(string $class, Container $container): Sequence
     {
         $values = [];
-        foreach ($this->getArguments() as $argument) {
-            $values[] = $argument->provide($container, $this->class);
+        foreach ($this->getArguments($class) as $argument) {
+            $values[] = $argument->provide($container, $class);
         }
 
         return ArraySequence::fromArray($values);
