@@ -14,7 +14,6 @@ use ReflectionClass;
 use ReflectionParameter;
 use RuntimeException;
 use Vivarium\Assertion\Object\HasMethod;
-use Vivarium\Assertion\String\IsClassOrInterface;
 use Vivarium\Collection\Map\HashMap;
 use Vivarium\Collection\Map\Map;
 use Vivarium\Collection\Sequence\ArraySequence;
