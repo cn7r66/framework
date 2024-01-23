@@ -23,15 +23,10 @@ final class Service implements Provider
         $this->instance = null;
     }
 
-    public function provides(): Key
-    {
-        return $this->provider->provides();
-    }
-
-    public function provide(Container $container, string|null $requester = null): mixed
+    public function provide(Container $container): mixed
     {
         if ($this->instance === null) {
-            $this->instance = $this->provider->provide($container, $requester);
+            $this->instance = $this->provider->provide($container);
         }
 
         return $this->instance;
