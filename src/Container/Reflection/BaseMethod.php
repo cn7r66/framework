@@ -21,6 +21,7 @@ use Vivarium\Collection\Sequence\ArraySequence;
 use Vivarium\Collection\Sequence\Sequence;
 use Vivarium\Container\Binder;
 use Vivarium\Container\Container;
+use Vivarium\Container\Exception\ParameterNotFound;
 use Vivarium\Container\GenericBinder;
 use Vivarium\Container\Provider;
 
@@ -53,7 +54,7 @@ abstract class BaseMethod implements Method
     public function getParameter(string $parameter): Provider
     {
         if (! $this->hasParameter($parameter)) {
-            throw new RuntimeException();
+            throw new ParameterNotFound($parameter, $this->method);
         }
 
         return $this->parameters->get($parameter);
