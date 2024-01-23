@@ -10,23 +10,17 @@ declare(strict_types=1);
 
 namespace Vivarium\Container\Provider;
 
-use Vivarium\Collection\Sequence\Sequence;
-use Vivarium\Container\Binder;
+use ReflectionMethod;
 use Vivarium\Container\Binding;
 use Vivarium\Container\Binding\ClassBinding;
 use Vivarium\Container\Container;
-use Vivarium\Container\Injection\MethodCall;
 use Vivarium\Container\Provider;
+use Vivarium\Container\Reflection\BaseMethod;
 use Vivarium\Container\Reflection\CreationalMethod;
-use Vivarium\Container\Reflection\InstanceMethod;
 
-final class Factory implements CreationalMethod, Provider
+final class Factory extends BaseMethod implements CreationalMethod, Provider
 {
     private Binding $factory;
-
-    private InstanceMethod $method;
-
-    private string|null $requester;
 
     public function __construct(
         string $class,
@@ -36,75 +30,28 @@ final class Factory implements CreationalMethod, Provider
     ) {
         $this->factory = new ClassBinding(
             $class,
-            $context,
             $tag,
+            $context,
         );
 
-        $this->method    = new MethodCall($class, $method);
-        $this->requester = null;
+        parent::__construct($method);
     }
 
-    public function provide(Container $container, string|null $requester = null): mixed
+    public function provide(Container $container): mixed
     {
-        return $this->getMethod($requester)->invoke(
-            $container,
-            $container->get($this->factory),
-        );
-    }
-
-    public function requesterOn(string $parameter): self
-    {
-        $factory            = clone $this;
-        $factory->requester = $parameter;
-
-        return $factory;
-    }
-
-    private function getMethod(string $requester): InstanceMethod
-    {
-        return $this->requester === null ?
-            $this->method : $this->method
-                ->bindParameter($this->requester)
-                ->toInstance($requester);
-    }
-
-    public function getClass(): string
-    {
-        // TODO: Implement getClass() method.
-    }
-
-    public function getName(): string
-    {
-        // TODO: Implement getName() method.
-    }
-
-    public function bindParameter(string $parameter): Binder
-    {
-        // TODO: Implement bindParameter() method.
-    }
-
-    public function getParameter(string $parameter): Provider
-    {
-        // TODO: Implement getParameter() method.
-    }
-
-    public function hasParameter(string $parameter): bool
-    {
-        // TODO: Implement hasParameter() method.
-    }
-
-    public function getArguments(): Sequence
-    {
-        // TODO: Implement getArguments() method.
-    }
-
-    public function getArgumentsValue(Container $container): Sequence
-    {
-        // TODO: Implement getArgumentsValue() method.
+        return $this->invoke($container);
     }
 
     public function invoke(Container $container): mixed
     {
-        // TODO: Implement invoke() method.
+        $instance = $container->get($this->factory);
+
+        $method = new ReflectionMethod($instance, $this->getName());
+
+        return $method->invokeArgs(
+            $instance,
+            $this->getArgumentsValue($this->factory->getId(), $container)
+                 ->toArray()
+        );
     }
 }
