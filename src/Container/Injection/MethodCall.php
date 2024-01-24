@@ -26,12 +26,12 @@ final class MethodCall extends BaseMethod implements InstanceMethod
 
     public function invoke(Container $container, object $instance): mixed
     {
-        $reflector = (new ReflectionClass($this->getClass()))
+        $reflector = (new ReflectionClass($instance))
             ->getMethod($this->getName());
 
         return $reflector->invokeArgs(
             $instance,
-            $this->getArgumentsValue($container)
+            $this->getArgumentsValue($instance::class, $container)
                  ->toArray(),
         );
     }
