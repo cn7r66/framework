@@ -10,7 +10,7 @@ declare(strict_types=1);
 
 namespace Vivarium\Container;
 
-interface Injectable
+interface Injectable extends Provider
 {
     public function withInjection(Injection $injection): self;
 
