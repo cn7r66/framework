@@ -18,12 +18,9 @@ use Vivarium\Container\Reflection\InstanceMethod;
 
 final class ImmutableMethodCall extends BaseMethod implements InstanceMethod, Injection
 {
-    public function __construct(string $class, string $method)
+    public function __construct(string $method)
     {
-        parent::__construct($class, $method);
-
-        // TODO Assert method is public
-        // TODO Assert method return assignable object
+        parent::__construct($method);
     }
 
     public function inject(Container $container, object $instance): object
@@ -33,12 +30,15 @@ final class ImmutableMethodCall extends BaseMethod implements InstanceMethod, In
 
     public function invoke(Container $container, object $instance): mixed
     {
-        $reflector = (new ReflectionClass($this->getClass()))
+        $reflector = (new ReflectionClass($instance))
             ->getMethod($this->getName());
+
+        // TODO Assert method is public
+        // TODO Assert method return assignable object
 
         return $reflector->invokeArgs(
             $instance,
-            $this->getArgumentsValue($container)
+            $this->getArgumentsValue($instance::class, $container)
                  ->toArray(),
         );
     }
