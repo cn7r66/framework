@@ -18,11 +18,6 @@ use Vivarium\Container\Reflection\InstanceMethod;
 
 final class ImmutableMethodCall extends BaseMethod implements InstanceMethod, Injection
 {
-    public function __construct(string $method)
-    {
-        parent::__construct($method);
-    }
-
     public function inject(Container $container, object $instance): object
     {
         return $this->invoke($container, $instance);
