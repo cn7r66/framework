@@ -13,7 +13,6 @@ namespace Vivarium\Test\Container\Injection;
 use PHPUnit\Framework\TestCase;
 use Vivarium\Container\Container;
 use Vivarium\Container\Injection\ImmutableMethodCall;
-use Vivarium\Test\Container\Stub\ConcreteStub;
 use Vivarium\Test\Container\Stub\ImmutableStub;
 
 /** @coversDefaultClass Vivarium\Container\Injection\ImmutableMethodCall */
