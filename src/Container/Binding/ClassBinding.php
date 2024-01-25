@@ -17,7 +17,6 @@ use Vivarium\Container\Binding;
 
 use function array_merge;
 use function class_implements;
-use function count;
 use function get_parent_class;
 
 final class ClassBinding extends BaseBinding
@@ -55,22 +54,23 @@ final class ClassBinding extends BaseBinding
         return $this->class;
     }
 
+    /** @return Sequence<Binding> */
     public function hierarchy(): Sequence
     {
-        /** @var Sequence<Binding> $hierarchy */
-        $hierarchy = new ArraySequence($this);
-        while ($this->couldBeWidened()) {
-            $widen     = $this->widen();
-            $hierarchy = $hierarchy->add($widen);
-        }
+        $bindings = array_merge(
+            [$this],
+            $this->extends(),
+            $this->interfaces(),
+        );
 
-        $parent = $this->parents();
-        while (count($parent) > 0) {
-            foreach ($parent as $binding) {
+        /** @var Sequence<Binding> $hierarchy */
+        $hierarchy = new ArraySequence();
+        foreach ($bindings as $binding) {
+            $hierarchy = $hierarchy->add($binding);
+            while ($binding->couldBeWidened()) {
+                $binding   = $binding->widen();
                 $hierarchy = $hierarchy->add($binding);
             }
-
-            $parent = $this->widenList($parent);
         }
 
         return $hierarchy;
@@ -83,7 +83,11 @@ final class ClassBinding extends BaseBinding
 
         $extend = get_parent_class($this->class);
         while ($extend !== false) {
-            $extends[] = new ClassBinding($extend, $this->getContext());
+            $extends[] = new ClassBinding(
+                $extend,
+                Binding::DEFAULT,
+                $this->getContext()
+            );
 
             $extend = get_parent_class($extend);
         }
@@ -96,37 +100,13 @@ final class ClassBinding extends BaseBinding
     {
         $interfaces = [];
         foreach (class_implements($this->class) as $interface) {
-            $interfaces[] = new ClassBinding($interface, $this->getContext());
+            $interfaces[] = new ClassBinding(
+                $interface,
+                Binding::DEFAULT,
+                $this->getContext()
+            );
         }
 
         return $interfaces;
-    }
-
-    /** @return array<Binding> */
-    private function parents(): array
-    {
-        return array_merge(
-            $this->extends(),
-            $this->interfaces(),
-        );
-    }
-
-    /**
-     * @param array<Binding> $bindings
-     *
-     * @return array<Binding>
-     */
-    private function widenList(array $bindings): array
-    {
-        $widened = [];
-        foreach ($bindings as $binding) {
-            if (! $binding->couldBeWidened()) {
-                continue;
-            }
-
-            $widened[] = $binding->widen();
-        }
-
-        return $widened;
     }
 }
