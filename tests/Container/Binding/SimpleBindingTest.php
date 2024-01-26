@@ -12,6 +12,7 @@ use PHPUnit\Framework\TestCase;
 use stdClass;
 use Vivarium\Container\Binding;
 use Vivarium\Container\Binding\SimpleBinding;
+use Vivarium\Container\Exception\CannotBeWidened;
 use Vivarium\Equality\Equal;
 use Vivarium\Test\Container\Stub\ConcreteStub;
 use Vivarium\Test\Container\Stub\SimpleStub;
@@ -65,6 +66,19 @@ final class SimpleBindingTest extends TestCase
 
         static::assertSame(Binding::DEFAULT, $widen2->getTag());
         static::assertSame('Vivarium', $widen2->getContext());
+    }
+
+    /** @covers ::widen() */
+    public function testWidenException(): void
+    {
+        static::expectException(CannotBeWidened::class);
+        static::expectExceptionMessage('Binding with id Vivarium\Test\Container\Stub\ConcreteStub, context $GLOBAL and tag $DEFAULT cannot be widened.');
+
+        $binding = new SimpleBinding(ConcreteStub::class);
+
+        static::assertFalse($binding->couldBeWidened());
+
+        $binding->widen();
     }
 
     /** @covers ::equals() */
