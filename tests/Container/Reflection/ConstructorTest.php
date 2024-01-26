@@ -70,6 +70,7 @@ final class ConstructorTest extends TestCase
      * @covers ::bindParameter()
      * @covers ::getArguments()
      * @covers ::getArgumentsValue()
+     * @covers ::solveParameter()
      * @covers ::invoke()
      */
     public function testInvokeWithParameterResolution(): void
