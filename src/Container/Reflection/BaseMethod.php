@@ -10,7 +10,9 @@ declare(strict_types=1);
 
 namespace Vivarium\Container\Reflection;
 
+use Fallback;
 use ReflectionClass;
+use ReflectionMethod;
 use ReflectionParameter;
 use RuntimeException;
 use Vivarium\Assertion\Object\HasMethod;
@@ -19,10 +21,15 @@ use Vivarium\Collection\Map\Map;
 use Vivarium\Collection\Sequence\ArraySequence;
 use Vivarium\Collection\Sequence\Sequence;
 use Vivarium\Container\Binder;
+use Vivarium\Container\Binding;
+use Vivarium\Container\Binding\TypeBinding;
 use Vivarium\Container\Container;
 use Vivarium\Container\Exception\ParameterNotFound;
+use Vivarium\Container\Exception\ParameterNotSolvable;
 use Vivarium\Container\GenericBinder;
 use Vivarium\Container\Provider;
+use Vivarium\Container\Provider\ContainerCall;
+use Vivarium\Container\Provider\Instance;
 
 abstract class BaseMethod implements Method
 {
@@ -75,8 +82,7 @@ abstract class BaseMethod implements Method
 
         $arguments = [];
         foreach ($method->getParameters() as $parameter) {
-            $arguments[] = $this->parameters->containsKey($parameter->getName()) ?
-                $this->parameters->get($parameter->getName()) : $this->solveParameter($parameter);
+            $arguments[] = $this->solveParameter($method, $parameter);
         }
 
         return ArraySequence::fromArray($arguments);
@@ -92,8 +98,30 @@ abstract class BaseMethod implements Method
         return ArraySequence::fromArray($values);
     }
 
-    private function solveParameter(ReflectionParameter $parameter): Provider
+    private function solveParameter(ReflectionMethod $method, ReflectionParameter $parameter): Provider
     {
-        throw new RuntimeException('Not implemented yet.');
+        if ($this->parameters->containsKey($parameter->getName())) {
+            return $this->parameters->get($parameter->getName());
+        }
+
+        if (! $parameter->hasType()) {
+            if ($parameter->isOptional()) {
+                return new Instance($parameter->getDefaultValue());
+            }
+
+            throw new ParameterNotSolvable($method->getName(), $parameter->getName());
+        }
+
+        $provider = new ContainerCall(
+            new TypeBinding(
+                $parameter->isVariadic() ? 'array' : $parameter->getType(), 
+                Binding::DEFAULT, 
+                $method->getDeclaringClass()->getName()
+            )
+        );
+
+        return $parameter->isOptional() ?
+            new Fallback($provider, $parameter->getDefaultValue()) : $provider;
     }
 }
+
