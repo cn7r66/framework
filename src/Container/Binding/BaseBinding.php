@@ -17,6 +17,7 @@ use Vivarium\Assertion\String\IsClassOrInterface;
 use Vivarium\Assertion\String\IsNamespace;
 use Vivarium\Assertion\String\IsNotEmpty;
 use Vivarium\Container\Binding;
+use Vivarium\Container\Exception\CannotBeWidened;
 use Vivarium\Equality\EqualsBuilder;
 use Vivarium\Equality\HashBuilder;
 
@@ -63,7 +64,7 @@ abstract class BaseBinding implements Binding
     public function widen(): Binding
     {
         if (! $this->couldBeWidened()) {
-            throw new RuntimeException();
+            throw new CannotBeWidened($this);
         }
 
         if ($this->tag !== self::DEFAULT) {
