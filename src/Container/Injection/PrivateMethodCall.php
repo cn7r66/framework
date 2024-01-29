@@ -32,7 +32,7 @@ final class PrivateMethodCall extends MethodInjection implements InstanceMethod
 
         return $reflector->invokeArgs(
             $instance,
-            $this->getArgumentsValue($container, $instance::class)
+            $this->getArgumentsValue($instance::class, $container)
                  ->toArray(),
         );
     }
