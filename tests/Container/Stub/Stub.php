@@ -12,5 +12,5 @@ namespace Vivarium\Test\Container\Stub;
 
 interface Stub
 {
-
+    public function setInt(int $n);
 }

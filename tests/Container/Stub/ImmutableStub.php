@@ -19,6 +19,15 @@ final class ImmutableStub extends BaseStub
         $this->n = 0;
     }
 
+    public function setInt(int $n): int
+    {
+        $old = $this->n;
+
+        $this->n = $n;
+
+        return $old;
+    }
+
     public function withInt(int $n): self
     {
         $stub    = clone $this;
