@@ -10,12 +10,12 @@ declare(strict_types=1);
 
 namespace Vivarium\Test\Container\Provider;
 
-use PHPUnit\Framework\TestCase;
-use Vivarium\Container\Provider;
-use Vivarium\Test\Container\Stub\ConcreteStub;
-use Vivarium\Container\Provider\Cloneable;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use Vivarium\Container\Container;
+use Vivarium\Container\Provider;
+use Vivarium\Container\Provider\Cloneable;
+use Vivarium\Test\Container\Stub\ConcreteStub;
 
 /** @coversDefaultClass Vivarium\Container\Provider\Cloneable */
 final class CloneableTest extends TestCase

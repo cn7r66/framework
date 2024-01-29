@@ -33,7 +33,7 @@ final class ClassBinding extends BaseBinding
         return new ClassBinding(
             $binding->getId(),
             $binding->getTag(),
-            $binding->getContext()
+            $binding->getContext(),
         );
     }
 
@@ -86,7 +86,7 @@ final class ClassBinding extends BaseBinding
             $extends[] = new ClassBinding(
                 $extend,
                 Binding::DEFAULT,
-                $this->getContext()
+                $this->getContext(),
             );
 
             $extend = get_parent_class($extend);
@@ -103,7 +103,7 @@ final class ClassBinding extends BaseBinding
             $interfaces[] = new ClassBinding(
                 $interface,
                 Binding::DEFAULT,
-                $this->getContext()
+                $this->getContext(),
             );
         }
 

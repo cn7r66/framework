@@ -14,7 +14,6 @@ use Fallback;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionParameter;
-use RuntimeException;
 use Vivarium\Assertion\Object\HasMethod;
 use Vivarium\Collection\Map\HashMap;
 use Vivarium\Collection\Map\Map;
@@ -30,8 +29,6 @@ use Vivarium\Container\GenericBinder;
 use Vivarium\Container\Provider;
 use Vivarium\Container\Provider\ContainerCall;
 use Vivarium\Container\Provider\Instance;
-
-use function Symfony\Component\DependencyInjection\Loader\Configurator\param;
 
 abstract class BaseMethod implements Method
 {
@@ -111,17 +108,17 @@ abstract class BaseMethod implements Method
                 new TypeBinding(
                     $parameter->isVariadic() ? 'array' : $parameter->getType(),
                     Binding::DEFAULT,
-                    $method->getDeclaringClass()->getName()
-                )
-                );
-    
+                    $method->getDeclaringClass()->getName(),
+                ),
+            );
+
             return $parameter->isOptional() ?
                 new Fallback($provider, $parameter->getDefaultValue()) : $provider;
         }
 
         if ($parameter->isOptional()) {
             return new Instance(
-                $parameter->isVariadic() ? [] : $parameter->getDefaultValue()
+                $parameter->isVariadic() ? [] : $parameter->getDefaultValue(),
             );
         }
 

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 /*
  * This file is part of Vivarium
@@ -13,13 +15,10 @@ use stdClass;
 use Vivarium\Container\Binding;
 use Vivarium\Container\Binding\SimpleBinding;
 use Vivarium\Container\Exception\CannotBeWidened;
-use Vivarium\Equality\Equal;
 use Vivarium\Test\Container\Stub\ConcreteStub;
 use Vivarium\Test\Container\Stub\SimpleStub;
 
-/**
- * @coversDefaultClass \Vivarium\Container\Binding\SimpleBinding
- */
+/** @coversDefaultClass \Vivarium\Container\Binding\SimpleBinding */
 final class SimpleBindingTest extends TestCase
 {
     /**
@@ -54,7 +53,7 @@ final class SimpleBindingTest extends TestCase
         $binding = new SimpleBinding(
             ConcreteStub::class,
             'theTag',
-            'Vivarium\Test'
+            'Vivarium\Test',
         );
 
         $widen1 = $binding->widen();
@@ -87,7 +86,7 @@ final class SimpleBindingTest extends TestCase
         $binding = new SimpleBinding(
             ConcreteStub::class,
             'theTag',
-            SimpleStub::class
+            SimpleStub::class,
         );
 
         $binding1 = $this->createMock(Binding::class);
@@ -115,13 +114,13 @@ final class SimpleBindingTest extends TestCase
         $binding = new SimpleBinding(
             ConcreteStub::class,
             'theTag',
-            SimpleStub::class
+            SimpleStub::class,
         );
 
         $binding1 = new SimpleBinding(
             ConcreteStub::class,
             'theTag',
-            SimpleStub::class
+            SimpleStub::class,
         );
 
         $binding2 = new SimpleBinding(ConcreteStub::class);
@@ -139,7 +138,7 @@ final class SimpleBindingTest extends TestCase
                 'theId',
                 Binding::DEFAULT,
                 Binding::GLOBAL,
-                false
+                false,
             ],
             'Binding with class' => [
                 ConcreteStub::class,
@@ -151,20 +150,20 @@ final class SimpleBindingTest extends TestCase
                 ConcreteStub::class,
                 'theTag',
                 Binding::GLOBAL,
-                true
+                true,
             ],
             'Binding with context' => [
                 ConcreteStub::class,
                 Binding::DEFAULT,
                 SimpleStub::class,
-                true
+                true,
             ],
             'Binding with tag and context' => [
                 ConcreteStub::class,
                 'theTag',
                 SimpleStub::class,
-                true
-            ]
+                true,
+            ],
         ];
     }
 }

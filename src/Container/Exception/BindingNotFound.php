@@ -10,11 +10,12 @@ declare(strict_types=1);
 
 namespace Vivarium\Container\Exception;
 
-use Vivarium\Container\Binding;
 use Psr\Container\NotFoundExceptionInterface;
-use \RuntimeException;
-use \Throwable;
-use function \sprintf;
+use RuntimeException;
+use Throwable;
+use Vivarium\Container\Binding;
+
+use function sprintf;
 
 final class BindingNotFound extends RuntimeException implements NotFoundExceptionInterface
 {
@@ -22,13 +23,13 @@ final class BindingNotFound extends RuntimeException implements NotFoundExceptio
     {
         parent::__construct(
             sprintf(
-                "Binding with id %s, context %s and tag %s not found.",
+                'Binding with id %s, context %s and tag %s not found.',
                 $binding->getId(),
                 $binding->getContext(),
-                $binding->getTag()
+                $binding->getTag(),
             ),
             $code,
-            $previous
+            $previous,
         );
     }
 

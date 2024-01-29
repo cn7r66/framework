@@ -48,8 +48,9 @@ final class LazySolverTest extends TestCase
             return [$module];
         }, $configurable);
 
-        $instance = $solver->solve($binding, function () {});
+        $instance = $solver->solve($binding, static function (): void {
+        });
 
         static::assertInstanceOf(Provider::class, $instance);
-    } 
+    }
 }

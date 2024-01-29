@@ -10,16 +10,15 @@ declare(strict_types=1);
 
 namespace Vivarium\Test\Container\Provider;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Vivarium\Container\Binding\ClassBinding;
+use Vivarium\Container\Binding\TypeBinding;
+use Vivarium\Container\Container;
 use Vivarium\Container\Provider\Factory;
 use Vivarium\Test\Container\Stub\ConcreteStub;
 use Vivarium\Test\Container\Stub\SimpleStub;
 use Vivarium\Test\Container\Stub\StubFactory;
-use Vivarium\Container\Container;
-use PHPUnit\Framework\MockObject\MockObject;
-use Vivarium\Container\Binding\ClassBinding;
-use Vivarium\Container\Binding\TypeBinding;
-use Vivarium\Test\Assertion\Stub\Stub;
 
 /** @coversDefaultClass Vivarium\Container\Provider\Factory */
 final class FactoryTest extends TestCase
@@ -45,8 +44,8 @@ final class FactoryTest extends TestCase
         $container->expects(static::exactly(2))
                   ->method('get')
                   ->willReturnOnConsecutiveCalls(
-                    new StubFactory(),
-                    new ConcreteStub()
+                      new StubFactory(),
+                      new ConcreteStub(),
                   );
 
         static::assertInstanceOf(SimpleStub::class, $factory->provide($container));

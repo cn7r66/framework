@@ -10,7 +10,6 @@ declare(strict_types=1);
 
 namespace Vivarium\Container\Binding;
 
-use RuntimeException;
 use Vivarium\Assertion\Comparison\IsSameOf;
 use Vivarium\Assertion\Conditional\Either;
 use Vivarium\Assertion\String\IsClassOrInterface;

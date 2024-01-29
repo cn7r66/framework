@@ -10,13 +10,10 @@ declare(strict_types=1);
 
 namespace Vivarium\Test\Container\Stub;
 
-use Vivarium\Test\Container\Stub\Stub;
-use Vivarium\Test\Container\Stub\SimpleStub;
-
 final class StaticStub
 {
     public static function get(Stub $stub): SimpleStub
     {
         return new SimpleStub($stub);
-    } 
+    }
 }

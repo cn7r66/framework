@@ -14,6 +14,8 @@ use ReflectionClass;
 use Vivarium\Container\Binding\ClassBinding;
 use Vivarium\Container\Provider\Prototype;
 
+use function class_exists;
+
 final class ReflectionSolver implements Step
 {
     public function solve(Binding $request, callable $next): Provider
@@ -22,7 +24,7 @@ final class ReflectionSolver implements Step
             return $next();
         }
 
-        $binding = ClassBinding::fromBinding($request);
+        $binding   = ClassBinding::fromBinding($request);
         $reflector = new ReflectionClass($binding->getId());
         if (! $reflector->isInstantiable()) {
             return $next();

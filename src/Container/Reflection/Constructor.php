@@ -16,14 +16,10 @@ use Vivarium\Container\Container;
 
 final class Constructor extends BaseMethod implements CreationalMethod
 {
-    private string $class;
-
-    public function __construct(string $class)
+    public function __construct(private string $class)
     {
         (new IsClass())
             ->assert($class);
-
-        $this->class = $class;
 
         parent::__construct('__construct');
     }
@@ -31,7 +27,7 @@ final class Constructor extends BaseMethod implements CreationalMethod
     public function invoke(Container $container): mixed
     {
         $reflector = new ReflectionClass($this->class);
-        
+
         $args = [];
         if ($reflector->hasMethod($this->getName())) {
             $args = $this->getArgumentsValue($this->class, $container)

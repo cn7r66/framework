@@ -13,18 +13,24 @@ namespace Vivarium\Container\Exception;
 use RuntimeException;
 use Throwable;
 
+use function sprintf;
+
 final class ParameterNotSolvable extends RuntimeException
 {
-    public function __construct(private string $parameter, private string $method, int $code = 0, Throwable|null $previous = null)
-    {
+    public function __construct(
+        private string $parameter,
+        private string $method,
+        int $code = 0,
+        Throwable|null $previous = null,
+    ) {
         parent::__construct(
             sprintf(
-                "Parameter named %s in method %s is not solvable.",
+                'Parameter named %s in method %s is not solvable.',
                 $parameter,
-                $method
+                $method,
             ),
             $code,
-            $previous
+            $previous,
         );
     }
 

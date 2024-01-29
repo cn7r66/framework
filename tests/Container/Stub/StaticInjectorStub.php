@@ -10,8 +10,6 @@ declare(strict_types=1);
 
 namespace Vivarium\Test\Container\Stub;
 
-use Vivarium\Test\Container\Stub\Stub;
-
 final class StaticInjectorStub
 {
     public static function get(Stub $stub): Stub
@@ -19,5 +17,5 @@ final class StaticInjectorStub
         $stub->setInt(42);
 
         return $stub;
-    } 
+    }
 }

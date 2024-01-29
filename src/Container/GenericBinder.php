@@ -54,6 +54,7 @@ final class GenericBinder implements Binder
         );
     }
 
+    /** @return T */
     public function toProvider(Provider $provider)
     {
         return ($this->create)($provider);

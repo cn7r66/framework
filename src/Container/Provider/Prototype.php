@@ -136,8 +136,11 @@ final class Prototype implements Definition
         return $prototype;
     }
 
-    public function bindImmutableMethod(string $method, callable|null $define = null, int $priority = Priority::NORMAL): self
-    {
+    public function bindImmutableMethod(
+        string $method,
+        callable|null $define = null,
+        int $priority = Priority::NORMAL,
+    ): self {
         $call = new ImmutableMethodCall($this->class, $method);
         if ($define !== null) {
             $call = $define($call);

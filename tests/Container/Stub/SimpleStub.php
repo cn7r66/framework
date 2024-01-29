@@ -14,7 +14,6 @@ final class SimpleStub
 {
     public function __construct(private Stub $stub)
     {
-        
     }
 
     public function getStub(): Stub

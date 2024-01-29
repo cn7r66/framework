@@ -10,10 +10,10 @@ declare(strict_types=1);
 
 namespace Vivarium\Test\Container\Provider;
 
-use PHPUnit\Framework\TestCase;
-use Vivarium\Container\Container;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use Vivarium\Container\Binding;
+use Vivarium\Container\Container;
 use Vivarium\Container\Provider\ContainerCall;
 use Vivarium\Test\Container\Stub\ConcreteStub;
 

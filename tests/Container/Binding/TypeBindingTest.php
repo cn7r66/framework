@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 /*
  * This file is part of Vivarium
@@ -11,14 +13,14 @@ namespace Vivarium\Test\Container\Binding;
 use PHPUnit\Framework\TestCase;
 use Vivarium\Assertion\Exception\AssertionFailed;
 use Vivarium\Container\Binding\TypeBinding;
-use Vivarium\Test\Container\Stub\Stub;
 use Vivarium\Test\Container\Stub\ConcreteStub;
+use Vivarium\Test\Container\Stub\Stub;
 
 /** @coversDefaultClass \Vivarium\Container\Binding\TypeBinding */
 final class TypeBindingTest extends TestCase
 {
-    /** 
-     * @covers ::__construct() 
+    /**
+     * @covers ::__construct()
      * @dataProvider getIds()
      */
     public function testConstruct(string $id): void
@@ -40,39 +42,17 @@ final class TypeBindingTest extends TestCase
     public function getIds(): array
     {
         return [
-            'Integer' => [
-                'int'
-            ],
-            'Float' => [
-                'float'
-            ],
-            'String' => [
-                'string'
-            ],
-            'Array' => [
-                'array'
-            ],
-            'Callable' => [
-                'callable'
-            ],
-            'Object' => [
-                'object'
-            ],
-            'Boolean' => [
-                'bool'
-            ],
-            'Class' => [
-                ConcreteStub::class
-            ],
-            'Interface' => [
-                Stub::class
-            ],
-            'Intersection' => [
-                'Vivarium\Test\Container\Stub\Stub&Stringable'
-            ],
-            'Union' => [
-                'string|Stringable'
-            ]
+            'Integer' => ['int'],
+            'Float' => ['float'],
+            'String' => ['string'],
+            'Array' => ['array'],
+            'Callable' => ['callable'],
+            'Object' => ['object'],
+            'Boolean' => ['bool'],
+            'Class' => [ConcreteStub::class],
+            'Interface' => [Stub::class],
+            'Intersection' => ['Vivarium\Test\Container\Stub\Stub&Stringable'],
+            'Union' => ['string|Stringable'],
         ];
     }
 }

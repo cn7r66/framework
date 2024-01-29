@@ -19,10 +19,12 @@ use Vivarium\Test\Container\Stub\ConcreteStub;
 use Vivarium\Test\Container\Stub\SimpleStub;
 use Vivarium\Test\Container\Stub\Stub;
 
+use function class_exists;
+
 /** @coversDefaultClass \Vivarium\Container\Binding\ClassBinding */
 final class ClassBindingTest extends TestCase
 {
-    /** 
+    /**
      * @covers ::__construct()
      * @covers ::fromBinding()
      */
@@ -48,16 +50,14 @@ final class ClassBindingTest extends TestCase
         static::assertSame($binding, $classBinding);
     }
 
-    /**
-     * @covers ::fromBinding()
-     */
+    /** @covers ::fromBinding() */
     public function testFromBindingException(): void
     {
         static::expectException(AssertionFailed::class);
         static::expectExceptionMessage('Expected string to be class or interface name. Got "theId".');
 
         ClassBinding::fromBinding(
-            new SimpleBinding('theId')
+            new SimpleBinding('theId'),
         );
     }
 
@@ -86,7 +86,7 @@ final class ClassBindingTest extends TestCase
         $binding = new ClassBinding(
             ConcreteStub::class,
             'theTag',
-            SimpleStub::class
+            SimpleStub::class,
         );
 
         $hierarchy = $binding->hierarchy();

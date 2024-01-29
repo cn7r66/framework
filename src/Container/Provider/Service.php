@@ -11,7 +11,6 @@ declare(strict_types=1);
 namespace Vivarium\Container\Provider;
 
 use Vivarium\Container\Container;
-use Vivarium\Container\Key;
 use Vivarium\Container\Provider;
 
 final class Service implements Provider

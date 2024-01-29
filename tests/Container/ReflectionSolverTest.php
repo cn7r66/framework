@@ -17,13 +17,13 @@ use RuntimeException;
 use stdClass;
 use Vivarium\Container\Binding\ClassBinding;
 use Vivarium\Container\Binding\SimpleBinding;
-use Vivarium\Container\Provider;
 use Vivarium\Container\Container;
+use Vivarium\Container\Provider;
+use Vivarium\Container\Provider\Instance;
+use Vivarium\Container\Provider\Prototype;
 use Vivarium\Container\ReflectionSolver;
 use Vivarium\Test\Container\Stub\ConcreteStub;
-use Vivarium\Container\Provider\Prototype;
 use Vivarium\Test\Container\Stub\NotInstantiableStub;
-use Vivarium\Container\Provider\Instance;
 
 /** @coversDefaultClass Vivarium\Container\ReflectionSolver */
 final class ReflectionSolverTest extends TestCase
@@ -31,12 +31,12 @@ final class ReflectionSolverTest extends TestCase
     /** @covers ::solve() */
     public function testSolve(): void
     {
-        $solver = new ReflectionSolver();
+        $solver   = new ReflectionSolver();
         $provider = $solver->solve(
             new ClassBinding(stdClass::class),
-            function () {
+            static function (): void {
                 throw new RuntimeException();
-            }
+            },
         );
 
         /** @var MockObject&Container */
@@ -47,17 +47,15 @@ final class ReflectionSolverTest extends TestCase
         static::assertInstanceOf(stdClass::class, $provider->provide($container));
     }
 
-    /**
-     * @covers ::solve()
-     */
+    /** @covers ::solve() */
     public function testSolveNotClass(): void
     {
         $solver   = new ReflectionSolver();
         $provider = $solver->solve(
             new SimpleBinding('theId'),
-            function () {
+            static function () {
                 return new Prototype(ConcreteStub::class);
-            }
+            },
         );
 
         /** @var MockObject&Container */
@@ -74,11 +72,11 @@ final class ReflectionSolverTest extends TestCase
         $solver   = new ReflectionSolver();
         $provider = $solver->solve(
             new ClassBinding(NotInstantiableStub::class),
-            function () {
+            static function () {
                 $reflector = new ReflectionClass(NotInstantiableStub::class);
 
                 return new Instance($reflector->newInstanceWithoutConstructor());
-            }
+            },
         );
 
         /** @var MockObject&Container */

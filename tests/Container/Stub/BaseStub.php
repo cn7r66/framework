@@ -12,5 +12,4 @@ namespace Vivarium\Test\Container\Stub;
 
 abstract class BaseStub implements Stub
 {
-
 }

@@ -11,9 +11,9 @@ declare(strict_types=1);
 namespace Vivarium\Test\Container\Injection;
 
 use PHPUnit\Framework\TestCase;
+use Vivarium\Container\Container;
 use Vivarium\Container\Injection\MethodCall;
 use Vivarium\Test\Container\Stub\ConcreteStub;
-use Vivarium\Container\Container;
 
 /** @coversDefaultClass Vivarium\Container\Injection\MethodCall */
 final class MethodCallTest extends TestCase

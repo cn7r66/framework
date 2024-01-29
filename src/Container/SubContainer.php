@@ -16,7 +16,8 @@ use Vivarium\Container\Provider\Instance;
 final class SubContainer implements Step
 {
     public function __construct(private ContainerInterface $container)
-    {}
+    {
+    }
 
     /** @param callable(): Provider $next */
     public function solve(Binding $request, callable $next): Provider
@@ -26,7 +27,7 @@ final class SubContainer implements Step
         }
 
         return new Instance(
-            $this->container->get($request->getId())
+            $this->container->get($request->getId()),
         );
     }
 }

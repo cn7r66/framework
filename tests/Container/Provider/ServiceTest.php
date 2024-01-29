@@ -10,13 +10,12 @@ declare(strict_types=1);
 
 namespace Vivarium\Test\Container\Provider;
 
-use PHPUnit\Framework\TestCase;
-use Vivarium\Container\Binding;
-use Vivarium\Container\Container;
-use Vivarium\Test\Container\Stub\ConcreteStub;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
+use Vivarium\Container\Container;
 use Vivarium\Container\Provider;
 use Vivarium\Container\Provider\Service;
+use Vivarium\Test\Container\Stub\ConcreteStub;
 
 /** @coversDefaultClass Vivarium\Container\Provider\Service */
 final class ServiceTest extends TestCase
@@ -27,7 +26,7 @@ final class ServiceTest extends TestCase
      */
     public function testProvide(): void
     {
-        /** @var MockObject&Container */
+        /** @var MockObject&Container $container */
         $container = $this->getMockBuilder(Container::class)
                           ->getMock();
 

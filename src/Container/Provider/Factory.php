@@ -51,7 +51,7 @@ final class Factory extends BaseMethod implements CreationalMethod, Provider
         return $method->invokeArgs(
             $instance,
             $this->getArgumentsValue($this->factory->getId(), $container)
-                 ->toArray()
+                 ->toArray(),
         );
     }
 }

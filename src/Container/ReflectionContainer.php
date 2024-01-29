@@ -34,7 +34,7 @@ final class ReflectionContainer implements MultiStepContainer
             new ValueAndPriority(
                 new ReflectionSolver(),
                 Priority::VERY_VERY_LOW,
-            )
+            ),
         );
 
         $this->solved = new HashMap();
@@ -110,7 +110,7 @@ final class ReflectionContainer implements MultiStepContainer
             };
         }
 
-        return static function () use ($request) {
+        return static function () use ($request): void {
             throw new BindingNotFound($request);
         };
     }

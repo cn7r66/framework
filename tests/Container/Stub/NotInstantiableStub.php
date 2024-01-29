@@ -14,6 +14,5 @@ final class NotInstantiableStub
 {
     private function __construct()
     {
-
     }
 }

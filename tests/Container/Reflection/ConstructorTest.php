@@ -10,15 +10,15 @@ declare(strict_types=1);
 
 namespace Vivarium\Test\Container\Reflection;
 
-use PHPUnit\Framework\TestCase;
-use Vivarium\Test\Container\Stub\ConcreteStub;
-use Vivarium\Container\Reflection\Constructor;
-use Vivarium\Container\Container;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use Vivarium\Container\Binding\TypeBinding;
+use Vivarium\Container\Container;
 use Vivarium\Container\Exception\ParameterNotFound;
-use Vivarium\Test\Container\Stub\SimpleStub;
 use Vivarium\Container\Provider;
+use Vivarium\Container\Reflection\Constructor;
+use Vivarium\Test\Container\Stub\ConcreteStub;
+use Vivarium\Test\Container\Stub\SimpleStub;
 
 /** @coversDefaultClass Vivarium\Container\Reflection\Constructor */
 final class ConstructorTest extends TestCase
@@ -91,9 +91,7 @@ final class ConstructorTest extends TestCase
         static::assertInstanceOf(SimpleStub::class, $constructor->invoke($container));
     }
 
-    /**
-     * @covers ::getParameter()
-     */
+    /** @covers ::getParameter() */
     public function testGetParameterException(): void
     {
         static::expectException(ParameterNotFound::class);

@@ -11,11 +11,10 @@ declare(strict_types=1);
 namespace Vivarium\Test\Container\Injection;
 
 use PHPUnit\Framework\TestCase;
-use Vivarium\Container\Binding\SimpleBinding;
 use Vivarium\Container\Binding\TypeBinding;
-use Vivarium\Test\Container\Stub\ConcreteStub;
 use Vivarium\Container\Container;
 use Vivarium\Container\Injection\StaticMethodCall;
+use Vivarium\Test\Container\Stub\ConcreteStub;
 use Vivarium\Test\Container\Stub\SimpleStub;
 use Vivarium\Test\Container\Stub\StaticInjectorStub;
 use Vivarium\Test\Container\Stub\StaticStub;
@@ -24,14 +23,14 @@ use Vivarium\Test\Container\Stub\StaticStub;
 final class StaticMethodCallTest extends TestCase
 {
     /**
-     * @covers ::__construct() 
-     * @covers ::invoke() 
+     * @covers ::__construct()
+     * @covers ::invoke()
      */
     public function testInvoke(): void
     {
         $method = new StaticMethodCall(
             StaticStub::class,
-            'get'
+            'get',
         );
 
         $method = $method->bindParameter('stub')
@@ -60,7 +59,7 @@ final class StaticMethodCallTest extends TestCase
     {
         $method = new StaticMethodCall(
             StaticInjectorStub::class,
-            'get'
+            'get',
         );
 
         $method = $method->instanceOn('stub');
@@ -78,7 +77,6 @@ final class StaticMethodCallTest extends TestCase
 
         static::assertSame(42, $instance->getInt());
     }
-
 
     /** @covers ::getClass() */
     public function testGetClass(): void
