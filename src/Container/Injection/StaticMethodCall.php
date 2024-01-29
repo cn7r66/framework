@@ -13,10 +13,10 @@ namespace Vivarium\Container\Injection;
 use ReflectionClass;
 use Vivarium\Comparator\Priority;
 use Vivarium\Container\Container;
+use Vivarium\Container\Reflection\BaseMethod;
 use Vivarium\Container\Reflection\CreationalMethod;
-use Vivarium\Container\Reflection\StaticMethod;
 
-final class StaticMethodCall extends MethodInjection implements CreationalMethod
+final class StaticMethodCall extends BaseMethod implements CreationalMethod
 {
     private string|null $parameter;
 
@@ -59,7 +59,7 @@ final class StaticMethodCall extends MethodInjection implements CreationalMethod
 
         return $reflector->invokeArgs(
             null,
-            $this->getArgumentsValue($container, $this->class)
+            $this->getArgumentsValue($this->class, $container)
                  ->toArray(),
         );
     }
