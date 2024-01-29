@@ -66,11 +66,11 @@ final class ConstructorTest extends TestCase
 
     /**
      * @covers Vivarium\Container\Reflection\BaseMethod::__construct()
+     * @covers Vivarium\Container\Reflection\BaseMethod::solveParameter()
      * @covers ::__construct()
      * @covers ::bindParameter()
      * @covers ::getArguments()
      * @covers ::getArgumentsValue()
-     * @covers ::solveParameter()
      * @covers ::invoke()
      */
     public function testInvokeWithParameterResolution(): void
