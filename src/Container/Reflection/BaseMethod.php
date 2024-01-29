@@ -31,6 +31,8 @@ use Vivarium\Container\Provider;
 use Vivarium\Container\Provider\ContainerCall;
 use Vivarium\Container\Provider\Instance;
 
+use function Symfony\Component\DependencyInjection\Loader\Configurator\param;
+
 abstract class BaseMethod implements Method
 {
     /** @var Map<string, Provider> */
@@ -104,24 +106,25 @@ abstract class BaseMethod implements Method
             return $this->parameters->get($parameter->getName());
         }
 
-        if (! $parameter->hasType()) {
-            if ($parameter->isOptional()) {
-                return new Instance($parameter->getDefaultValue());
-            }
-
-            throw new ParameterNotSolvable($method->getName(), $parameter->getName());
+        if ($parameter->hasType()) {
+            $provider = new ContainerCall(
+                new TypeBinding(
+                    $parameter->isVariadic() ? 'array' : $parameter->getType(),
+                    Binding::DEFAULT,
+                    $method->getDeclaringClass()->getName()
+                )
+                );
+    
+            return $parameter->isOptional() ?
+                new Fallback($provider, $parameter->getDefaultValue()) : $provider;
         }
 
-        $provider = new ContainerCall(
-            new TypeBinding(
-                $parameter->isVariadic() ? 'array' : $parameter->getType(), 
-                Binding::DEFAULT, 
-                $method->getDeclaringClass()->getName()
-            )
-        );
+        if ($parameter->isOptional()) {
+            return new Instance(
+                $parameter->isVariadic() ? [] : $parameter->getDefaultValue()
+            );
+        }
 
-        return $parameter->isOptional() ?
-            new Fallback($provider, $parameter->getDefaultValue()) : $provider;
+        throw new ParameterNotSolvable($method->getName(), $parameter->getName());
     }
 }
-
