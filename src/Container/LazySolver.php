@@ -12,7 +12,7 @@ namespace Vivarium\Container;
 
 final class LazySolver implements Step
 {
-    private Step $solver;
+    private Step|null $solver;
 
     /** @var callable():Step */
     private $init;
