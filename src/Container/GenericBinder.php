@@ -10,6 +10,13 @@ declare(strict_types=1);
 
 namespace Vivarium\Container;
 
+use ReflectionFunction;
+use RuntimeException;
+use Vivarium\Assertion\Conditional\Either;
+use Vivarium\Assertion\Conditional\IsNotNull;
+use Vivarium\Assertion\Conditional\NotNull;
+use Vivarium\Assertion\Conditional\NullOr;
+use Vivarium\Assertion\Hierarchy\IsAssignableTo;
 use Vivarium\Assertion\String\IsType;
 use Vivarium\Container\Provider\ContainerCall;
 use Vivarium\Container\Provider\Instance;
@@ -26,6 +33,12 @@ final class GenericBinder implements Binder
      /** @param callable $create(Provider): T */
     public function __construct(callable $create)
     {
+        (new IsNotNull)
+            ->assert(
+                (new ReflectionFunction($create))->getReturnType(),
+                '"Missing type hint on callback function."'
+            );
+
         $this->create = $create;
     }
 

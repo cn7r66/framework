@@ -10,7 +10,6 @@ declare(strict_types=1);
 
 namespace Vivarium\Container\Reflection;
 
-use Fallback;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionParameter;
@@ -28,6 +27,7 @@ use Vivarium\Container\Exception\ParameterNotSolvable;
 use Vivarium\Container\GenericBinder;
 use Vivarium\Container\Provider;
 use Vivarium\Container\Provider\ContainerCall;
+use Vivarium\Container\Provider\Fallback;
 use Vivarium\Container\Provider\Instance;
 
 abstract class BaseMethod implements Method
@@ -48,7 +48,7 @@ abstract class BaseMethod implements Method
 
     public function bindParameter(string $parameter): Binder
     {
-        return new GenericBinder(function (Provider $provider) use ($parameter) {
+        return new GenericBinder(function (Provider $provider) use ($parameter) : self {
             $method             = clone $this;
             $method->parameters = $method->parameters->put($parameter, $provider);
 
