@@ -10,7 +10,6 @@ declare(strict_types=1);
 
 namespace Vivarium\Test\Container;
 
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use RuntimeException;
@@ -39,7 +38,6 @@ final class ReflectionSolverTest extends TestCase
             },
         );
 
-        /** @var MockObject&Container */
         $container = $this->getMockBuilder(Container::class)
                           ->getMock();
 
@@ -58,7 +56,6 @@ final class ReflectionSolverTest extends TestCase
             },
         );
 
-        /** @var MockObject&Container */
         $container = $this->getMockBuilder(Container::class)
                           ->getMock();
 
@@ -79,7 +76,6 @@ final class ReflectionSolverTest extends TestCase
             },
         );
 
-        /** @var MockObject&Container */
         $container = $this->getMockBuilder(Container::class)
                           ->getMock();
 

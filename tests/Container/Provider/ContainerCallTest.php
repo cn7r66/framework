@@ -10,7 +10,6 @@ declare(strict_types=1);
 
 namespace Vivarium\Test\Container\Provider;
 
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Vivarium\Container\Binding;
 use Vivarium\Container\Container;
@@ -26,11 +25,9 @@ final class ContainerCallTest extends TestCase
      */
     public function testProvide(): void
     {
-        /** @var MockObject&Binding */
         $binding = $this->getMockBuilder(Binding::class)
                         ->getMock();
 
-        /** @var MockObject&Container */
         $container = $this->getMockBuilder(Container::class)
                           ->getMock();
 

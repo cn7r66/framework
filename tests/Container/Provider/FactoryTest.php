@@ -10,7 +10,6 @@ declare(strict_types=1);
 
 namespace Vivarium\Test\Container\Provider;
 
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Vivarium\Container\Binding\ClassBinding;
 use Vivarium\Container\Binding\TypeBinding;
@@ -34,7 +33,6 @@ final class FactoryTest extends TestCase
                         ->bindParameter('stub')
                         ->to(ConcreteStub::class);
 
-        /** @var MockObject&Container */
         $container = $this->getMockBuilder(Container::class)
                           ->getMock();
 

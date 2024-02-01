@@ -18,6 +18,8 @@ use Vivarium\Container\Exception\CannotBeWidened;
 use Vivarium\Test\Container\Stub\ConcreteStub;
 use Vivarium\Test\Container\Stub\SimpleStub;
 
+use function sprintf;
+
 /** @coversDefaultClass \Vivarium\Container\Binding\SimpleBinding */
 final class SimpleBindingTest extends TestCase
 {
@@ -71,7 +73,9 @@ final class SimpleBindingTest extends TestCase
     public function testWidenException(): void
     {
         static::expectException(CannotBeWidened::class);
-        static::expectExceptionMessage('Binding with id Vivarium\Test\Container\Stub\ConcreteStub, context $GLOBAL and tag $DEFAULT cannot be widened.');
+        static::expectExceptionMessage(
+            sprintf('Binding with id %s, context $GLOBAL and tag $DEFAULT cannot be widened.', ConcreteStub::class),
+        );
 
         $binding = new SimpleBinding(ConcreteStub::class);
 

@@ -34,11 +34,14 @@ final class TypeBindingTest extends TestCase
     public function testConstructException(): void
     {
         static::expectException(AssertionFailed::class);
-        static::expectExceptionMessage('Expected string to be a primitive, class, interface, union or intersection. Got "theId".');
+        static::expectExceptionMessage(
+            'Expected string to be a primitive, class, interface, union or intersection. Got "theId".',
+        );
 
         $binding = new TypeBinding('theId');
     }
 
+    /** @return array<string, array<string>> */
     public function getIds(): array
     {
         return [

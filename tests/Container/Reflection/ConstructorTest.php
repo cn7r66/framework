@@ -10,7 +10,6 @@ declare(strict_types=1);
 
 namespace Vivarium\Test\Container\Reflection;
 
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Vivarium\Container\Binding\TypeBinding;
 use Vivarium\Container\Container;
@@ -31,7 +30,6 @@ final class ConstructorTest extends TestCase
     {
         $constructor = new Constructor(ConcreteStub::class);
 
-        /** @var MockObject&Container */
         $container = $this->getMockBuilder(Container::class)
                           ->getMock();
 
@@ -79,7 +77,6 @@ final class ConstructorTest extends TestCase
         ->bindParameter('stub')
         ->to(ConcreteStub::class);
 
-        /** @var MockObject&Container */
         $container = $this->getMockBuilder(Container::class)
         ->getMock();
 

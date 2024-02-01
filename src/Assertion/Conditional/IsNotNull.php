@@ -12,15 +12,11 @@ namespace Vivarium\Assertion\Conditional;
 
 use Vivarium\Assertion\Assertion;
 use Vivarium\Assertion\Exception\AssertionFailed;
-use Vivarium\Assertion\Helpers\TypeToString;
 use Vivarium\Assertion\String\IsEmpty;
 
-use function get_class;
 use function sprintf;
 
-/**
- * @template-implements Assertion<null>
- */
+/** @template-implements Assertion<null> */
 final class IsNotNull implements Assertion
 {
     /** @psalm-assert !null $value */

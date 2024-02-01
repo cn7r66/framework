@@ -48,7 +48,7 @@ abstract class BaseMethod implements Method
 
     public function bindParameter(string $parameter): Binder
     {
-        return new GenericBinder(function (Provider $provider) use ($parameter) : self {
+        return new GenericBinder(function (Provider $provider) use ($parameter): self {
             $method             = clone $this;
             $method->parameters = $method->parameters->put($parameter, $provider);
 

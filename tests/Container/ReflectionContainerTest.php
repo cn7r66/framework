@@ -10,22 +10,20 @@ declare(strict_types=1);
 
 namespace Vivarium\Test\Container;
 
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 use Vivarium\Container\Binding\SimpleBinding;
-use Vivarium\Container\Binding;
-use Vivarium\Container\Step;
 use Vivarium\Container\Exception\BindingNotFound;
 use Vivarium\Container\Provider\Prototype;
 use Vivarium\Container\ReflectionContainer;
+use Vivarium\Container\Step;
 use Vivarium\Test\Container\Stub\ConcreteStub;
 use Vivarium\Test\Container\Stub\SimpleStub;
 
 /** @coversDefaultClass Vivarium\Container\ReflectionContainer */
 final class ReflectionContainerTest extends TestCase
 {
-    /** 
+    /**
      * @covers ::__construct()
      * @covers ::has()
      * @covers ::solve()
@@ -41,9 +39,10 @@ final class ReflectionContainerTest extends TestCase
     }
 
     /**
-     * @covers ::__construct() 
-     * @covers ::get() */
-    public function testGet()
+     * @covers ::__construct()
+     * @covers ::get()
+     */
+    public function testGet(): void
     {
         $container = new ReflectionContainer();
         $instance  = $container->get(stdClass::class);
@@ -72,16 +71,15 @@ final class ReflectionContainerTest extends TestCase
      */
     public function testWithStep(): void
     {
-        /** @var MockObject&Step */
         $step = $this->getMockBuilder(Step::class)
                      ->getMock();
 
-                     $step->expects(static::once())
+        $step->expects(static::once())
              ->method('solve')
              ->with($this->equalTo(new SimpleBinding('theId')))
              ->willReturn(new Prototype(ConcreteStub::class));
 
-        $container = (new ReflectionContainer)
+        $container = (new ReflectionContainer())
                             ->withStep($step);
 
         static::assertTrue($container->has('theId'));
@@ -94,20 +92,20 @@ final class ReflectionContainerTest extends TestCase
         return [
             'Non existent ID' => [
                 'theId',
-                false
+                false,
             ],
             'Class without contructor' => [
                 stdClass::class,
-                true
+                true,
             ],
             'Class with empty constructor' => [
                 ConcreteStub::class,
-                true
+                true,
             ],
             'Class with constructor' => [
                 SimpleStub::class,
-                true
-            ]
+                true,
+            ],
         ];
     }
 }

@@ -53,7 +53,7 @@ final class GenericBinderTest extends TestCase
     {
         $instance = new ConcreteStub();
 
-        $binder = new GenericBinder(function (Provider $provider) use ($instance) : void {
+        $binder = new GenericBinder(function (Provider $provider) use ($instance): void {
             $binding = new TypeBinding(ConcreteStub::class);
 
             $container = $this->createMock(Container::class);
@@ -72,7 +72,7 @@ final class GenericBinderTest extends TestCase
     {
         $provider = $this->createMock(Provider::class);
 
-        $binder = new GenericBinder(function (Provider $provider1) use ($provider) : void {
+        $binder = new GenericBinder(static function (Provider $provider1) use ($provider): void {
             static::assertSame($provider, $provider1);
         });
 
@@ -85,6 +85,7 @@ final class GenericBinderTest extends TestCase
         static::expectException(AssertionFailed::class);
         static::expectExceptionMessage('Missing type hint on callback function.');
 
-        new GenericBinder(function (Provider $provider) {});
+        new GenericBinder(static function (Provider $provider): void {
+        });
     }
 }

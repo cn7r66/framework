@@ -10,7 +10,6 @@ declare(strict_types=1);
 
 namespace Vivarium\Test\Container\Provider;
 
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Vivarium\Container\Container;
 use Vivarium\Container\Provider\Instance;
@@ -25,7 +24,6 @@ final class InstanceTest extends TestCase
      */
     public function testProvide(): void
     {
-        /** @var MockObject&Container */
         $container = $this->getMockBuilder(Container::class)
                           ->getMock();
 

@@ -10,7 +10,6 @@ declare(strict_types=1);
 
 namespace Vivarium\Test\Container;
 
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use RuntimeException;
@@ -30,7 +29,6 @@ final class SubContainerTest extends TestCase
      */
     public function testSolveNotFound(): void
     {
-        /** @var MockObject&ContainerInterface */
         $container = $this->getMockBuilder(ContainerInterface::class)
                           ->getMock();
 
@@ -58,7 +56,6 @@ final class SubContainerTest extends TestCase
     {
         $binding = new SimpleBinding(ConcreteStub::class);
 
-        /** @var MockObject&ContainerInterface */
         $container = $this->getMockBuilder(ContainerInterface::class)
                           ->getMock();
 

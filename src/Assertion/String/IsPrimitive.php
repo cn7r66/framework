@@ -52,7 +52,7 @@ final class IsPrimitive implements Assertion
             'array',
             'callable',
             'object',
-            'bool'
+            'bool',
         ))($value);
     }
 }
