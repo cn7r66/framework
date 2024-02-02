@@ -135,7 +135,7 @@ final class SimpleBindingTest extends TestCase
     }
 
     /** @return array<array<string, string, string, bool>> */
-    public function getBindings(): array
+    public static function getBindings(): array
     {
         return [
             'Binding with ID' => [

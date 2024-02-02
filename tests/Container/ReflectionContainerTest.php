@@ -87,7 +87,7 @@ final class ReflectionContainerTest extends TestCase
     }
 
     /** @return array<array-key, array<string, bool>> */
-    public function getContainerIds(): array
+    public static function getContainerIds(): array
     {
         return [
             'Non existent ID' => [

@@ -42,7 +42,7 @@ final class TypeBindingTest extends TestCase
     }
 
     /** @return array<string, array<string>> */
-    public function getIds(): array
+    public static function getIds(): array
     {
         return [
             'Integer' => ['int'],
