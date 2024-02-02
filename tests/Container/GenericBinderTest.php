@@ -85,7 +85,8 @@ final class GenericBinderTest extends TestCase
         static::expectException(AssertionFailed::class);
         static::expectExceptionMessage('Missing type hint on callback function.');
 
-        new GenericBinder(static function (Provider $provider): void {
+        // phpcs:ignore
+        new GenericBinder(static function (Provider $provider) {
         });
     }
 }
