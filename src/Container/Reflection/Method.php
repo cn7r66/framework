@@ -23,4 +23,8 @@ interface Method
     public function getParameter(string $parameter): Provider;
 
     public function hasParameter(string $parameter): bool;
+
+    public function makeAccessible(): self;
+
+    public function isAccessible(): bool;
 }
