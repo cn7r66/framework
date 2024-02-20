@@ -8,9 +8,8 @@ declare(strict_types=1);
  * Copyright (c) 2023 Luca Cantoreggi
  */
 
-namespace Vivarium\Container\Injection;
+namespace Vivarium\Container\Reflection;
 
-use ReflectionClass;
 use Vivarium\Comparator\Priority;
 use Vivarium\Container\Container;
 use Vivarium\Container\Reflection\BaseMethod;
@@ -33,34 +32,13 @@ final class StaticMethodCall extends BaseMethod implements CreationalMethod
         return $this->class;
     }
 
-    public function instanceOn(string $parameter): self
-    {
-        $method            = clone $this;
-        $method->parameter = $parameter;
-
-        return $method;
-    }
-
-    public function inject(Container $container, object $instance): object
-    {
-        $method = $this->parameter === null ?
-            $this : $this->bindParameter($this->parameter)
-                         ->toInstance($instance);
-
-        $method->invoke($container);
-
-        return $instance;
-    }
-
     public function invoke(Container $container): mixed
     {
-        $reflector = (new ReflectionClass($this->class))
-            ->getMethod($this->getName());
-
-        return $reflector->invokeArgs(
-            null,
-            $this->getArgumentsValue($this->class, $container)
-                 ->toArray(),
-        );
+        return $this->getReflector($this->class)
+                    ->invokeArgs(
+                        null,
+                        $this->getArgumentsValue($this->class, $container)
+                             ->toArray(),
+                    );
     }
 }

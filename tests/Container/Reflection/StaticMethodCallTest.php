@@ -8,23 +8,25 @@
 
 declare(strict_types=1);
 
-namespace Vivarium\Test\Container\Injection;
+namespace Vivarium\Test\Container\Reflection;
 
 use PHPUnit\Framework\TestCase;
 use Vivarium\Container\Binding\TypeBinding;
 use Vivarium\Container\Container;
-use Vivarium\Container\Injection\StaticMethodCall;
+use Vivarium\Container\Reflection\StaticMethodCall;
 use Vivarium\Test\Container\Stub\ConcreteStub;
 use Vivarium\Test\Container\Stub\SimpleStub;
 use Vivarium\Test\Container\Stub\StaticInjectorStub;
 use Vivarium\Test\Container\Stub\StaticStub;
 
-/** @coversDefaultClass Vivarium\Container\Injection\StaticMethodCall */
+/** @coversDefaultClass Vivarium\Container\Reflection\StaticMethodCall */
 final class StaticMethodCallTest extends TestCase
 {
     /**
      * @covers ::__construct()
      * @covers ::invoke()
+     * @covers ::isAccessible()
+     * @covers ::getReflector() 
      */
     public function testInvoke(): void
     {
@@ -48,34 +50,6 @@ final class StaticMethodCallTest extends TestCase
         $instance = $method->invoke($container);
 
         static::assertInstanceOf(SimpleStub::class, $instance);
-    }
-
-    /**
-     * @covers ::__construct()
-     * @covers ::inject()
-     * @covers ::instanceOn()
-     */
-    public function testInject(): void
-    {
-        $method = new StaticMethodCall(
-            StaticInjectorStub::class,
-            'get',
-        );
-
-        $method = $method->instanceOn('stub');
-
-        $container = $this->createMock(Container::class);
-
-        $container->expects(static::never())
-                  ->method('get');
-
-        $instance = new ConcreteStub();
-
-        static::assertSame(0, $instance->getInt());
-
-        $instance = $method->inject($container, $instance);
-
-        static::assertSame(42, $instance->getInt());
     }
 
     /** @covers ::getClass() */
