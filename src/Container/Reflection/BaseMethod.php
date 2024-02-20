@@ -35,10 +35,13 @@ abstract class BaseMethod implements Method
     /** @var Map<string, Provider> */
     private Map $parameters;
 
+    private bool $accessible;
+
     /** @psalm-assert class-string $class */
     public function __construct(private string $method)
     {
         $this->parameters = new HashMap();
+        $this->accessible = false;
     }
 
     public function getName(): string
@@ -68,6 +71,31 @@ abstract class BaseMethod implements Method
     public function hasParameter(string $parameter): bool
     {
         return $this->parameters->containsKey($parameter);
+    }
+
+    public function makeAccessible(): self
+    {
+        $method             = clone $this;
+        $method->accessible = true;
+
+        return $method;
+    }
+
+    public function isAccessible(): bool
+    {
+        return $this->accessible;
+    }
+
+    protected function getReflector(string $class): ReflectionMethod
+    {
+        $reflector = (new ReflectionClass($class))
+            ->getMethod($this->getName());
+
+        if (! $reflector->isPublic() && $this->isAccessible()) {
+            $reflector->setAccessible(true);
+        }
+
+        return $reflector;
     }
 
     /** @return Sequence<Provider> */
