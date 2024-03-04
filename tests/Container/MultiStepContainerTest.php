@@ -15,13 +15,13 @@ use stdClass;
 use Vivarium\Container\Binding\SimpleBinding;
 use Vivarium\Container\Exception\BindingNotFound;
 use Vivarium\Container\Provider\Prototype;
-use Vivarium\Container\ReflectionContainer;
+use Vivarium\Container\MultiStepContainer;
 use Vivarium\Container\Step;
 use Vivarium\Test\Container\Stub\ConcreteStub;
 use Vivarium\Test\Container\Stub\SimpleStub;
 
-/** @coversDefaultClass Vivarium\Container\ReflectionContainer */
-final class ReflectionContainerTest extends TestCase
+/** @coversDefaultClass Vivarium\Container\MultiStepContainer */
+final class MultiStepContainerTest extends TestCase
 {
     /**
      * @covers ::__construct()
@@ -33,7 +33,7 @@ final class ReflectionContainerTest extends TestCase
      */
     public function testHasWithString(string $id, bool $result): void
     {
-        $container = new ReflectionContainer();
+        $container = new MultiStepContainer();
 
         static::assertSame($container->has($id), $result);
     }
@@ -44,7 +44,7 @@ final class ReflectionContainerTest extends TestCase
      */
     public function testGet(): void
     {
-        $container = new ReflectionContainer();
+        $container = new MultiStepContainer();
         $instance  = $container->get(stdClass::class);
 
         static::assertInstanceOf(stdClass::class, $instance);
@@ -59,7 +59,7 @@ final class ReflectionContainerTest extends TestCase
         static::expectException(BindingNotFound::class);
         static::expectExceptionMessage('Binding with id theId, context $GLOBAL and tag $DEFAULT not found.');
 
-        $container = new ReflectionContainer();
+        $container = new MultiStepContainer();
         $container->get('theId');
     }
 
@@ -79,7 +79,7 @@ final class ReflectionContainerTest extends TestCase
              ->with($this->equalTo(new SimpleBinding('theId')))
              ->willReturn(new Prototype(ConcreteStub::class));
 
-        $container = (new ReflectionContainer())
+        $container = (new MultiStepContainer())
                             ->withStep($step);
 
         static::assertTrue($container->has('theId'));
