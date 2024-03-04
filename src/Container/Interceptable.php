@@ -10,9 +10,9 @@ declare(strict_types=1);
 
 namespace Vivarium\Container;
 
-interface Injectable extends Provider
+interface Interceptable extends Provider
 {
-    public function withInjection(Injection $injection): self;
+    public function withInjection(Interception $injection): self;
 
-    public function withUniqueInjection(Injection $injection): self;
+    public function withUniqueInjection(Interception $injection): self;
 }

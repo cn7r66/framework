@@ -10,7 +10,7 @@ declare(strict_types=1);
 
 namespace Vivarium\Container;
 
-interface Injection
+interface Interception
 {
     /**
      * @param T $instance
@@ -19,5 +19,5 @@ interface Injection
      *
      * @template T of object
      */
-    public function inject(Container $container, object $instance): object;
+    public function intercept(Container $container, object $instance): object;
 }
