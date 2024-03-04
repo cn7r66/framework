@@ -8,7 +8,7 @@
 
 declare(strict_types=1);
 
-namespace Vivarium\Test\Container;
+namespace Vivarium\Test\Container\Step;
 
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
@@ -20,7 +20,7 @@ use Vivarium\Container\Container;
 use Vivarium\Container\Provider;
 use Vivarium\Container\Provider\Instance;
 use Vivarium\Container\Provider\Prototype;
-use Vivarium\Container\ReflectionSolver;
+use Vivarium\Container\Step\ReflectionSolver;
 use Vivarium\Test\Container\Stub\ConcreteStub;
 use Vivarium\Test\Container\Stub\NotInstantiableStub;
 

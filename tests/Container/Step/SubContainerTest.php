@@ -8,7 +8,7 @@
 
 declare(strict_types=1);
 
-namespace Vivarium\Test\Container;
+namespace Vivarium\Test\Container\Step;
 
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
@@ -17,7 +17,7 @@ use Vivarium\Container\Binding\SimpleBinding;
 use Vivarium\Container\Provider;
 use Vivarium\Container\Provider\Instance;
 use Vivarium\Container\Provider\Prototype;
-use Vivarium\Container\SubContainer;
+use Vivarium\Container\Step\SubContainer;
 use Vivarium\Test\Container\Stub\ConcreteStub;
 
 /** @coversDefaultClass Vivarium\Container\SubContainer */

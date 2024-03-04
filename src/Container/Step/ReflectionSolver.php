@@ -8,11 +8,14 @@ declare(strict_types=1);
  * Copyright (c) 2023 Luca Cantoreggi
  */
 
-namespace Vivarium\Container;
+namespace Vivarium\Container\Step;
 
 use ReflectionClass;
+use Vivarium\Container\Binding;
 use Vivarium\Container\Binding\ClassBinding;
+use Vivarium\Container\Provider;
 use Vivarium\Container\Provider\Prototype;
+use Vivarium\Container\Step;
 
 use function class_exists;
 

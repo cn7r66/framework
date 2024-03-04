@@ -8,10 +8,13 @@ declare(strict_types=1);
  * Copyright (c) 2023 Luca Cantoreggi
  */
 
-namespace Vivarium\Container;
+namespace Vivarium\Container\Step;
 
 use Psr\Container\ContainerInterface;
+use Vivarium\Container\Binding;
+use Vivarium\Container\Provider;
 use Vivarium\Container\Provider\Instance;
+use Vivarium\Container\Step;
 
 final class SubContainer implements Step
 {

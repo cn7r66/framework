@@ -8,7 +8,11 @@ declare(strict_types=1);
  * Copyright (c) 2023 Luca Cantoreggi
  */
 
-namespace Vivarium\Container;
+namespace Vivarium\Container\Step;
+
+use Vivarium\Container\Binder;
+use Vivarium\Container\Interception;
+use Vivarium\Container\Step;
 
 interface ConfigurableSolver extends Step
 {
@@ -21,9 +25,6 @@ interface ConfigurableSolver extends Step
     /** callable(Definition) */
     public function define(string $class, callable $define, string $tag, string $context): self;
 
-    /** callable(Injectable) */
-    public function inject(string $type, callable $inject, string $tag, string $context): self;
-
     /**
      * @param callable(T): Provider $extend
      *
@@ -31,5 +32,10 @@ interface ConfigurableSolver extends Step
      */
     public function extend(string $type, callable $extend, string $tag, string $context): self;
 
-    public function decorate(): void;
+    /** callable(Injectable) */
+    public function inject(string $type, callable $inject, string $tag, string $context): self;
+
+    public function decorate(): self;
+
+    public function intercept(Interception $interception): self;
 }
