@@ -20,7 +20,7 @@ use Vivarium\Container\Step\LazySolver;
 use Vivarium\Test\Container\Stub\ConcreteStub;
 use Vivarium\Test\Container\Stub\Stub;
 
-/** @coversDefaultClass \Vivarium\Container\LazySolver */
+/** @coversDefaultClass \Vivarium\Container\Step\LazySolver */
 final class LazySolverTest extends TestCase
 {
     /**

@@ -20,7 +20,7 @@ use Vivarium\Container\Provider\Prototype;
 use Vivarium\Container\Step\SubContainer;
 use Vivarium\Test\Container\Stub\ConcreteStub;
 
-/** @coversDefaultClass Vivarium\Container\SubContainer */
+/** @coversDefaultClass Vivarium\Container\Step\SubContainer */
 final class SubContainerTest extends TestCase
 {
     /**

@@ -16,7 +16,7 @@ use Vivarium\Container\Interception\ImmutableMethodInterception;
 use Vivarium\Container\Reflection\MethodCall;
 use Vivarium\Test\Container\Stub\ImmutableStub;
 
-/** @coversDefaultClass Vivarium\Container\Interception\ImmutableMethodCall */
+/** @coversDefaultClass Vivarium\Container\Interception\ImmutableMethodInterception */
 final class ImmutableMethodInterceptionTest extends TestCase
 {
     /** @covers ::intercept() */

@@ -24,7 +24,7 @@ use Vivarium\Container\Step\ReflectionSolver;
 use Vivarium\Test\Container\Stub\ConcreteStub;
 use Vivarium\Test\Container\Stub\NotInstantiableStub;
 
-/** @coversDefaultClass Vivarium\Container\ReflectionSolver */
+/** @coversDefaultClass Vivarium\Container\Step\ReflectionSolver */
 final class ReflectionSolverTest extends TestCase
 {
     /** @covers ::solve() */
