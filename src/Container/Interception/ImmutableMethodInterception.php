@@ -28,7 +28,7 @@ final class ImmutableMethodInterception implements MethodInterception
         $return = $this->method->invoke($container, $instance);
 
         (new IsAssignableTo($instance::class))
-            ->assert($return);
+            ->assert($return::class);
 
         return $return;
     }
