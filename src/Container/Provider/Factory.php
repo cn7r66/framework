@@ -13,11 +13,12 @@ namespace Vivarium\Container\Provider;
 use Vivarium\Container\Binding;
 use Vivarium\Container\Container;
 use Vivarium\Container\Provider;
+use Vivarium\Container\Reflection\CreationalMethod;
 use Vivarium\Container\Reflection\FactoryMethodCall;
 
 final class Factory implements Provider
 {
-    private FactoryMethodCall $method;
+    private CreationalMethod $method;
 
     public function __construct(
         string $class,
