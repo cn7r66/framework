@@ -33,10 +33,10 @@ final class ImmutableMethodInterception implements MethodInterception
         return $return;
     }
 
-    public function configure(MethodCall $method, callable $configure): self
+    public function configure(callable $configure): self
     {
         $interception         = clone $this;
-        $interception->method = $configure($method);
+        $interception->method = $configure($this->method);
 
         return $interception;
     }

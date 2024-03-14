@@ -15,5 +15,5 @@ use Vivarium\Container\Reflection\MethodCall;
 
 interface MethodInterception extends Interception
 {
-    public function configure(MethodCall $method, callable $configure): self;
+    public function configure(callable $configure): self;
 }
