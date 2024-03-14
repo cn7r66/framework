@@ -18,8 +18,8 @@ use function sprintf;
 final class ParameterNotSolvable extends RuntimeException
 {
     public function __construct(
-        private string $parameter,
         private string $method,
+        private string $parameter,
         int $code = 0,
         Throwable|null $previous = null,
     ) {
