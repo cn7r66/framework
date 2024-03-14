@@ -16,7 +16,6 @@ use Vivarium\Container\Binding\TypeBinding;
 use Vivarium\Container\Container;
 use Vivarium\Container\Provider\Factory;
 use Vivarium\Container\Reflection\FactoryMethodCall;
-use Vivarium\Container\Reflection\MethodCall;
 use Vivarium\Test\Container\Stub\ConcreteStub;
 use Vivarium\Test\Container\Stub\SimpleStub;
 use Vivarium\Test\Container\Stub\StubFactory;
@@ -47,8 +46,8 @@ final class FactoryTest extends TestCase
         $container->expects(static::exactly(2))
                   ->method('get')
                   ->willReturnOnConsecutiveCalls(
-                      new StubFactory(),
-                      new ConcreteStub(),
+                    new StubFactory(),
+                    new ConcreteStub(),
                   );
 
         static::assertInstanceOf(SimpleStub::class, $factory->provide($container));
