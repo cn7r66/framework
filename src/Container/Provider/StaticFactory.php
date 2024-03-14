@@ -24,6 +24,14 @@ final class StaticFactory implements Provider
         $this->method = new StaticMethodCall($class, $method);
     }
     
+    public function configure(callable $configure): self
+    {
+        $factory         = clone $this;
+        $factory->method = $configure($factory->method);
+
+        return $factory;
+    }
+
     public function provide(Container $container): mixed 
     { 
         return $this->method->invoke($container);
