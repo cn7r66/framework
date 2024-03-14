@@ -16,7 +16,7 @@ interface Definition extends Provider
 {
     public function bindConstructorFactory(string $class, string $method, string $tag, string $context): self;
 
-    public function bindConstructorStaticFactory(string $class, string $method, string $tag, string $context): self;
+    public function bindConstructorStaticFactory(string $class, string $method): self;
 
     /** @return Binder<self> */
     public function bindParameter(string $parameter): Binder;

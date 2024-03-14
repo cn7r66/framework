@@ -27,12 +27,13 @@ use Vivarium\Container\Binder;
 use Vivarium\Container\Container;
 use Vivarium\Container\Definition;
 use Vivarium\Container\GenericBinder;
-use Vivarium\Container\Injection\ImmutableMethodCall;
-use Vivarium\Container\Injection\MethodCall;
+use Vivarium\Container\Interception\ImmutableMethodInterception;
+use Vivarium\Container\Interception\MutableMethodInterception;
 use Vivarium\Container\Provider;
 use Vivarium\Container\Reflection\Constructor;
 use Vivarium\Container\Reflection\CreationalMethod;
 use Vivarium\Container\Reflection\Method;
+use Vivarium\Container\Reflection\MethodCall;
 
 use function array_map;
 
@@ -43,7 +44,7 @@ final class Prototype implements Definition
     /** @var Map<string, Provider> */
     private Map $properties;
 
-    /** @var Queue<ValueAndPriority<Injection> */
+    /** @var Queue<ValueAndPriority<MethodInterception>> */
     private Queue $methods;
 
     /** @param class-string $class */
@@ -77,6 +78,11 @@ final class Prototype implements Definition
                       ->setValue($instance, $provider->provide($container));
         }
 
+        foreach ($this->methods as $method) {
+            $instance = $method->getValue()
+                               ->invoke($container, $instance);
+        }
+
         return $instance;
     }
 
@@ -88,9 +94,12 @@ final class Prototype implements Definition
         return $prototype;
     }
 
-    public function bindConstructorStaticFactory(string $class, string $method, string $tag, string $context): self
+    public function bindConstructorStaticFactory(string $class, string $method): self
     {
-        throw new RuntimeException('Not implemented yet.');
+        $prototype              = clone $this;
+        $prototype->constructor = new StaticFactory($class, $method);
+    
+        return $prototype;
     }
 
     /** @return Binder<Prototype> */
@@ -120,10 +129,13 @@ final class Prototype implements Definition
     /** @param callable(Method):Method|null $define */
     public function bindMethod(string $method, callable|null $define = null, int $priority = Priority::NORMAL): self
     {
-        $call = new MethodCall($this->class, $method);
+        $call = new MutableMethodInterception(
+            new MethodCall($method)
+        );
+
         if ($define !== null) {
-            $call = $define($call);
-        }
+            $call = $call->configure($define);
+        } 
 
         $prototype          = clone $this;
         $prototype->methods = $prototype->methods->enqueue(
@@ -141,9 +153,12 @@ final class Prototype implements Definition
         callable|null $define = null,
         int $priority = Priority::NORMAL,
     ): self {
-        $call = new ImmutableMethodCall($this->class, $method);
+        $call = new ImmutableMethodInterception(
+            new MethodCall($method)
+        );
+
         if ($define !== null) {
-            $call = $define($call);
+            $call = $call->configure($define);
         }
 
         $prototype          = clone $this;
