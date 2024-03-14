@@ -12,10 +12,12 @@ namespace Vivarium\Test\Container;
 
 use PHPUnit\Framework\TestCase;
 use stdClass;
+use Vivarium\Container\Binding;
 use Vivarium\Container\Binding\SimpleBinding;
 use Vivarium\Container\Exception\BindingNotFound;
 use Vivarium\Container\Provider\Prototype;
 use Vivarium\Container\MultiStepContainer;
+use Vivarium\Container\Provider\Instance;
 use Vivarium\Container\Step;
 use Vivarium\Test\Container\Stub\ConcreteStub;
 use Vivarium\Test\Container\Stub\SimpleStub;
@@ -33,7 +35,17 @@ final class MultiStepContainerTest extends TestCase
      */
     public function testHasWithString(string $id, bool $result): void
     {
-        $container = new MultiStepContainer();
+        $solver = $this->createMock(Step::class);
+        $solver->method('solve')
+               ->willReturnCallback(function (Binding $arg, callable $next) {
+                if (! \class_exists($arg->getId())) {
+                    return $next();
+                }
+
+                return new Prototype($arg->getId());
+            });
+
+        $container = (new MultiStepContainer())->withStep($solver);
 
         static::assertSame($container->has($id), $result);
     }
@@ -44,7 +56,13 @@ final class MultiStepContainerTest extends TestCase
      */
     public function testGet(): void
     {
-        $container = new MultiStepContainer();
+        $solver = $this->createMock(Step::class);
+        $solver->method('solve')
+               ->willReturnCallback(function (Binding $arg) {
+                return new Instance(new ($arg->getId()));
+            });
+
+        $container = (new MultiStepContainer())->withStep($solver);
         $instance  = $container->get(stdClass::class);
 
         static::assertInstanceOf(stdClass::class, $instance);
