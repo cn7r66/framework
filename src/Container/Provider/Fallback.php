@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Vivarium\Container\Provider;
 
+use Psr\Container\ContainerExceptionInterface;
+use Throwable;
 use Vivarium\Container\Container;
 use Vivarium\Container\Provider;
 
@@ -15,16 +17,16 @@ use Vivarium\Container\Provider;
 
 final class Fallback implements Provider
 {
-    public function __construct(private Provider $provider, private mixed $default)
+    public function __construct(private Provider $provider, private Provider $fallback)
     {
     }
 
     public function provide(Container $container): mixed
     {
         try {
-            $this->provider->provide($container);
-        } catch (Throwable) {
-            return $this->default;
+            return $this->provider->provide($container);
+        } catch (ContainerExceptionInterface) {
+            return $this->fallback->provide($container);
         }
     }
 }
