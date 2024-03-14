@@ -15,6 +15,8 @@ use Vivarium\Container\Binding\ClassBinding;
 use Vivarium\Container\Binding\TypeBinding;
 use Vivarium\Container\Container;
 use Vivarium\Container\Provider\Factory;
+use Vivarium\Container\Reflection\FactoryMethodCall;
+use Vivarium\Container\Reflection\MethodCall;
 use Vivarium\Test\Container\Stub\ConcreteStub;
 use Vivarium\Test\Container\Stub\SimpleStub;
 use Vivarium\Test\Container\Stub\StubFactory;
@@ -25,14 +27,17 @@ final class FactoryTest extends TestCase
     /**
      * @covers ::__construct()
      * @covers ::provide()
-     * @covers ::invoke()
+     * @covers ::configure()
      */
     public function testProvide(): void
     {
         $factory = (new Factory(StubFactory::class, 'create'))
-                        ->bindParameter('stub')
-                        ->to(ConcreteStub::class);
-
+                        ->configure(function (FactoryMethodCall $method) {
+                            return $method
+                                ->bindParameter('stub')
+                                ->to(ConcreteStub::class);
+                        });
+                        
         $container = $this->getMockBuilder(Container::class)
                           ->getMock();
 

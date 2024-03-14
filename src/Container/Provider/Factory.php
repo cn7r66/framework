@@ -10,17 +10,14 @@ declare(strict_types=1);
 
 namespace Vivarium\Container\Provider;
 
-use ReflectionMethod;
 use Vivarium\Container\Binding;
-use Vivarium\Container\Binding\ClassBinding;
 use Vivarium\Container\Container;
 use Vivarium\Container\Provider;
-use Vivarium\Container\Reflection\BaseMethod;
-use Vivarium\Container\Reflection\CreationalMethod;
+use Vivarium\Container\Reflection\FactoryMethodCall;
 
-final class Factory extends BaseMethod implements CreationalMethod, Provider
+final class Factory implements Provider
 {
-    private Binding $factory;
+    private FactoryMethodCall $method;
 
     public function __construct(
         string $class,
@@ -28,30 +25,24 @@ final class Factory extends BaseMethod implements CreationalMethod, Provider
         string $tag = Binding::DEFAULT,
         string $context = Binding::GLOBAL,
     ) {
-        $this->factory = new ClassBinding(
+        $this->method = new FactoryMethodCall(
             $class,
+            $method,
             $tag,
-            $context,
+            $context
         );
-
-        parent::__construct($method);
     }
 
-    public function provide(Container $container): mixed
+    public function configure(callable $configure): self
     {
-        return $this->invoke($container);
+        $factory         = clone $this;
+        $factory->method = $configure($factory->method);
+
+        return $factory;
     }
 
-    public function invoke(Container $container): mixed
-    {
-        $instance = $container->get($this->factory);
-
-        $method = new ReflectionMethod($instance, $this->getName());
-
-        return $method->invokeArgs(
-            $instance,
-            $this->getArgumentsValue($this->factory->getId(), $container)
-                 ->toArray(),
-        );
+    public function provide(Container $container): mixed 
+    { 
+        return $this->method->invoke($container);
     }
 }
