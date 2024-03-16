@@ -31,12 +31,12 @@ final class FactoryTest extends TestCase
     public function testProvide(): void
     {
         $factory = (new Factory(StubFactory::class, 'create'))
-                        ->configure(function (FactoryMethodCall $method) {
+                        ->configure(static function (FactoryMethodCall $method) {
                             return $method
                                 ->bindParameter('stub')
                                 ->to(ConcreteStub::class);
                         });
-                        
+
         $container = $this->getMockBuilder(Container::class)
                           ->getMock();
 
@@ -46,8 +46,8 @@ final class FactoryTest extends TestCase
         $container->expects(static::exactly(2))
                   ->method('get')
                   ->willReturnOnConsecutiveCalls(
-                    new StubFactory(),
-                    new ConcreteStub(),
+                      new StubFactory(),
+                      new ConcreteStub(),
                   );
 
         static::assertInstanceOf(SimpleStub::class, $factory->provide($container));
