@@ -38,7 +38,7 @@ abstract class BaseMethod implements Method
     private bool $accessible;
 
     /** @psalm-assert class-string $class */
-    public function __construct(private string $method)
+    public function __construct(private readonly string $method)
     {
         $this->parameters = new HashMap();
         $this->accessible = false;
