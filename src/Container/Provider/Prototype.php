@@ -24,17 +24,21 @@ use Vivarium\Comparator\Priority;
 use Vivarium\Comparator\SortableComparator;
 use Vivarium\Comparator\ValueAndPriority;
 use Vivarium\Container\Binder;
+use Vivarium\Container\Binding;
 use Vivarium\Container\Container;
 use Vivarium\Container\Definition;
 use Vivarium\Container\GenericBinder;
 use Vivarium\Container\Interception\ImmutableMethodInterception;
+use Vivarium\Container\Interception\MethodInterception;
 use Vivarium\Container\Interception\MutableMethodInterception;
 use Vivarium\Container\Provider;
 use Vivarium\Container\Reflection\Constructor;
 use Vivarium\Container\Reflection\CreationalMethod;
+use Vivarium\Container\Reflection\FactoryMethodCall;
 use Vivarium\Container\Reflection\Method;
 use Vivarium\Container\Reflection\MethodCall;
 
+use Vivarium\Container\Reflection\StaticMethodCall;
 use function array_map;
 
 final class Prototype implements Definition
@@ -48,7 +52,7 @@ final class Prototype implements Definition
     private Queue $methods;
 
     /** @param class-string $class */
-    public function __construct(private string $class)
+    public function __construct(string $class)
     {
         (new IsClass())
             ->assert($class);
@@ -86,10 +90,14 @@ final class Prototype implements Definition
         return $instance;
     }
 
-    public function bindConstructorFactory(string $class, string $method, string $tag, string $context): self
+    public function bindConstructorFactory(
+        string $class,
+        string $method,
+        string $tag = Binding::DEFAULT,
+        string $context = Binding::GLOBAL): self
     {
         $prototype              = clone $this;
-        $prototype->constructor = new Factory($class, $method, $tag, $context);
+        $prototype->constructor = new FactoryMethodCall($class, $method, $tag, $context);
 
         return $prototype;
     }
@@ -97,8 +105,8 @@ final class Prototype implements Definition
     public function bindConstructorStaticFactory(string $class, string $method): self
     {
         $prototype              = clone $this;
-        $prototype->constructor = new StaticFactory($class, $method);
-    
+        $prototype->constructor = new StaticMethodCall($class, $method);
+
         return $prototype;
     }
 
@@ -129,18 +137,10 @@ final class Prototype implements Definition
     /** @param callable(Method):Method|null $define */
     public function bindMethod(string $method, callable|null $define = null, int $priority = Priority::NORMAL): self
     {
-        $call = new MutableMethodInterception(
-            new MethodCall($method)
-        );
-
-        if ($define !== null) {
-            $call = $call->configure($define);
-        } 
-
         $prototype          = clone $this;
         $prototype->methods = $prototype->methods->enqueue(
             new ValueAndPriority(
-                $call,
+                new MutableMethodInterception($this->bindMethodCall($method, $define)),
                 $priority,
             ),
         );
@@ -153,18 +153,10 @@ final class Prototype implements Definition
         callable|null $define = null,
         int $priority = Priority::NORMAL,
     ): self {
-        $call = new ImmutableMethodInterception(
-            new MethodCall($method)
-        );
-
-        if ($define !== null) {
-            $call = $call->configure($define);
-        }
-
         $prototype          = clone $this;
         $prototype->methods = $prototype->methods->enqueue(
             new ValueAndPriority(
-                $call,
+                new ImmutableMethodInterception($this->bindMethodCall($method, $define)),
                 $priority,
             ),
         );
@@ -191,5 +183,15 @@ final class Prototype implements Definition
                 return $method->getValue();
             }, $this->methods->toArray()),
         );
+    }
+
+    private function bindMethodCall(string $method, callable|null $define = null)
+    {
+        $call = new MethodCall($method);
+        if ($define !== null) {
+            $call = $define($call);
+        }
+
+        return $call;
     }
 }
