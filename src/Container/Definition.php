@@ -14,7 +14,11 @@ use Vivarium\Comparator\Priority;
 
 interface Definition extends Provider
 {
-    public function bindConstructorFactory(string $class, string $method, string $tag, string $context): self;
+    public function bindConstructorFactory(
+        string $class,
+        string $method,
+        string $tag = Binding::DEFAULT,
+        string $context = Binding::GLOBAL): self;
 
     public function bindConstructorStaticFactory(string $class, string $method): self;
 
