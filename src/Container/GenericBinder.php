@@ -25,7 +25,7 @@ final class GenericBinder implements Binder
     /** @var callable(Provider):T */
     private $create;
 
-     /** @param callable $create(Provider): T */
+     /** @param callable(Provider): T $create */
     public function __construct(callable $create)
     {
         (new IsNotNull())
