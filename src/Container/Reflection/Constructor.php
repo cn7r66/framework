@@ -16,7 +16,8 @@ use Vivarium\Container\Container;
 
 final class Constructor extends BaseMethod implements CreationalMethod
 {
-    public function __construct(private string $class)
+    public function __construct(private readonly string
+    $class)
     {
         (new IsClass())
             ->assert($class);
