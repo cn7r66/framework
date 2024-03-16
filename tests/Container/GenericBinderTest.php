@@ -54,8 +54,6 @@ final class GenericBinderTest extends TestCase
         $instance = new ConcreteStub();
 
         $binder = new GenericBinder(function (Provider $provider) use ($instance): void {
-            $binding = new TypeBinding(ConcreteStub::class);
-
             $container = $this->createMock(Container::class);
 
             $container->expects(static::never())
