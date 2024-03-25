@@ -25,7 +25,7 @@ final class ImmutableMethodInterceptionTest extends TestCase
         $container = $this->getMockBuilder(Container::class)->getMock();
 
         $interception = new ImmutableMethodInterception(
-                            (new MethodCall('withInt'))
+                            (new MethodCall(ImmutableStub::class, 'withInt'))
                                 ->bindParameter('n')
                                 ->toInstance(42)
                             );

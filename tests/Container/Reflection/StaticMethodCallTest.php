@@ -16,7 +16,6 @@ use Vivarium\Container\Container;
 use Vivarium\Container\Reflection\StaticMethodCall;
 use Vivarium\Test\Container\Stub\ConcreteStub;
 use Vivarium\Test\Container\Stub\SimpleStub;
-use Vivarium\Test\Container\Stub\StaticInjectorStub;
 use Vivarium\Test\Container\Stub\StaticStub;
 
 /** @coversDefaultClass Vivarium\Container\Reflection\StaticMethodCall */
@@ -26,7 +25,6 @@ final class StaticMethodCallTest extends TestCase
      * @covers ::__construct()
      * @covers ::invoke()
      * @covers ::isAccessible()
-     * @covers ::getReflector() 
      */
     public function testInvoke(): void
     {
@@ -52,7 +50,9 @@ final class StaticMethodCallTest extends TestCase
         static::assertInstanceOf(SimpleStub::class, $instance);
     }
 
-    /** @covers ::getClass() */
+    /** 
+     * @covers ::getClass()
+     */
     public function testGetClass(): void
     {
         $method = new StaticMethodCall(StaticStub::class, 'get');

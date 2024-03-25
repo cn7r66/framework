@@ -11,7 +11,7 @@ declare(strict_types=1);
 namespace Vivarium\Test\Container\Reflection;
 
 use PHPUnit\Framework\TestCase;
-use Psr\Container\ContainerExceptionInterface;
+use stdClass;
 use Vivarium\Container\Binding;
 use Vivarium\Container\Binding\TypeBinding;
 use Vivarium\Container\Container;
@@ -33,6 +33,7 @@ final class ConstructorTest extends TestCase
     /**
      * @covers ::__construct()
      * @covers ::invoke()
+     * @covers ::isAccessible()
      */
     public function testInvoke(): void
     {
@@ -44,6 +45,7 @@ final class ConstructorTest extends TestCase
         $container->expects(static::never())
                   ->method('get');
 
+        static::assertTrue($constructor->isAccessible());
         static::assertInstanceOf(ConcreteStub::class, $constructor->invoke($container));
     }
 
@@ -71,7 +73,6 @@ final class ConstructorTest extends TestCase
     }
 
     /**
-     * @covers Vivarium\Container\Reflection\BaseMethod::__construct()
      * @covers Vivarium\Container\Reflection\BaseMethod::solveParameter()
      * @covers ::__construct()
      * @covers ::bindParameter()
@@ -97,7 +98,6 @@ final class ConstructorTest extends TestCase
     }
 
     /**
-     * @covers Vivarium\Container\Reflection\BaseMethod::__construct()
      * @covers Vivarium\Container\Reflection\BaseMethod::solveParameter()
      * @covers ::__construct()
      * @covers ::bindParameter()
@@ -127,7 +127,6 @@ final class ConstructorTest extends TestCase
     }
 
     /**
-     * @covers Vivarium\Container\Reflection\BaseMethod::__construct()
      * @covers Vivarium\Container\Reflection\BaseMethod::solveParameter()
      * @covers ::__construct()
      * @covers ::bindParameter()
@@ -160,7 +159,6 @@ final class ConstructorTest extends TestCase
     }
 
     /**
-     * @covers Vivarium\Container\Reflection\BaseMethod::__construct()
      * @covers Vivarium\Container\Reflection\BaseMethod::solveParameter()
      * @covers ::__construct()
      * @covers ::bindParameter()
@@ -185,7 +183,6 @@ final class ConstructorTest extends TestCase
     }
 
     /**
-     * @covers Vivarium\Container\Reflection\BaseMethod::__construct()
      * @covers Vivarium\Container\Reflection\BaseMethod::solveParameter()
      * @covers ::__construct()
      * @covers ::bindParameter()
@@ -213,5 +210,18 @@ final class ConstructorTest extends TestCase
 
         $constructor = new Constructor(SimpleStub::class);
         $constructor->getParameter('stub');
+    }
+
+    /**
+     * @covers ::__construct()
+     * @covers ::isAccessible()
+     * @covers ::getArguments()
+     */
+    public function testInvokeWithoutExplicitConstructor(): void
+    {
+        $constructor = new Constructor(stdClass::class);
+
+        static::assertTrue($constructor->isAccessible());
+        static::assertSame([], $constructor->getArguments()->toArray());
     }
 }

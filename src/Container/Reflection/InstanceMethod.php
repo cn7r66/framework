@@ -11,7 +11,6 @@ declare(strict_types=1);
 namespace Vivarium\Container\Reflection;
 
 use Vivarium\Container\Container;
-use Vivarium\Container\Injection;
 
 interface InstanceMethod extends Method
 {

@@ -10,19 +10,25 @@ declare(strict_types=1);
 
 namespace Vivarium\Container\Reflection;
 
+use ReflectionClass;
+use Vivarium\Assertion\Hierarchy\IsAssignableTo;
 use Vivarium\Container\Container;
-use Vivarium\Container\Reflection\BaseMethod;
-use Vivarium\Container\Reflection\InstanceMethod;
 
 final class MethodCall extends BaseMethod implements InstanceMethod
 {
-    public function invoke(Container $container, object $instance): mixed
+    public function invoke(Container $container, object $instance): mixed 
     {
-        return $this->getReflector($instance::class)
-                    ->invokeArgs(
-                        $instance,
-                        $this->getArgumentsValue($instance::class, $container)
-                             ->toArray(),
-                    );
+        (new IsAssignableTo($this->getClass()))
+            ->assert($instance::class);
+    
+        $this->assertIsAccesible();
+
+        return (new ReflectionClass($instance::class))
+            ->getMethod($this->getName())
+            ->invokeArgs(
+                $instance,
+                $this->getArgumentsValue($container)
+                     ->toArray()
+            );
     }
 }

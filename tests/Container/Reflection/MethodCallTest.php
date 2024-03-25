@@ -12,7 +12,9 @@ namespace Vivarium\Test\Container\Reflection;
 
 use PHPUnit\Framework\TestCase;
 use Vivarium\Container\Container;
+use Vivarium\Container\Exception\InaccesibleMethod;
 use Vivarium\Container\Reflection\MethodCall;
+use Vivarium\Test\Container\Stub\BaseStub;
 use Vivarium\Test\Container\Stub\ConcreteStub;
 use Vivarium\Test\Container\Stub\PrivateStub;
 
@@ -22,13 +24,12 @@ final class MethodCallTest extends TestCase
     /** 
      * @covers ::invoke() 
      * @covers ::isAccessible()
-     * @covers ::getReflector() 
      */
     public function testInvoke(): void
     {
         $container = $this->getMockBuilder(Container::class)->getMock();
 
-        $method = (new MethodCall('setInt'))
+        $method = (new MethodCall(ConcreteStub::class, 'setInt'))
                             ->bindParameter('n')
                             ->toInstance(42);
 
@@ -42,14 +43,13 @@ final class MethodCallTest extends TestCase
      * @covers ::__construct()
      * @covers ::invoke()
      * @covers ::isAccessible()
-     * @covers ::getReflector() 
      * @covers ::makeAccessible()
      */
     public function testPrivateInvoke(): void
     {
         $container = $this->getMockBuilder(Container::class)->getMock();
 
-        $method = (new MethodCall('setInt'))
+        $method = (new MethodCall(PrivateStub::class, 'setInt'))
                             ->bindParameter('n')
                             ->toInstance(42)
                             ->makeAccessible();
@@ -58,5 +58,44 @@ final class MethodCallTest extends TestCase
 
         static::assertSame(0, $method->invoke($container, $stub));
         static::assertSame(42, $method->invoke($container, $stub));
+    }
+
+    /**
+     * @covers ::__construct()
+     * @covers ::invoke()
+     * @covers ::isAccessible()
+     * @covers ::makeAccessible()
+     */
+    public function testInaccesiblePrivateInvoke(): void
+    {
+        static::expectException(InaccesibleMethod::class);
+        static::expectExceptionMessage('Method setInt, of class Vivarium\Test\Container\Stub\PrivateStub is not accessible.');
+
+        $container = $this->getMockBuilder(Container::class)->getMock();
+
+        $method = (new MethodCall(PrivateStub::class, 'setInt'))
+                            ->bindParameter('n')
+                            ->toInstance(42);
+
+        $stub = new PrivateStub();
+
+        $method->invoke($container, $stub);
+    }
+
+    /**
+     * @covers ::__construct()
+     * @covers ::invoke()
+     * @covers ::isAccessible()
+     * @covers ::makeAccessible()
+     */
+    public function testCallOnOverrideMethod(): void
+    {
+        $container = $this->getMockBuilder(Container::class)->getMock();
+
+        $method = new MethodCall(BaseStub::class, 'do');
+
+        $stub = new ConcreteStub();
+
+        static::assertSame(420, $method->invoke($container, $stub));
     }
 }

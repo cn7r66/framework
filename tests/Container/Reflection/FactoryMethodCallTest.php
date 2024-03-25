@@ -12,7 +12,6 @@ namespace Vivarium\Test\Container\Reflection;
 
 use PHPUnit\Framework\TestCase;
 use Vivarium\Container\Binding\ClassBinding;
-use Vivarium\Container\Binding\TypeBinding;
 use Vivarium\Container\Container;
 use Vivarium\Container\Reflection\FactoryMethodCall;
 use Vivarium\Equality\Equal;
@@ -26,6 +25,8 @@ final class FactoryMethodCallTest extends TestCase
     /** 
      * @covers ::__construct()
      * @covers ::invoke()
+     * @covers ::getArguments()
+     * @covers ::getArgumentsValue()
      */
     public function testInvoke(): void
     {

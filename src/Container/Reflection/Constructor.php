@@ -11,30 +11,46 @@ declare(strict_types=1);
 namespace Vivarium\Container\Reflection;
 
 use ReflectionClass;
-use Vivarium\Assertion\String\IsClass;
+use Vivarium\Collection\Sequence\ArraySequence;
+use Vivarium\Collection\Sequence\Sequence;
 use Vivarium\Container\Container;
 
 final class Constructor extends BaseMethod implements CreationalMethod
 {
-    public function __construct(private readonly string
-    $class)
+    public function __construct(string $class)
     {
-        (new IsClass())
-            ->assert($class);
-
-        parent::__construct('__construct');
+        parent::__construct($class, '__construct');
     }
 
-    public function invoke(Container $container): mixed
+    public function isAccessible(): bool
     {
-        $reflector = new ReflectionClass($this->class);
-
-        $args = [];
-        if ($reflector->hasMethod($this->getName())) {
-            $args = $this->getArgumentsValue($this->class, $container)
-                         ->toArray();
+        $reflector = (new ReflectionClass($this->getClass()));
+        if (! $reflector->hasMethod($this->getName())) {
+            return true;
         }
 
-        return $reflector->newInstanceArgs($args);
+        return parent::isAccessible();
+    }
+
+    public function getArguments(): Sequence
+    {
+        $reflector = new ReflectionClass($this->getClass());
+        if (! $reflector->hasMethod($this->getName())) {
+            return new ArraySequence();
+        }
+
+        return parent::getArguments();
+    }
+
+    public function invoke(Container $container): mixed 
+    {
+        $this->assertIsAccesible();
+
+        return (new ReflectionClass($this->getClass()))
+            ->newInstanceArgs(
+                $this->getArgumentsValue($container)
+                     ->toArray()
+        );    
+        
     }
 }

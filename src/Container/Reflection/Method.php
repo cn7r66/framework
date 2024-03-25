@@ -10,7 +10,9 @@ declare(strict_types=1);
 
 namespace Vivarium\Container\Reflection;
 
+use Vivarium\Collection\Sequence\Sequence;
 use Vivarium\Container\Binder;
+use Vivarium\Container\Container;
 use Vivarium\Container\Provider;
 
 interface Method
@@ -27,4 +29,9 @@ interface Method
     public function makeAccessible(): self;
 
     public function isAccessible(): bool;
+
+    /** @return Sequence<Provider> */
+    public function getArguments(): Sequence;
+
+    public function getArgumentsValue(Container $container): Sequence;
 }

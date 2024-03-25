@@ -10,7 +10,7 @@ declare(strict_types=1);
 
 namespace Vivarium\Container\Reflection;
 
-use Vivarium\Assertion\Object\HasMethod;
+use ReflectionClass;
 use Vivarium\Container\Binding;
 use Vivarium\Container\Binding\ClassBinding;
 use Vivarium\Container\Container;
@@ -25,7 +25,7 @@ final class FactoryMethodCall extends BaseMethod implements CreationalMethod
         string $tag = Binding::DEFAULT,
         string $context = Binding::GLOBAL)
     {
-        parent::__construct($method);
+        parent::__construct($class, $method);
 
         $this->factory = new ClassBinding(
             $class,
@@ -41,13 +41,16 @@ final class FactoryMethodCall extends BaseMethod implements CreationalMethod
 
     public function invoke(Container $container): mixed 
     { 
+        $this->assertIsAccesible();
+
         $instance = $container->get($this->factory);
 
-        return $this->getReflector($this->factory->getId())
-                    ->invokeArgs(
-                        $instance,
-                        $this->getArgumentsValue($this->factory->getId(), $container)
-                             ->toArray()
-                    );
+        return (new ReflectionClass($this->getClass()))
+            ->getMethod($this->getName())
+            ->invokeArgs(
+                $instance,
+                $this->getArgumentsValue($container)
+                     ->toArray()
+            );
     }
 }

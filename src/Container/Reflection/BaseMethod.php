@@ -22,6 +22,7 @@ use Vivarium\Container\Binder;
 use Vivarium\Container\Binding;
 use Vivarium\Container\Binding\TypeBinding;
 use Vivarium\Container\Container;
+use Vivarium\Container\Exception\InaccesibleMethod;
 use Vivarium\Container\Exception\ParameterNotFound;
 use Vivarium\Container\Exception\ParameterNotSolvable;
 use Vivarium\Container\GenericBinder;
@@ -35,13 +36,28 @@ abstract class BaseMethod implements Method
     /** @var Map<string, Provider> */
     private Map $parameters;
 
+    /** @var class-string */
+    private string $class;
+
+    private string $method;
+
     private bool $accessible;
 
     /** @psalm-assert class-string $class */
-    public function __construct(private readonly string $method)
+    public function __construct(string $class, string $method)
     {
+        (new HasMethod($method))
+            ->assert($class);
+
         $this->parameters = new HashMap();
+        $this->class      = $class;
+        $this->method     = $method;
         $this->accessible = false;
+    }
+
+    public function getClass(): string
+    {
+        return $this->class;
     }
 
     public function getName(): string
@@ -83,46 +99,41 @@ abstract class BaseMethod implements Method
 
     public function isAccessible(): bool
     {
-        return $this->accessible;
-    }
+        $method = (new ReflectionClass($this->getClass()))
+            ->getMethod($this->method);
 
-    protected function getReflector(string $class): ReflectionMethod
-    {
-        $reflector = (new ReflectionClass($class))
-            ->getMethod($this->getName());
-
-        if (! $reflector->isPublic() && $this->isAccessible()) {
-            $reflector->setAccessible(true);
-        }
-
-        return $reflector;
+        return $method->isPublic() || $this->accessible;
     }
 
     /** @return Sequence<Provider> */
-    protected function getArguments(string $class): Sequence
+    public function getArguments(): Sequence
     {
-        (new HasMethod($this->method))
-            ->assert($class);
-
-        $method = (new ReflectionClass($class))
+        $method = (new ReflectionClass($this->class))
             ->getMethod($this->method);
 
         $arguments = [];
         foreach ($method->getParameters() as $parameter) {
             $arguments[] = $this->solveParameter($method, $parameter);
         }
-
+        
         return ArraySequence::fromArray($arguments);
     }
 
-    protected function getArgumentsValue(string $class, Container $container): Sequence
+    public function getArgumentsValue(Container $container): Sequence
     {
         $values = [];
-        foreach ($this->getArguments($class) as $argument) {
-            $values[] = $argument->provide($container, $class);
+        foreach ($this->getArguments() as $argument) {
+            $values[] = $argument->provide($container);
         }
 
         return ArraySequence::fromArray($values);
+    }
+
+    protected function assertIsAccesible(): void
+    {
+        if (! $this->isAccessible()) {
+            throw new InaccesibleMethod($this->getClass(), $this->getName());
+        }
     }
 
     private function solveParameter(ReflectionMethod $method, ReflectionParameter $parameter): Provider
