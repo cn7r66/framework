@@ -45,6 +45,6 @@ final class HasMethod implements Assertion
             new IsObject(),
         ))->assert($value, 'Value must be either class, interface or object. Got %s');
 
-        return method_exists($value, $this->method);
+        return method_exists($value, $this->method) || $this->method === '__construct';
     }
 }
