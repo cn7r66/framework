@@ -12,4 +12,8 @@ namespace Vivarium\Test\Container\Stub;
 
 abstract class BaseStub implements Stub
 {
+    public function do(): int
+    {
+        return 42;
+    }
 }

@@ -32,4 +32,9 @@ final class ConcreteStub extends BaseStub
     {
         return $this->n;
     }
+
+    public function do(): int
+    {
+        return 420;
+    }
 }
