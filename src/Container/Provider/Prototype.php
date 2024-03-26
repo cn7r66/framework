@@ -27,6 +27,7 @@ use Vivarium\Container\Binder;
 use Vivarium\Container\Binding;
 use Vivarium\Container\Container;
 use Vivarium\Container\Definition;
+use Vivarium\Container\Exception\PropertyNotFound;
 use Vivarium\Container\GenericBinder;
 use Vivarium\Container\Interception\ImmutableMethodInterception;
 use Vivarium\Container\Interception\MethodInterception;
@@ -51,6 +52,8 @@ final class Prototype implements Definition
     /** @var Queue<ValueAndPriority<MethodInterception>> */
     private Queue $methods;
 
+    private string $class;
+
     /** @param class-string $class */
     public function __construct(string $class)
     {
@@ -61,8 +64,10 @@ final class Prototype implements Definition
             ->assert(
                 (new ReflectionClass($class))
                     ->isInstantiable(),
+                "Expectec Prototype class to be instantiable."
             );
 
+        $this->class       = $class;
         $this->constructor = new Constructor($class);
         $this->properties  = new HashMap();
         $this->methods     = new PriorityQueue(new SortableComparator());
@@ -75,7 +80,7 @@ final class Prototype implements Definition
         $reflector = new ReflectionClass($instance);
         foreach ($this->properties as $property => $provider) {
             if (! $reflector->hasProperty($property)) {
-                throw new RuntimeException('');
+                throw new PropertyNotFound($this->class, $property);
             }
 
             $reflector->getProperty($property)
@@ -84,7 +89,7 @@ final class Prototype implements Definition
 
         foreach ($this->methods as $method) {
             $instance = $method->getValue()
-                               ->invoke($container, $instance);
+                               ->intercept($container, $instance);
         }
 
         return $instance;
@@ -113,7 +118,7 @@ final class Prototype implements Definition
     /** @return Binder<Prototype> */
     public function bindParameter(string $parameter): Binder
     {
-        return new GenericBinder(function (Provider $provider) use ($parameter) {
+        return new GenericBinder(function (Provider $provider) use ($parameter): Prototype {
             $prototype              = clone $this;
             $prototype->constructor = $this->constructor
                 ->bindParameter($parameter)
@@ -126,7 +131,7 @@ final class Prototype implements Definition
     /** @return Binder<Prototype> */
     public function bindProperty(string $property): Binder
     {
-        return new GenericBinder(function (Provider $provider) use ($property) {
+        return new GenericBinder(function (Provider $provider) use ($property): Prototype {
             $prototype             = clone $this;
             $prototype->properties = $prototype->properties->put($property, $provider);
 
@@ -187,7 +192,7 @@ final class Prototype implements Definition
 
     private function bindMethodCall(string $method, callable|null $define = null)
     {
-        $call = new MethodCall($method);
+        $call = new MethodCall($this->class, $method);
         if ($define !== null) {
             $call = $define($call);
         }

@@ -12,8 +12,10 @@ namespace Vivarium\Test\Container\Stub;
 
 abstract class BaseStub implements Stub
 {
+    public int $value = 0;
+
     public function do(): int
     {
-        return 42;
+        return $this->value === 0 ? 42 : $this->value;
     }
 }
