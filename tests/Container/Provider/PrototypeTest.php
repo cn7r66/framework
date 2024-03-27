@@ -15,9 +15,11 @@ use Vivarium\Assertion\Exception\AssertionFailed;
 use Vivarium\Container\Container;
 use Vivarium\Container\Exception\PropertyNotFound;
 use Vivarium\Container\Provider\Prototype;
+use Vivarium\Container\Reflection\CreationalMethod;
 use Vivarium\Container\Reflection\Method;
 use Vivarium\Test\Container\Stub\BaseStub;
 use Vivarium\Test\Container\Stub\ConcreteStub;
+use Vivarium\Test\Container\Stub\ImmutableStub;
 use Vivarium\Test\Container\Stub\SimpleStub;
 use Vivarium\Test\Container\Stub\StaticStub;
 use Vivarium\Test\Container\Stub\StubFactory;
@@ -151,6 +153,7 @@ final class PrototypeTest extends TestCase
     /**
      * @covers ::__construct()
      * @covers ::bindMethod()
+     * @covers ::bindMethodCall()
      * @covers ::provide()
      */
     public function testProvideWithBindMethod(): void
@@ -175,6 +178,43 @@ final class PrototypeTest extends TestCase
 
     /**
      * @covers ::__construct()
+     * @covers ::bindMethod()
+     * @covers ::bindImmutableMethod()
+     * @covers ::provide()
+     */
+    public function testProvideWithBindImmutableMethod(): void
+    {
+        $container = $this->createMock(Container::class);
+
+        $container->method('get')
+                  ->willReturn(
+                    new ImmutableStub(),
+                );
+
+        $prototype = (new Prototype(ImmutableStub::class))
+                ->bindImmutableMethod('withInt', function(Method $method) {
+                    return $method->bindParameter('n')
+                                  ->toInstance(42);
+                });
+
+        $instance = $prototype->provide($container);
+        static::assertInstanceOf(ImmutableStub::class, $instance);
+        static::assertSame(42, $instance->getInt());
+    }
+
+    /**
+     * @covers ::__construct()
+     * @covers ::getConstructor()
+     */
+    public function testGetConstructor(): void
+    {
+        $prototype = new Prototype(ConcreteStub::class);
+
+        static::assertInstanceOf(CreationalMethod::class, $prototype->getConstructor());
+    }
+
+    /**
+     * @covers ::__construct()
      * @covers ::getProperties()
      */
     public function testGetProperties(): void
@@ -190,6 +230,27 @@ final class PrototypeTest extends TestCase
         static::assertCount(2, $properties);
         static::assertTrue($properties->containsKey('factory'));
         static::assertTrue($properties->containsKey('value'));
+    }
+
+    /**
+     * @covers ::__construct()
+     * @covers ::getMethods()
+     */
+    public function testGetMethods(): void
+    {
+        $prototype = (new Prototype(ImmutableStub::class))
+                        ->bindMethod('setInt', function (Method $method) {
+                            return $method->bindParameter('n')
+                                          ->toInstance(420);
+                        })
+                        ->bindImmutableMethod('withInt', function (Method $method) {
+                            return $method->bindParameter('n')
+                                          ->toInstance(420);
+                        });
+        
+        $methods = $prototype->getMethods();
+
+        static::assertCount(2, $methods);
     }
 
     /** @covers ::__construct() */

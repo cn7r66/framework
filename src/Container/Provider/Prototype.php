@@ -29,6 +29,7 @@ use Vivarium\Container\Container;
 use Vivarium\Container\Definition;
 use Vivarium\Container\Exception\PropertyNotFound;
 use Vivarium\Container\GenericBinder;
+use Vivarium\Container\Interception;
 use Vivarium\Container\Interception\ImmutableMethodInterception;
 use Vivarium\Container\Interception\MethodInterception;
 use Vivarium\Container\Interception\MutableMethodInterception;
@@ -180,11 +181,11 @@ final class Prototype implements Definition
         return $this->properties;
     }
 
-    /** @return Sequence<Method> */
+    /** @return Sequence<Interception> */
     public function getMethods(): Sequence
     {
         return ArraySequence::fromArray(
-            array_map(static function (ValueAndPriority $method): Method {
+            array_map(static function (ValueAndPriority $method): Interception {
                 return $method->getValue();
             }, $this->methods->toArray()),
         );
