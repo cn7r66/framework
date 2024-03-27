@@ -19,6 +19,15 @@
     <junit outputFile="tests-results/phpunit/junit.xml"/>
   </logging>
 
+  <source>
+    <include>
+      <directory suffix=".php">src</directory>
+    </include>
+    <exclude>
+      <directory suffix=".php">src/*/Exception</directory>
+    </exclude>
+  </source>
+
   <testsuites>
     <testsuite name="Assertion Tests">
       <directory>tests/Assertion</directory>
@@ -43,9 +52,4 @@
     </testsuite>
   </testsuites>
 
-  <source>
-    <include>
-      <directory suffix=".php">src</directory>
-    </include>
-  </source>
 </phpunit>
