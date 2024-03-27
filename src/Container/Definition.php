@@ -18,7 +18,8 @@ interface Definition extends Provider
         string $class,
         string $method,
         string $tag = Binding::DEFAULT,
-        string $context = Binding::GLOBAL): self;
+        string $context = Binding::GLOBAL,
+    ): self;
 
     public function bindConstructorStaticFactory(string $class, string $method): self;
 

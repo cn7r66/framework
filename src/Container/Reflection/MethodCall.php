@@ -16,17 +16,17 @@ use Vivarium\Container\Container;
 
 final class MethodCall extends BaseMethod implements InstanceMethod
 {
-    public function invoke(Container $container, object $instance): mixed 
+    public function invoke(Container $container, object $instance): mixed
     {
         (new IsAssignableTo($this->getClass()))
             ->assert($instance::class);
-    
+
         return (new ReflectionClass($instance::class))
             ->getMethod($this->getName())
             ->invokeArgs(
                 $instance,
                 $this->getArgumentsValue($container)
-                     ->toArray()
+                     ->toArray(),
             );
     }
 }

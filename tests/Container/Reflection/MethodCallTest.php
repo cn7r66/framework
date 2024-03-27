@@ -12,7 +12,6 @@ namespace Vivarium\Test\Container\Reflection;
 
 use PHPUnit\Framework\TestCase;
 use Vivarium\Container\Container;
-use Vivarium\Container\Exception\InaccesibleMethod;
 use Vivarium\Container\Reflection\MethodCall;
 use Vivarium\Test\Container\Stub\BaseStub;
 use Vivarium\Test\Container\Stub\ConcreteStub;
@@ -21,9 +20,7 @@ use Vivarium\Test\Container\Stub\PrivateStub;
 /** @coversDefaultClass Vivarium\Container\Reflection\MethodCall */
 final class MethodCallTest extends TestCase
 {
-    /** 
-     * @covers ::invoke() 
-     */
+    /** @covers ::invoke() */
     public function testInvoke(): void
     {
         $container = $this->getMockBuilder(Container::class)->getMock();

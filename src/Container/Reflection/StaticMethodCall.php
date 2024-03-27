@@ -15,14 +15,14 @@ use Vivarium\Container\Container;
 
 final class StaticMethodCall extends BaseMethod implements CreationalMethod
 {
-    public function invoke(Container $container): mixed 
-    {        
+    public function invoke(Container $container): mixed
+    {
         return (new ReflectionClass($this->getClass()))
             ->getMethod($this->getName())
             ->invokeArgs(
                 null,
                 $this->getArgumentsValue($container)
-                     ->toArray()   
+                     ->toArray(),
             );
     }
 }

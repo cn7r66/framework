@@ -15,12 +15,14 @@ use stdClass;
 use Vivarium\Container\Binding;
 use Vivarium\Container\Binding\SimpleBinding;
 use Vivarium\Container\Exception\BindingNotFound;
-use Vivarium\Container\Provider\Prototype;
 use Vivarium\Container\MultiStepContainer;
 use Vivarium\Container\Provider\Instance;
+use Vivarium\Container\Provider\Prototype;
 use Vivarium\Container\Step;
 use Vivarium\Test\Container\Stub\ConcreteStub;
 use Vivarium\Test\Container\Stub\SimpleStub;
+
+use function class_exists;
 
 /** @coversDefaultClass Vivarium\Container\MultiStepContainer */
 final class MultiStepContainerTest extends TestCase
@@ -37,13 +39,13 @@ final class MultiStepContainerTest extends TestCase
     {
         $solver = $this->createMock(Step::class);
         $solver->method('solve')
-               ->willReturnCallback(function (Binding $arg, callable $next) {
-                if (! \class_exists($arg->getId())) {
+               ->willReturnCallback(static function (Binding $arg, callable $next) {
+                if (! class_exists($arg->getId())) {
                     return $next();
                 }
 
                 return new Prototype($arg->getId());
-            });
+               });
 
         $container = (new MultiStepContainer())->withStep($solver);
 
@@ -58,9 +60,9 @@ final class MultiStepContainerTest extends TestCase
     {
         $solver = $this->createMock(Step::class);
         $solver->method('solve')
-               ->willReturnCallback(function (Binding $arg) {
+               ->willReturnCallback(static function (Binding $arg) {
                 return new Instance(new ($arg->getId()));
-            });
+               });
 
         $container = (new MultiStepContainer())->withStep($solver);
         $instance  = $container->get(stdClass::class);

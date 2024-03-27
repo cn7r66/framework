@@ -16,9 +16,11 @@ use Vivarium\Container\Step;
 
 final class Caching implements Step
 {
-    public function __construct(private string $path) {}
+    public function __construct(private string $path)
+    {
+    }
 
-    public function solve(Binding $request, callable $next): Provider 
+    public function solve(Binding $request, callable $next): Provider
     {
         // TODO Implements caching
         return $next();

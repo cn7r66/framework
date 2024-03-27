@@ -30,22 +30,22 @@ final class StaticFactoryTest extends TestCase
     public function testProvide(): void
     {
         $factory = (new StaticFactory(StaticStub::class, 'get'))
-                        ->configure(function (CreationalMethod $method) {
+                        ->configure(static function (CreationalMethod $method) {
                             return $method
                                 ->bindParameter('stub')
                                 ->to(ConcreteStub::class);
                         });
-                        
+
         $container = $this->getMockBuilder(Container::class)
                           ->getMock();
 
-        $binding    = new TypeBinding(ConcreteStub::class);
+        $binding = new TypeBinding(ConcreteStub::class);
 
         $container->expects(static::once())
                   ->method('get')
                   ->with(static::equalTo($binding))
                   ->willReturn(
-                    new ConcreteStub()
+                      new ConcreteStub(),
                   );
 
         static::assertInstanceOf(SimpleStub::class, $factory->provide($container));

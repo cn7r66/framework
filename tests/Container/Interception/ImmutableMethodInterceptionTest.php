@@ -20,18 +20,18 @@ use Vivarium\Test\Container\Stub\ImmutableStub;
 final class ImmutableMethodInterceptionTest extends TestCase
 {
     /**
-     * @covers ::__construct() 
-     * @covers ::intercept() 
+     * @covers ::__construct()
+     * @covers ::intercept()
      */
     public function testIntercept(): void
     {
         $container = $this->getMockBuilder(Container::class)->getMock();
 
         $interception = new ImmutableMethodInterception(
-                            (new MethodCall(ImmutableStub::class, 'withInt'))
+            (new MethodCall(ImmutableStub::class, 'withInt'))
                                 ->bindParameter('n')
-                                ->toInstance(42)
-                            );
+                                ->toInstance(42),
+        );
 
         $stub  = new ImmutableStub();
         $stub1 = $interception->intercept($container, $stub);
@@ -41,8 +41,8 @@ final class ImmutableMethodInterceptionTest extends TestCase
     }
 
     /**
-     * @covers ::__construct() 
-     * @covers ::intercept() 
+     * @covers ::__construct()
+     * @covers ::intercept()
      * @covers ::configure()
      */
     public function testConfigure(): void
@@ -50,8 +50,8 @@ final class ImmutableMethodInterceptionTest extends TestCase
         $container = $this->getMockBuilder(Container::class)->getMock();
 
         $interception = new ImmutableMethodInterception(
-                            new MethodCall(ImmutableStub::class, 'withInt')
-                        );
+            new MethodCall(ImmutableStub::class, 'withInt'),
+        );
 
         $interception = $interception->configure(static function (MethodCall $method) {
             return $method->bindParameter('n')

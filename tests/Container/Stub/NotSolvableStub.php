@@ -12,7 +12,7 @@ namespace Vivarium\Test\Container\Stub;
 
 final class NotSolvableStub
 {
-    public function __construct(private $stub)
+    public function __construct(private $stub) // phpcs:ignore
     {
     }
 }

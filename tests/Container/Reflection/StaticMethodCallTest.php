@@ -49,9 +49,7 @@ final class StaticMethodCallTest extends TestCase
         static::assertInstanceOf(SimpleStub::class, $instance);
     }
 
-    /** 
-     * @covers ::getClass()
-     */
+    /** @covers ::getClass() */
     public function testGetClass(): void
     {
         $method = new StaticMethodCall(StaticStub::class, 'get');

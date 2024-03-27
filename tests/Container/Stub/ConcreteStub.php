@@ -12,7 +12,7 @@ namespace Vivarium\Test\Container\Stub;
 
 final class ConcreteStub extends BaseStub
 {
-    public ?StubFactory $factory = null;
+    public StubFactory|null $factory = null;
 
     private int $n;
 

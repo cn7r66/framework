@@ -18,9 +18,10 @@ use Vivarium\Container\Reflection\MethodCall;
 final class ImmutableMethodInterception implements MethodInterception
 {
     public function __construct(private MethodCall $method)
-    {}
+    {
+    }
 
-    public function intercept(Container $container, object $instance): object 
+    public function intercept(Container $container, object $instance): object
     {
         (new HasMethod($this->method->getName()))
             ->assert($instance);

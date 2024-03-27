@@ -22,7 +22,7 @@ use Vivarium\Test\Container\Stub\StubFactory;
 /** @coversDefaultClass \Vivarium\Container\Reflection\FactoryMethodCall */
 final class FactoryMethodCallTest extends TestCase
 {
-    /** 
+    /**
      * @covers ::__construct()
      * @covers ::invoke()
      * @covers ::getArguments()
@@ -43,8 +43,8 @@ final class FactoryMethodCallTest extends TestCase
         $container->expects(static::exactly(2))
                   ->method('get')
                   ->willReturnOnConsecutiveCalls(
-                    new StubFactory(),
-                    new ConcreteStub()
+                      new StubFactory(),
+                      new ConcreteStub(),
                   );
 
         $instance = $method->invoke($container);
@@ -52,9 +52,9 @@ final class FactoryMethodCallTest extends TestCase
         static::assertInstanceOf(SimpleStub::class, $instance);
     }
 
-    /** 
-     * @covers ::__construct() 
-     * @covers ::getBinding() 
+    /**
+     * @covers ::__construct()
+     * @covers ::getBinding()
      */
     public function testGetBinding(): void
     {

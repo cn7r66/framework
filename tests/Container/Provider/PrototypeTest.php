@@ -17,7 +17,6 @@ use Vivarium\Container\Exception\PropertyNotFound;
 use Vivarium\Container\Provider\Prototype;
 use Vivarium\Container\Reflection\CreationalMethod;
 use Vivarium\Container\Reflection\Method;
-use Vivarium\Test\Container\Stub\BaseStub;
 use Vivarium\Test\Container\Stub\ConcreteStub;
 use Vivarium\Test\Container\Stub\ImmutableStub;
 use Vivarium\Test\Container\Stub\SimpleStub;
@@ -139,7 +138,9 @@ final class PrototypeTest extends TestCase
     public function testProvideWithNonExistentProperty(): void
     {
         static::expectException(PropertyNotFound::class);
-        static::expectExceptionMessage('Property named nonExistent in class Vivarium\Test\Container\Stub\ConcreteStub not found.');
+        static::expectExceptionMessage(
+            'Property named nonExistent in class Vivarium\Test\Container\Stub\ConcreteStub not found.',
+        );
 
         $container = $this->createMock(Container::class);
 
@@ -166,7 +167,7 @@ final class PrototypeTest extends TestCase
                   );
 
         $prototype = (new Prototype(ConcreteStub::class))
-                ->bindMethod('setInt', function(Method $method) {
+                ->bindMethod('setInt', static function (Method $method) {
                     return $method->bindParameter('n')
                                   ->toInstance(42);
                 });
@@ -188,11 +189,11 @@ final class PrototypeTest extends TestCase
 
         $container->method('get')
                   ->willReturn(
-                    new ImmutableStub(),
-                );
+                      new ImmutableStub(),
+                  );
 
         $prototype = (new Prototype(ImmutableStub::class))
-                ->bindImmutableMethod('withInt', function(Method $method) {
+                ->bindImmutableMethod('withInt', static function (Method $method) {
                     return $method->bindParameter('n')
                                   ->toInstance(42);
                 });
@@ -239,15 +240,15 @@ final class PrototypeTest extends TestCase
     public function testGetMethods(): void
     {
         $prototype = (new Prototype(ImmutableStub::class))
-                        ->bindMethod('setInt', function (Method $method) {
+                        ->bindMethod('setInt', static function (Method $method) {
                             return $method->bindParameter('n')
                                           ->toInstance(420);
                         })
-                        ->bindImmutableMethod('withInt', function (Method $method) {
+                        ->bindImmutableMethod('withInt', static function (Method $method) {
                             return $method->bindParameter('n')
                                           ->toInstance(420);
                         });
-        
+
         $methods = $prototype->getMethods();
 
         static::assertCount(2, $methods);

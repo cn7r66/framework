@@ -20,17 +20,17 @@ final class FactoryMethodCall extends BaseMethod implements CreationalMethod
     private ClassBinding $factory;
 
     public function __construct(
-        string $class, 
-        string $method,         
+        string $class,
+        string $method,
         string $tag = Binding::DEFAULT,
-        string $context = Binding::GLOBAL)
-    {
+        string $context = Binding::GLOBAL,
+    ) {
         parent::__construct($class, $method);
 
         $this->factory = new ClassBinding(
             $class,
             $tag,
-            $context
+            $context,
         );
     }
 
@@ -39,8 +39,8 @@ final class FactoryMethodCall extends BaseMethod implements CreationalMethod
         return $this->factory;
     }
 
-    public function invoke(Container $container): mixed 
-    { 
+    public function invoke(Container $container): mixed
+    {
         $instance = $container->get($this->factory);
 
         return (new ReflectionClass($this->getClass()))
@@ -48,7 +48,7 @@ final class FactoryMethodCall extends BaseMethod implements CreationalMethod
             ->invokeArgs(
                 $instance,
                 $this->getArgumentsValue($container)
-                     ->toArray()
+                     ->toArray(),
             );
     }
 }

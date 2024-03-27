@@ -12,7 +12,7 @@ namespace Vivarium\Test\Container\Stub;
 
 final class DefaultArgumentNotSolvableStub
 {
-    public function __construct(private $value = 'DEFAULT')
+    public function __construct(private $value = 'DEFAULT') // phpcs:ignore
     {
     }
 

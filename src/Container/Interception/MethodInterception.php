@@ -11,7 +11,6 @@ declare(strict_types=1);
 namespace Vivarium\Container\Interception;
 
 use Vivarium\Container\Interception;
-use Vivarium\Container\Reflection\MethodCall;
 
 interface MethodInterception extends Interception
 {

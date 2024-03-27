@@ -35,20 +35,13 @@ abstract class BaseMethod implements Method
     /** @var Map<string, Provider> */
     private Map $parameters;
 
-    /** @var class-string */
-    private string $class;
-
-    private string $method;
-
     /** @psalm-assert class-string $class */
-    public function __construct(string $class, string $method)
+    public function __construct(private string $class, private string $method)
     {
         (new HasMethod($method))
             ->assert($class);
 
         $this->parameters = new HashMap();
-        $this->class      = $class;
-        $this->method     = $method;
     }
 
     public function getClass(): string
@@ -95,7 +88,7 @@ abstract class BaseMethod implements Method
         foreach ($method->getParameters() as $parameter) {
             $arguments[] = $this->solveParameter($method, $parameter);
         }
-        
+
         return ArraySequence::fromArray($arguments);
     }
 

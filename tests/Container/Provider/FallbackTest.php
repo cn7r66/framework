@@ -12,10 +12,7 @@ namespace Vivarium\Test\Container\Provider;
 
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\ContainerInterface;
-use Vivarium\Container\Binding\TypeBinding;
 use Vivarium\Container\Container;
-use Vivarium\Container\Exception\BindingNotFound;
 use Vivarium\Container\Provider;
 use Vivarium\Container\Provider\Fallback;
 
@@ -47,9 +44,9 @@ final class FallbackTest extends TestCase
     }
 
         /**
-     * @covers ::__construct()
-     * @covers ::provide()
-     */
+         * @covers ::__construct()
+         * @covers ::provide()
+         */
     public function testProvideFallback(): void
     {
         $container = $this->getMockBuilder(Container::class)

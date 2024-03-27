@@ -11,7 +11,6 @@ declare(strict_types=1);
 namespace Vivarium\Container\Provider;
 
 use ReflectionClass;
-use RuntimeException;
 use Vivarium\Assertion\Boolean\IsTrue;
 use Vivarium\Assertion\String\IsClass;
 use Vivarium\Collection\Map\HashMap;
@@ -39,8 +38,8 @@ use Vivarium\Container\Reflection\CreationalMethod;
 use Vivarium\Container\Reflection\FactoryMethodCall;
 use Vivarium\Container\Reflection\Method;
 use Vivarium\Container\Reflection\MethodCall;
-
 use Vivarium\Container\Reflection\StaticMethodCall;
+
 use function array_map;
 
 final class Prototype implements Definition
@@ -53,10 +52,8 @@ final class Prototype implements Definition
     /** @var Queue<ValueAndPriority<MethodInterception>> */
     private Queue $methods;
 
-    private string $class;
-
     /** @param class-string $class */
-    public function __construct(string $class)
+    public function __construct(private string $class)
     {
         (new IsClass())
             ->assert($class);
@@ -65,10 +62,9 @@ final class Prototype implements Definition
             ->assert(
                 (new ReflectionClass($class))
                     ->isInstantiable(),
-                "Expectec Prototype class to be instantiable."
+                'Expectec Prototype class to be instantiable.',
             );
 
-        $this->class       = $class;
         $this->constructor = new Constructor($class);
         $this->properties  = new HashMap();
         $this->methods     = new PriorityQueue(new SortableComparator());
@@ -100,8 +96,8 @@ final class Prototype implements Definition
         string $class,
         string $method,
         string $tag = Binding::DEFAULT,
-        string $context = Binding::GLOBAL): self
-    {
+        string $context = Binding::GLOBAL,
+    ): self {
         $prototype              = clone $this;
         $prototype->constructor = new FactoryMethodCall($class, $method, $tag, $context);
 
@@ -191,7 +187,7 @@ final class Prototype implements Definition
         );
     }
 
-    private function bindMethodCall(string $method, callable|null $define = null)
+    private function bindMethodCall(string $method, callable|null $define = null): MethodCall
     {
         $call = new MethodCall($this->class, $method);
         if ($define !== null) {

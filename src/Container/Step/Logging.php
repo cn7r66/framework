@@ -17,9 +17,11 @@ use Vivarium\Container\Step;
 
 final class Logging implements Step
 {
-    public function __construct(private LoggerInterface $logger) {}
+    public function __construct(private LoggerInterface $logger)
+    {
+    }
 
-    public function solve(Binding $request, callable $next): Provider 
+    public function solve(Binding $request, callable $next): Provider
     {
         // TODO Implements caching
         return $next();

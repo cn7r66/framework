@@ -30,8 +30,8 @@ final class MultiStepContainer implements Container
 
     public function __construct()
     {
-        $this->steps  = new PriorityQueue(
-            new SortableComparator()
+        $this->steps = new PriorityQueue(
+            new SortableComparator(),
         );
 
         $this->solved = new HashMap();

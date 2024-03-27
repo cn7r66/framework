@@ -30,7 +30,7 @@ final class Factory implements Provider
             $class,
             $method,
             $tag,
-            $context
+            $context,
         );
     }
 
@@ -42,8 +42,8 @@ final class Factory implements Provider
         return $factory;
     }
 
-    public function provide(Container $container): mixed 
-    { 
+    public function provide(Container $container): mixed
+    {
         return $this->method->invoke($container);
     }
 }

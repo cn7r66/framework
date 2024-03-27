@@ -113,7 +113,7 @@ final class ConstructorTest extends TestCase
         $binding = new TypeBinding(
             Stub::class,
             Binding::DEFAULT,
-            SimpleStub::class
+            SimpleStub::class,
         );
 
         $container->expects(static::once())
@@ -142,7 +142,7 @@ final class ConstructorTest extends TestCase
         $binding = new TypeBinding(
             'string',
             Binding::DEFAULT,
-            DefaultArgumentStub::class
+            DefaultArgumentStub::class,
         );
 
         $container->expects(static::once())
@@ -200,6 +200,7 @@ final class ConstructorTest extends TestCase
 
         $constructor->invoke($container);
     }
+
     /** @covers ::getParameter() */
     public function testGetParameterException(): void
     {

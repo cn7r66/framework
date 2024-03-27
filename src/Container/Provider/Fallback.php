@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Vivarium\Container\Provider;
 
 use Psr\Container\ContainerExceptionInterface;
-use Throwable;
 use Vivarium\Container\Container;
 use Vivarium\Container\Provider;
 
