@@ -41,8 +41,6 @@ final class FactoryMethodCall extends BaseMethod implements CreationalMethod
 
     public function invoke(Container $container): mixed 
     { 
-        $this->assertIsAccesible();
-
         $instance = $container->get($this->factory);
 
         return (new ReflectionClass($this->getClass()))

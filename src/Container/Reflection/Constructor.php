@@ -22,16 +22,6 @@ final class Constructor extends BaseMethod implements CreationalMethod
         parent::__construct($class, '__construct');
     }
 
-    public function isAccessible(): bool
-    {
-        $reflector = (new ReflectionClass($this->getClass()));
-        if (! $reflector->hasMethod($this->getName())) {
-            return true;
-        }
-
-        return parent::isAccessible();
-    }
-
     public function getArguments(): Sequence
     {
         $reflector = new ReflectionClass($this->getClass());
@@ -44,8 +34,6 @@ final class Constructor extends BaseMethod implements CreationalMethod
 
     public function invoke(Container $container): mixed 
     {
-        $this->assertIsAccesible();
-
         return (new ReflectionClass($this->getClass()))
             ->newInstanceArgs(
                 $this->getArgumentsValue($container)

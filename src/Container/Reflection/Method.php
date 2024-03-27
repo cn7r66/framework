@@ -28,10 +28,6 @@ interface Method
 
     public function hasParameter(string $parameter): bool;
 
-    public function makeAccessible(): self;
-
-    public function isAccessible(): bool;
-
     /** @return Sequence<Provider> */
     public function getArguments(): Sequence;
 

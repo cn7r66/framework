@@ -22,7 +22,6 @@ use Vivarium\Container\Binder;
 use Vivarium\Container\Binding;
 use Vivarium\Container\Binding\TypeBinding;
 use Vivarium\Container\Container;
-use Vivarium\Container\Exception\InaccesibleMethod;
 use Vivarium\Container\Exception\ParameterNotFound;
 use Vivarium\Container\Exception\ParameterNotSolvable;
 use Vivarium\Container\GenericBinder;
@@ -41,8 +40,6 @@ abstract class BaseMethod implements Method
 
     private string $method;
 
-    private bool $accessible;
-
     /** @psalm-assert class-string $class */
     public function __construct(string $class, string $method)
     {
@@ -52,7 +49,6 @@ abstract class BaseMethod implements Method
         $this->parameters = new HashMap();
         $this->class      = $class;
         $this->method     = $method;
-        $this->accessible = false;
     }
 
     public function getClass(): string
@@ -89,22 +85,6 @@ abstract class BaseMethod implements Method
         return $this->parameters->containsKey($parameter);
     }
 
-    public function makeAccessible(): self
-    {
-        $method             = clone $this;
-        $method->accessible = true;
-
-        return $method;
-    }
-
-    public function isAccessible(): bool
-    {
-        $method = (new ReflectionClass($this->getClass()))
-            ->getMethod($this->method);
-
-        return $method->isPublic() || $this->accessible;
-    }
-
     /** @return Sequence<Provider> */
     public function getArguments(): Sequence
     {
@@ -127,13 +107,6 @@ abstract class BaseMethod implements Method
         }
 
         return ArraySequence::fromArray($values);
-    }
-
-    protected function assertIsAccesible(): void
-    {
-        if (! $this->isAccessible()) {
-            throw new InaccesibleMethod($this->getClass(), $this->getName());
-        }
     }
 
     private function solveParameter(ReflectionMethod $method, ReflectionParameter $parameter): Provider

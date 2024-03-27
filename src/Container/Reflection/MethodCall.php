@@ -21,8 +21,6 @@ final class MethodCall extends BaseMethod implements InstanceMethod
         (new IsAssignableTo($this->getClass()))
             ->assert($instance::class);
     
-        $this->assertIsAccesible();
-
         return (new ReflectionClass($instance::class))
             ->getMethod($this->getName())
             ->invokeArgs(

@@ -33,7 +33,6 @@ final class ConstructorTest extends TestCase
     /**
      * @covers ::__construct()
      * @covers ::invoke()
-     * @covers ::isAccessible()
      */
     public function testInvoke(): void
     {
@@ -45,7 +44,6 @@ final class ConstructorTest extends TestCase
         $container->expects(static::never())
                   ->method('get');
 
-        static::assertTrue($constructor->isAccessible());
         static::assertInstanceOf(ConcreteStub::class, $constructor->invoke($container));
     }
 
@@ -214,14 +212,12 @@ final class ConstructorTest extends TestCase
 
     /**
      * @covers ::__construct()
-     * @covers ::isAccessible()
      * @covers ::getArguments()
      */
     public function testInvokeWithoutExplicitConstructor(): void
     {
         $constructor = new Constructor(stdClass::class);
 
-        static::assertTrue($constructor->isAccessible());
         static::assertSame([], $constructor->getArguments()->toArray());
     }
 }

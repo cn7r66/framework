@@ -16,9 +16,7 @@ use Vivarium\Container\Container;
 final class StaticMethodCall extends BaseMethod implements CreationalMethod
 {
     public function invoke(Container $container): mixed 
-    {
-        $this->assertIsAccesible();
-        
+    {        
         return (new ReflectionClass($this->getClass()))
             ->getMethod($this->getName())
             ->invokeArgs(

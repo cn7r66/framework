@@ -23,7 +23,6 @@ final class MethodCallTest extends TestCase
 {
     /** 
      * @covers ::invoke() 
-     * @covers ::isAccessible()
      */
     public function testInvoke(): void
     {
@@ -42,8 +41,6 @@ final class MethodCallTest extends TestCase
     /**
      * @covers ::__construct()
      * @covers ::invoke()
-     * @covers ::isAccessible()
-     * @covers ::makeAccessible()
      */
     public function testPrivateInvoke(): void
     {
@@ -51,8 +48,7 @@ final class MethodCallTest extends TestCase
 
         $method = (new MethodCall(PrivateStub::class, 'setInt'))
                             ->bindParameter('n')
-                            ->toInstance(42)
-                            ->makeAccessible();
+                            ->toInstance(42);
 
         $stub = new PrivateStub();
 
@@ -63,30 +59,6 @@ final class MethodCallTest extends TestCase
     /**
      * @covers ::__construct()
      * @covers ::invoke()
-     * @covers ::isAccessible()
-     * @covers ::makeAccessible()
-     */
-    public function testInaccesiblePrivateInvoke(): void
-    {
-        static::expectException(InaccesibleMethod::class);
-        static::expectExceptionMessage('Method setInt, of class Vivarium\Test\Container\Stub\PrivateStub is not accessible.');
-
-        $container = $this->getMockBuilder(Container::class)->getMock();
-
-        $method = (new MethodCall(PrivateStub::class, 'setInt'))
-                            ->bindParameter('n')
-                            ->toInstance(42);
-
-        $stub = new PrivateStub();
-
-        $method->invoke($container, $stub);
-    }
-
-    /**
-     * @covers ::__construct()
-     * @covers ::invoke()
-     * @covers ::isAccessible()
-     * @covers ::makeAccessible()
      */
     public function testCallOnOverrideMethod(): void
     {

@@ -24,7 +24,6 @@ final class StaticMethodCallTest extends TestCase
     /**
      * @covers ::__construct()
      * @covers ::invoke()
-     * @covers ::isAccessible()
      */
     public function testInvoke(): void
     {
