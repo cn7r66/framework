@@ -17,6 +17,8 @@ use Vivarium\Container\Provider;
 
 interface Method
 {
+    public function getClass(): string;
+
     public function getName(): string;
 
     /** @return Binder<self> */
