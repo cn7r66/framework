@@ -11,31 +11,30 @@ declare(strict_types=1);
 namespace Vivarium\Container\Step;
 
 use Vivarium\Container\Binder;
+use Vivarium\Container\Binding;
 use Vivarium\Container\Interception;
+use Vivarium\Container\Interceptor;
 use Vivarium\Container\Step;
 
 interface ConfigurableSolver extends Step
 {
     /** @return Binder<self> */
-    public function bind(string $type, string $tag, string $context): Binder;
+    public function bind(string $type, string $tag = Binding::DEFAULT, string $context = Binding::GLOBAL): Binder;
 
     /** @return Binder<self> */
-    public function rebind(string $type, string $tag, string $context): Binder;
+    public function rebind(string $type, string $tag = Binding::DEFAULT, string $context = Binding::GLOBAL): Binder;
 
     /** callable(Definition) */
-    public function define(string $class, callable $define, string $tag, string $context): self;
+    public function define(string $class, callable $define, string $tag = Binding::DEFAULT, string $context = Binding::GLOBAL): self;
 
     /**
      * @param callable(T): Provider $extend
      *
      * @template T of Provider
      */
-    public function extend(string $type, callable $extend, string $tag, string $context): self;
+    public function extend(string $type, callable $extend, string $tag = Binding::DEFAULT, string $context = Binding::GLOBAL): self;
 
-    /** callable(Injectable) */
-    public function inject(string $type, callable $inject, string $tag, string $context): self;
+    public function intercept(string $type, string $tag = Binding::DEFAULT, string $context = Binding::GLOBAL): Interceptor;
 
     public function decorate(): self;
-
-    public function intercept(Interception $interception): self;
 }

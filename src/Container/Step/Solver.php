@@ -14,14 +14,17 @@ use RuntimeException;
 use Vivarium\Collection\Map\HashMap;
 use Vivarium\Collection\Map\Map;
 use Vivarium\Container\Binder;
+use Vivarium\Container\Binding;
 use Vivarium\Container\Binding\ClassBinding;
 use Vivarium\Container\Binding\TypeBinding;
 use Vivarium\Container\GenericBinder;
+use Vivarium\Container\GenericInterceptor;
+use Vivarium\Container\Interception;
+use Vivarium\Container\Interceptor;
 use Vivarium\Container\Provider;
 use Vivarium\Container\Provider\Prototype;
-use Vivarium\Container\Step;
 
-final class Solver implements Step
+final class Solver implements ConfigurableSolver
 {
     private Map $providers;
 
@@ -30,7 +33,7 @@ final class Solver implements Step
         $this->providers = new HashMap();
     }
 
-    public function bind(string $type, string $tag, string $context): Binder
+    public function bind(string $type, string $tag = Binding::DEFAULT, string $context = Binding::GLOBAL): Binder
     {
         $binding = new TypeBinding($type, $tag, $context);
 
@@ -41,7 +44,7 @@ final class Solver implements Step
         return $this->rebind($type, $tag, $context);
     }
 
-    public function rebind(string $type, string $tag, string $context): Binder
+    public function rebind(string $type, string $tag = Binding::DEFAULT, string $context = Binding::GLOBAL): Binder
     {
         $binding = new TypeBinding($type, $tag, $context);
 
@@ -59,7 +62,7 @@ final class Solver implements Step
      * @param non-empty-string                 $tag
      * @param non-empty-string                 $context
      */
-    public function define(string $class, callable $define, string $tag, string $context): self
+    public function define(string $class, callable $define, string $tag = Binding::DEFAULT, string $context = Binding::GLOBAL): self
     {
         $binding = new ClassBinding($class, $tag, $context);
         if ($this->providers->containsKey($binding)) {
@@ -75,20 +78,18 @@ final class Solver implements Step
         return $solver;
     }
 
-    public function inject(string $type, callable $inject, string $tag, string $context): self
-    {
-        // TODO: Implement inject() method.
+    public function extend(string $type, callable $extend, string $tag = Binding::DEFAULT, string $context = Binding::GLOBAL): self { }
+
+    public function intercept(string $type, string $tag = Binding::DEFAULT, string $context = Binding::GLOBAL): Interceptor 
+    { 
+        $binding = new TypeBinding($type, $tag, $context);
+
+        return new GenericInterceptor(function (Interception $interception) use ($binding) {
+            return $interception;
+        });
     }
 
-    public function extend(string $type, callable $extend, string $tag, string $context): self
-    {
-        // TODO: Implement extend() method.
-    }
-
-    public function decorate(): void
-    {
-        // TODO: Implement decorate() method.
-    }
+    public function decorate(): self { }
 
     public function solve(Binding $request, callable $next): Provider
     {
