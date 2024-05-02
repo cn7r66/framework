@@ -10,36 +10,39 @@ declare(strict_types=1);
 
 namespace Vivarium\Container;
 
-/** @template T */
-interface Interceptor
+use ReflectionFunction;
+use Vivarium\Assertion\Conditional\IsNotNull;
+
+/**
+ * @template T
+ */
+final class Interceptor
 {
-    /**
-     * @param callable(InstanceMethod): InstanceMethod $configure 
-     * @return T 
-     */
-    public function withMethod(callable $configure);
+    /** @var callable(Interception):T */
+    private $create;
 
-    /**
-     * @param callable(InstanceMethod):InstanceMethod $configure
-     * @return T
-     */
-    public function withImmutableMethod(callable $configure);
+        /** @param callable(Interception): T $create */
+    public function __construct(callable $create)
+    {
+        (new IsNotNull())
+            ->assert(
+                (new ReflectionFunction($create))->getReturnType(),
+                '"Missing type hint on callback function."',
+            );
 
-    /**
-     * @param callable(InstanceMethod):InstanceMethod $configure
-     * @return T
-     */
-    public function withUniqueMethod(callable $configure);
+        $this->create = $create;
+    }
 
-    /**
-     * @param callable(InstanceMethod):InstanceMethod $configure
-     * @return T
-     */
-    public function withUniqueImmutableMethod(callable $configure);
+    public function withMethod(callable $configure) { }
 
-    /** @return T */
-    public function withInterception(Interception $interception);
+    public function withImmutableMethod(callable $configure) { }
 
-    /** @return T */
-    public function withUniqueInterception(Interception $interception);
+    public function withUniqueMethod(callable $configure) { }
+
+    public function withUniqueImmutableMethod(callable $configure) { }
+
+    public function withInterception(Interception $interception) { }
+
+    public function withUniqueInterception(Interception $interception) { }
+
 }

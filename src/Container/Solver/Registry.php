@@ -17,16 +17,16 @@ use Vivarium\Container\Binder;
 use Vivarium\Container\Binding;
 use Vivarium\Container\Binding\ClassBinding;
 use Vivarium\Container\Binding\TypeBinding;
-use Vivarium\Container\GenericBinder;
-use Vivarium\Container\GenericInterceptor;
-use Vivarium\Container\Interception;
+use Vivarium\Container\Definition;
 use Vivarium\Container\Interceptor;
+use Vivarium\Container\Interception;
 use Vivarium\Container\Provider;
 use Vivarium\Container\Provider\Prototype;
 use Vivarium\Container\Solver;
 
 final class Registry implements Solver
 {
+    /** @var Map<Binding, Provider> */
     private Map $providers;
 
     public function __construct()
@@ -49,7 +49,7 @@ final class Registry implements Solver
     {
         $binding = new TypeBinding($type, $tag, $context);
 
-        return new GenericBinder(function (Provider $provider) use ($binding) {
+        return new Binder(function (Provider $provider) use ($binding) {
             $solver            = clone $this;
             $solver->providers = $solver->providers->put($binding, $provider);
 
@@ -85,7 +85,7 @@ final class Registry implements Solver
     { 
         $binding = new TypeBinding($type, $tag, $context);
 
-        return new GenericInterceptor(function (Interception $interception) use ($binding) {
+        return new Interceptor(function (Interception $interception) use ($binding) {
             return $interception;
         });
     }

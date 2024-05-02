@@ -10,15 +10,60 @@ declare(strict_types=1);
 
 namespace Vivarium\Container;
 
-/** @template T */
-interface Binder
+use ReflectionFunction;
+use Vivarium\Assertion\Conditional\IsNotNull;
+use Vivarium\Assertion\String\IsType;
+use Vivarium\Container\Provider\ContainerCall;
+use Vivarium\Container\Provider\Instance;
+
+/**
+ * @template T
+ */
+final class Binder
 {
-    /** @return T */
-    public function to(string $type, string $tag = Binding::DEFAULT, string $context = Binding::GLOBAL);
+    /** @var callable(Provider):T */
+    private $create;
+
+     /** @param callable(Provider): T $create */
+    public function __construct(callable $create)
+    {
+        (new IsNotNull())
+            ->assert(
+                (new ReflectionFunction($create))->getReturnType(),
+                '"Missing type hint on callback function."',
+            );
+
+        $this->create = $create;
+    }
 
     /** @return T */
-    public function toInstance(mixed $instance);
+    public function to(string $type, string $tag = Binding::DEFAULT, string $context = Binding::GLOBAL)
+    {
+        (new IsType())
+            ->assert($type);
+
+        return $this->toProvider(
+            new ContainerCall(
+                new Binding\TypeBinding(
+                    $type,
+                    $tag,
+                    $context,
+                ),
+            ),
+        );
+    }
 
     /** @return T */
-    public function toProvider(Provider $provider);
+    public function toInstance(mixed $instance)
+    {
+        return $this->toProvider(
+            new Instance($instance),
+        );
+    }
+
+    /** @return T */
+    public function toProvider(Provider $provider)
+    {
+        return ($this->create)($provider);
+    }
 }

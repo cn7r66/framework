@@ -14,13 +14,13 @@ use PHPUnit\Framework\TestCase;
 use Vivarium\Assertion\Exception\AssertionFailed;
 use Vivarium\Container\Binding\TypeBinding;
 use Vivarium\Container\Container;
-use Vivarium\Container\GenericBinder;
+use Vivarium\Container\Binder;
 use Vivarium\Container\Provider;
 use Vivarium\Container\Provider\ContainerCall;
 use Vivarium\Test\Container\Stub\ConcreteStub;
 
-/** @coversDefaultClass \Vivarium\Container\GenericBinder */
-final class GenericBinderTest extends TestCase
+/** @coversDefaultClass \Vivarium\Container\Binder */
+final class BinderTest extends TestCase
 {
     /**
      * @covers ::__construct()
@@ -28,7 +28,7 @@ final class GenericBinderTest extends TestCase
      */
     public function testTo(): void
     {
-        $binder = new GenericBinder(function (Provider $provider): void {
+        $binder = new Binder(function (Provider $provider): void {
             $binding = new TypeBinding(ConcreteStub::class);
 
             $container = $this->createMock(Container::class);
@@ -53,7 +53,7 @@ final class GenericBinderTest extends TestCase
     {
         $instance = new ConcreteStub();
 
-        $binder = new GenericBinder(function (Provider $provider) use ($instance): void {
+        $binder = new Binder(function (Provider $provider) use ($instance): void {
             $container = $this->createMock(Container::class);
 
             $container->expects(static::never())
@@ -70,7 +70,7 @@ final class GenericBinderTest extends TestCase
     {
         $provider = $this->createMock(Provider::class);
 
-        $binder = new GenericBinder(static function (Provider $provider1) use ($provider): void {
+        $binder = new Binder(static function (Provider $provider1) use ($provider): void {
             static::assertSame($provider, $provider1);
         });
 
@@ -84,7 +84,7 @@ final class GenericBinderTest extends TestCase
         static::expectExceptionMessage('Missing type hint on callback function.');
 
         // phpcs:ignore
-        new GenericBinder(static function (Provider $provider) {
+        new Binder(static function (Provider $provider) {
         });
     }
 }

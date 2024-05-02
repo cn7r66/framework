@@ -27,7 +27,6 @@ use Vivarium\Container\Binding;
 use Vivarium\Container\Container;
 use Vivarium\Container\Definition;
 use Vivarium\Container\Exception\PropertyNotFound;
-use Vivarium\Container\GenericBinder;
 use Vivarium\Container\Interception;
 use Vivarium\Container\Interception\ImmutableMethodInterception;
 use Vivarium\Container\Interception\MethodInterception;
@@ -115,7 +114,7 @@ final class Prototype implements Definition
     /** @return Binder<Prototype> */
     public function bindParameter(string $parameter): Binder
     {
-        return new GenericBinder(function (Provider $provider) use ($parameter): Prototype {
+        return new Binder(function (Provider $provider) use ($parameter): Prototype {
             $prototype              = clone $this;
             $prototype->constructor = $this->constructor
                 ->bindParameter($parameter)
@@ -128,7 +127,7 @@ final class Prototype implements Definition
     /** @return Binder<Prototype> */
     public function bindProperty(string $property): Binder
     {
-        return new GenericBinder(function (Provider $provider) use ($property): Prototype {
+        return new Binder(function (Provider $provider) use ($property): Prototype {
             $prototype             = clone $this;
             $prototype->properties = $prototype->properties->put($property, $provider);
 

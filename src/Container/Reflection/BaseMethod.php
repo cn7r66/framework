@@ -24,7 +24,6 @@ use Vivarium\Container\Binding\TypeBinding;
 use Vivarium\Container\Container;
 use Vivarium\Container\Exception\ParameterNotFound;
 use Vivarium\Container\Exception\ParameterNotSolvable;
-use Vivarium\Container\GenericBinder;
 use Vivarium\Container\Provider;
 use Vivarium\Container\Provider\ContainerCall;
 use Vivarium\Container\Provider\Fallback;
@@ -56,7 +55,7 @@ abstract class BaseMethod implements Method
 
     public function bindParameter(string $parameter): Binder
     {
-        return new GenericBinder(function (Provider $provider) use ($parameter): self {
+        return new Binder(function (Provider $provider) use ($parameter): self {
             $method             = clone $this;
             $method->parameters = $method->parameters->put($parameter, $provider);
 
