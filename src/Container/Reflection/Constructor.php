@@ -32,7 +32,7 @@ final class Constructor extends BaseMethod implements CreationalMethod
         return parent::getArguments();
     }
 
-    public function invoke(Container $container): mixed
+    public function invoke(Container $container): object
     {
         return (new ReflectionClass($this->getClass()))
             ->newInstanceArgs(
