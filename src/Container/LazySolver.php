@@ -8,25 +8,32 @@ declare(strict_types=1);
  * Copyright (c) 2023 Luca Cantoreggi
  */
 
-namespace Vivarium\Container\Step;
+namespace Vivarium\Container;
 
 use Vivarium\Container\Binding;
 use Vivarium\Container\Provider;
-use Vivarium\Container\Step;
+use Vivarium\Container\Solver;
 
-final class LazySolver implements Step
+/** 
+ * @template T of Solver
+ * @template-implements Solver<T>
+ */
+final class LazySolver implements Solver
 {
-    private Step|null $solver;
+    /** @var T */
+    private $solver;
 
-    /** @var callable():Step */
+    /** @var callable():T */
     private $init;
 
-    /** @param callable():iterable<Module> $modules; */
-    public function __construct(callable $modules, ConfigurableSolver|null $solver = null)
+    /** 
+     * @param callable():iterable<Module<T>> $modules; 
+     * @param T                              $solver 
+     */
+    public function __construct(callable $modules, $solver)
     {
         $this->solver = null;
         $this->init   = static function () use ($modules, $solver) {
-            $solver ??= new Solver();
             foreach ($modules() as $module) {
                 $solver = $module->install($solver);
             }

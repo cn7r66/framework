@@ -15,17 +15,17 @@ use stdClass;
 use Vivarium\Container\Binding;
 use Vivarium\Container\Binding\SimpleBinding;
 use Vivarium\Container\Exception\BindingNotFound;
-use Vivarium\Container\MultiStepContainer;
+use Vivarium\Container\MultiSolverContainer;
 use Vivarium\Container\Provider\Instance;
 use Vivarium\Container\Provider\Prototype;
-use Vivarium\Container\Step;
+use Vivarium\Container\Solver;
 use Vivarium\Test\Container\Stub\ConcreteStub;
 use Vivarium\Test\Container\Stub\SimpleStub;
 
 use function class_exists;
 
-/** @coversDefaultClass Vivarium\Container\MultiStepContainer */
-final class MultiStepContainerTest extends TestCase
+/** @coversDefaultClass Vivarium\Container\MultiSolverContainer */
+final class MultiSolverContainerTest extends TestCase
 {
     /**
      * @covers ::__construct()
@@ -37,7 +37,7 @@ final class MultiStepContainerTest extends TestCase
      */
     public function testHasWithString(string $id, bool $result): void
     {
-        $solver = $this->createMock(Step::class);
+        $solver = $this->createMock(Solver::class);
         $solver->method('solve')
                ->willReturnCallback(static function (Binding $arg, callable $next) {
                 if (! class_exists($arg->getId())) {
@@ -47,7 +47,7 @@ final class MultiStepContainerTest extends TestCase
                 return new Prototype($arg->getId());
                });
 
-        $container = (new MultiStepContainer())->withStep($solver);
+        $container = (new MultiSolverContainer())->withSolver($solver);
 
         static::assertSame($container->has($id), $result);
     }
@@ -58,13 +58,13 @@ final class MultiStepContainerTest extends TestCase
      */
     public function testGet(): void
     {
-        $solver = $this->createMock(Step::class);
+        $solver = $this->createMock(Solver::class);
         $solver->method('solve')
                ->willReturnCallback(static function (Binding $arg) {
                 return new Instance(new ($arg->getId()));
                });
 
-        $container = (new MultiStepContainer())->withStep($solver);
+        $container = (new MultiSolverContainer())->withSolver($solver);
         $instance  = $container->get(stdClass::class);
 
         static::assertInstanceOf(stdClass::class, $instance);
@@ -79,28 +79,28 @@ final class MultiStepContainerTest extends TestCase
         static::expectException(BindingNotFound::class);
         static::expectExceptionMessage('Binding with id theId, context $GLOBAL and tag $DEFAULT not found.');
 
-        $container = new MultiStepContainer();
+        $container = new MultiSolverContainer();
         $container->get('theId');
     }
 
     /**
-     * @covers ::withStep()
+     * @covers ::withSolver()
      * @covers ::get()
      * @covers ::has()
      * @covers ::solve()
      */
-    public function testWithStep(): void
+    public function testWithSolver(): void
     {
-        $step = $this->getMockBuilder(Step::class)
+        $solver = $this->getMockBuilder(Solver::class)
                      ->getMock();
 
-        $step->expects(static::once())
+        $solver->expects(static::once())
              ->method('solve')
              ->with($this->equalTo(new SimpleBinding('theId')))
              ->willReturn(new Prototype(ConcreteStub::class));
 
-        $container = (new MultiStepContainer())
-                            ->withStep($step);
+        $container = (new MultiSolverContainer())
+                            ->withSolver($solver);
 
         static::assertTrue($container->has('theId'));
         static::assertInstanceOf(ConcreteStub::class, $container->get('theId'));

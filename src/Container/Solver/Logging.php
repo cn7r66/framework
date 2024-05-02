@@ -8,15 +8,16 @@ declare(strict_types=1);
  * Copyright (c) 2023 Luca Cantoreggi
  */
 
-namespace Vivarium\Container\Step;
+namespace Vivarium\Container\Solver;
 
+use Psr\Log\LoggerInterface;
 use Vivarium\Container\Binding;
 use Vivarium\Container\Provider;
-use Vivarium\Container\Step;
+use Vivarium\Container\Solver;
 
-final class Caching implements Step
+final class Logging implements Solver
 {
-    public function __construct(private string $path)
+    public function __construct(private LoggerInterface $logger)
     {
     }
 

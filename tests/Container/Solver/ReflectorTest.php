@@ -8,7 +8,7 @@
 
 declare(strict_types=1);
 
-namespace Vivarium\Test\Container\Step;
+namespace Vivarium\Test\Container\Solver;
 
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
@@ -20,17 +20,17 @@ use Vivarium\Container\Container;
 use Vivarium\Container\Provider;
 use Vivarium\Container\Provider\Instance;
 use Vivarium\Container\Provider\Prototype;
-use Vivarium\Container\Step\ReflectionSolver;
+use Vivarium\Container\Solver\Reflector;
 use Vivarium\Test\Container\Stub\ConcreteStub;
 use Vivarium\Test\Container\Stub\NotInstantiableStub;
 
-/** @coversDefaultClass Vivarium\Container\Step\ReflectionSolver */
-final class ReflectionSolverTest extends TestCase
+/** @coversDefaultClass Vivarium\Container\Solver\Reflector */
+final class ReflectorTest extends TestCase
 {
     /** @covers ::solve() */
     public function testSolve(): void
     {
-        $solver   = new ReflectionSolver();
+        $solver   = new Reflector();
         $provider = $solver->solve(
             new ClassBinding(stdClass::class),
             static function (): void {
@@ -48,7 +48,7 @@ final class ReflectionSolverTest extends TestCase
     /** @covers ::solve() */
     public function testSolveNotClass(): void
     {
-        $solver   = new ReflectionSolver();
+        $solver   = new Reflector();
         $provider = $solver->solve(
             new SimpleBinding('theId'),
             static function () {
@@ -66,7 +66,7 @@ final class ReflectionSolverTest extends TestCase
     /** @covers ::solve() */
     public function testSolveNotInstantiable(): void
     {
-        $solver   = new ReflectionSolver();
+        $solver   = new Reflector();
         $provider = $solver->solve(
             new ClassBinding(NotInstantiableStub::class),
             static function () {

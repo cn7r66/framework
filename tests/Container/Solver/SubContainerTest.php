@@ -8,7 +8,7 @@
 
 declare(strict_types=1);
 
-namespace Vivarium\Test\Container\Step;
+namespace Vivarium\Test\Container\Solver;
 
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
@@ -17,10 +17,10 @@ use Vivarium\Container\Binding\SimpleBinding;
 use Vivarium\Container\Provider;
 use Vivarium\Container\Provider\Instance;
 use Vivarium\Container\Provider\Prototype;
-use Vivarium\Container\Step\SubContainer;
+use Vivarium\Container\Solver\SubContainer;
 use Vivarium\Test\Container\Stub\ConcreteStub;
 
-/** @coversDefaultClass Vivarium\Container\Step\SubContainer */
+/** @coversDefaultClass Vivarium\Container\Solver\SubContainer */
 final class SubContainerTest extends TestCase
 {
     /**
@@ -39,9 +39,9 @@ final class SubContainerTest extends TestCase
         $container->expects(static::never())
                   ->method('get');
 
-        $step = new SubContainer($container);
+        $solver = new SubContainer($container);
 
-        $provider = $step->solve(new SimpleBinding('theId'), static function () {
+        $provider = $solver->solve(new SimpleBinding('theId'), static function () {
             return new Prototype(ConcreteStub::class);
         });
 
@@ -69,9 +69,9 @@ final class SubContainerTest extends TestCase
                   ->with(static::equalTo($binding->getId()))
                   ->willReturn(new ConcreteStub());
 
-        $step = new SubContainer($container);
+        $solver = new SubContainer($container);
 
-        $provider = $step->solve($binding, static function (): void {
+        $provider = $solver->solve($binding, static function (): void {
             throw new RuntimeException();
         });
 

@@ -8,18 +8,18 @@ declare(strict_types=1);
  * Copyright (c) 2023 Luca Cantoreggi
  */
 
-namespace Vivarium\Container\Step;
+namespace Vivarium\Container\Solver;
 
 use ReflectionClass;
 use Vivarium\Container\Binding;
 use Vivarium\Container\Binding\ClassBinding;
 use Vivarium\Container\Provider;
 use Vivarium\Container\Provider\Prototype;
-use Vivarium\Container\Step;
+use Vivarium\Container\Solver;
 
 use function class_exists;
 
-final class ReflectionSolver implements Step
+final class Reflector implements Solver
 {
     public function solve(Binding $request, callable $next): Provider
     {

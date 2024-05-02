@@ -20,17 +20,17 @@ use Vivarium\Comparator\ValueAndPriority;
 use Vivarium\Container\Binding\SimpleBinding;
 use Vivarium\Container\Exception\BindingNotFound;
 
-final class MultiStepContainer implements Container
+final class MultiSolverContainer implements Container
 {
-    /** @var PriorityQueue<ValueAndPriority<Step>> */
-    private PriorityQueue $steps;
+    /** @var PriorityQueue<ValueAndPriority<Solver>> */
+    private PriorityQueue $solvers;
 
     /** @var Map<Binding, Provider> */
     private Map $solved;
 
     public function __construct()
     {
-        $this->steps = new PriorityQueue(
+        $this->solvers = new PriorityQueue(
             new SortableComparator(),
         );
 
@@ -68,11 +68,11 @@ final class MultiStepContainer implements Container
         }
     }
 
-    public function withStep(Step $step, int $priority = Priority::NORMAL): self
+    public function withSolver(Solver $solver, int $priority = Priority::NORMAL): self
     {
         $container        = clone $this;
-        $container->steps = $container->steps->enqueue(
-            new ValueAndPriority($step, $priority),
+        $container->solvers = $container->solvers->enqueue(
+            new ValueAndPriority($solver, $priority),
         );
 
         return $container;
@@ -82,7 +82,7 @@ final class MultiStepContainer implements Container
     {
         return $this->next(
             $request,
-            $this->steps->getIterator(),
+            $this->solvers->getIterator(),
         )();
     }
 

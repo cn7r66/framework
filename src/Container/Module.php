@@ -10,9 +10,13 @@ declare(strict_types=1);
 
 namespace Vivarium\Container;
 
-use Vivarium\Container\Step\ConfigurableSolver;
-
+/** @template T of Solver */
 interface Module
 {
-    public function install(ConfigurableSolver $solver): ConfigurableSolver;
+    /** 
+     * @param T $solver
+     * 
+     * @return T
+     */
+    public function install($solver);
 }

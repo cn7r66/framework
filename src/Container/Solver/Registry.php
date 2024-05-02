@@ -8,7 +8,7 @@ declare(strict_types=1);
  * Copyright (c) 2023 Luca Cantoreggi
  */
 
-namespace Vivarium\Container\Step;
+namespace Vivarium\Container\Solver;
 
 use RuntimeException;
 use Vivarium\Collection\Map\HashMap;
@@ -23,8 +23,9 @@ use Vivarium\Container\Interception;
 use Vivarium\Container\Interceptor;
 use Vivarium\Container\Provider;
 use Vivarium\Container\Provider\Prototype;
+use Vivarium\Container\Solver;
 
-final class Solver implements ConfigurableSolver
+final class Registry implements Solver
 {
     private Map $providers;
 
