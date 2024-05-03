@@ -12,18 +12,29 @@ namespace Vivarium\Container;
 
 use ReflectionFunction;
 use Vivarium\Assertion\Conditional\IsNotNull;
+use Vivarium\Assertion\String\IsClassOrInterface;
+use Vivarium\Comparator\Priority;
+use Vivarium\Container\Interception\ImmutableMethodInterception;
+use Vivarium\Container\Interception\MutableMethodInterception;
+use Vivarium\Container\Reflection\MethodCall;
 
 /**
  * @template T
  */
 final class Interceptor
 {
+    /** @var class-string */
+    private $class;
+
     /** @var callable(Interception):T */
     private $create;
 
         /** @param callable(Interception): T $create */
-    public function __construct(callable $create)
+    public function __construct(string $class, callable $create)
     {
+        (new IsClassOrInterface())
+            ->assert($class);
+
         (new IsNotNull())
             ->assert(
                 (new ReflectionFunction($create))->getReturnType(),
@@ -33,16 +44,43 @@ final class Interceptor
         $this->create = $create;
     }
 
-    public function withMethod(callable $configure) { }
+    /**
+     * @param callable(InstanceMethod): InstanceMethod $define
+     * 
+     * @return T
+     */
+    public function withMethod(string $method, callable|null $define = null, int $priority = Priority::NORMAL) 
+    { 
+        return $this->withInterception(
+            new MutableMethodInterception(
+                $this->bindMethodCall($method, $define)
+            ),
+            $priority
+        );
+    }
 
-    public function withImmutableMethod(callable $configure) { }
+    public function withImmutableMethod(string $method, callable|null $define = null, int $priority = Priority::NORMAL) 
+    {
+        return $this->withInterception(
+            new ImmutableMethodInterception(
+                $this->bindMethodCall($method, $define),
+            ),
+            $priority
+        );
+    }
 
-    public function withUniqueMethod(callable $configure) { }
+    public function withInterception(Interception $interception, int $priority = Priority::NORMAL) 
+    { 
+        return ($this->create)($interception, $priority);
+    }
 
-    public function withUniqueImmutableMethod(callable $configure) { }
+    private function bindMethodCall(string $method, callable|null $define = null): MethodCall
+    {
+        $call = new MethodCall($this->class, $method);
+        if ($define !== null) {
+            $call = $define($call);
+        }
 
-    public function withInterception(Interception $interception) { }
-
-    public function withUniqueInterception(Interception $interception) { }
-
+        return $call;
+    }
 }
