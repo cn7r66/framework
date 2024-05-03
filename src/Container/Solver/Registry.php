@@ -13,6 +13,11 @@ namespace Vivarium\Container\Solver;
 use RuntimeException;
 use Vivarium\Collection\Map\HashMap;
 use Vivarium\Collection\Map\Map;
+use Vivarium\Collection\MultiMap\MultiMap;
+use Vivarium\Collection\MultiMap\MultiValueMap;
+use Vivarium\Collection\Queue\PriorityQueue;
+use Vivarium\Comparator\SortableComparator;
+use Vivarium\Comparator\ValueAndPriority;
 use Vivarium\Container\Binder;
 use Vivarium\Container\Binding;
 use Vivarium\Container\Binding\ClassBinding;
@@ -29,9 +34,15 @@ final class Registry implements Solver
     /** @var Map<Binding, Provider> */
     private Map $providers;
 
+    /** @var MultiMap<Binding, PriorityQueue<ValueAndPriority<Interception>>> */
+    private MultiMap $interceptions;
+
     public function __construct()
     {
-        $this->providers = new HashMap();
+        $this->providers     = new HashMap();
+        $this->interceptions = new MultiValueMap(function () : PriorityQueue {
+            return new PriorityQueue(new SortableComparator());
+        });
     }
 
     public function bind(string $type, string $tag = Binding::DEFAULT, string $context = Binding::GLOBAL): Binder
@@ -81,13 +92,28 @@ final class Registry implements Solver
 
     public function extend(string $type, callable $extend, string $tag = Binding::DEFAULT, string $context = Binding::GLOBAL): self { }
 
-    public function intercept(string $type, string $tag = Binding::DEFAULT, string $context = Binding::GLOBAL): Interceptor 
+    public function intercept(
+        string $type, 
+        string $tag = Binding::DEFAULT, 
+        string $context = Binding::GLOBAL): Interceptor 
     { 
-        $binding = new TypeBinding($type, $tag, $context);
+        $binding = new ClassBinding($type, $tag, $context);
 
-        return new Interceptor(function (Interception $interception) use ($binding) {
-            return $interception;
-        });
+        return new Interceptor(
+            $binding->getId(), 
+            function (Interception $interception, int $priority) use ($binding) : Registry {
+                $registry                = clone $this;
+                $registry->interceptions = $registry->interceptions->put(
+                    $binding,
+                    new ValueAndPriority(
+                        $interception,
+                        $priority
+                    )
+                );
+
+                return $registry;
+            }
+        );
     }
 
     public function decorate(): self { }
