@@ -23,8 +23,8 @@ use Vivarium\Container\Binding;
 use Vivarium\Container\Binding\ClassBinding;
 use Vivarium\Container\Binding\TypeBinding;
 use Vivarium\Container\Definition;
-use Vivarium\Container\Interceptor;
 use Vivarium\Container\Interception;
+use Vivarium\Container\Interceptor;
 use Vivarium\Container\Provider;
 use Vivarium\Container\Provider\Prototype;
 use Vivarium\Container\Solver;
@@ -40,7 +40,7 @@ final class Registry implements Solver
     public function __construct()
     {
         $this->providers     = new HashMap();
-        $this->interceptions = new MultiValueMap(function () : PriorityQueue {
+        $this->interceptions = new MultiValueMap(static function (): PriorityQueue {
             return new PriorityQueue(new SortableComparator());
         });
     }
@@ -90,33 +90,37 @@ final class Registry implements Solver
         return $solver;
     }
 
-    public function extend(string $type, callable $extend, string $tag = Binding::DEFAULT, string $context = Binding::GLOBAL): self { }
+    public function extend(string $type, callable $extend, string $tag = Binding::DEFAULT, string $context = Binding::GLOBAL): self
+    {
+    }
 
     public function intercept(
-        string $type, 
-        string $tag = Binding::DEFAULT, 
-        string $context = Binding::GLOBAL): Interceptor 
-    { 
+        string $type,
+        string $tag = Binding::DEFAULT,
+        string $context = Binding::GLOBAL,
+    ): Interceptor {
         $binding = new ClassBinding($type, $tag, $context);
 
         return new Interceptor(
-            $binding->getId(), 
-            function (Interception $interception, int $priority) use ($binding) : Registry {
+            $binding->getId(),
+            function (Interception $interception, int $priority) use ($binding): Registry {
                 $registry                = clone $this;
                 $registry->interceptions = $registry->interceptions->put(
                     $binding,
                     new ValueAndPriority(
                         $interception,
-                        $priority
-                    )
+                        $priority,
+                    ),
                 );
 
                 return $registry;
-            }
+            },
         );
     }
 
-    public function decorate(): self { }
+    public function decorate(): self
+    {
+    }
 
     public function solve(Binding $request, callable $next): Provider
     {

@@ -70,7 +70,7 @@ final class MultiSolverContainer implements Container
 
     public function withSolver(Solver $solver, int $priority = Priority::NORMAL): self
     {
-        $container        = clone $this;
+        $container          = clone $this;
         $container->solvers = $container->solvers->enqueue(
             new ValueAndPriority($solver, $priority),
         );

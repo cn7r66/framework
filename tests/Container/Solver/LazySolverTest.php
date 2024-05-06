@@ -12,10 +12,10 @@ namespace Vivarium\Test\Container\Solver;
 
 use PHPUnit\Framework\TestCase;
 use Vivarium\Container\Binding\ClassBinding;
+use Vivarium\Container\LazySolver;
 use Vivarium\Container\Module;
 use Vivarium\Container\Provider;
 use Vivarium\Container\Provider\Instance;
-use Vivarium\Container\LazySolver;
 use Vivarium\Container\Solver;
 use Vivarium\Test\Container\Stub\ConcreteStub;
 use Vivarium\Test\Container\Stub\Stub;

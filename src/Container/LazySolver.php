@@ -10,11 +10,7 @@ declare(strict_types=1);
 
 namespace Vivarium\Container;
 
-use Vivarium\Container\Binding;
-use Vivarium\Container\Provider;
-use Vivarium\Container\Solver;
-
-/** 
+/**
  * @template T of Solver
  * @template-implements Solver<T>
  */
@@ -26,9 +22,9 @@ final class LazySolver implements Solver
     /** @var callable():T */
     private $init;
 
-    /** 
-     * @param callable():iterable<Module<T>> $modules; 
-     * @param T                              $solver 
+    /**
+     * @param callable():iterable<Module<T>> $modules;
+     * @param T                              $solver
      */
     public function __construct(callable $modules, $solver)
     {

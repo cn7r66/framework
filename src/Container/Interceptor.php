@@ -18,13 +18,11 @@ use Vivarium\Container\Interception\ImmutableMethodInterception;
 use Vivarium\Container\Interception\MutableMethodInterception;
 use Vivarium\Container\Reflection\MethodCall;
 
-/**
- * @template T
- */
+/** @template T */
 final class Interceptor
 {
     /** @var class-string */
-    private $class;
+    private string $class;
 
     /** @var callable(Interception):T */
     private $create;
@@ -46,31 +44,31 @@ final class Interceptor
 
     /**
      * @param callable(InstanceMethod): InstanceMethod $define
-     * 
+     *
      * @return T
      */
-    public function withMethod(string $method, callable|null $define = null, int $priority = Priority::NORMAL) 
-    { 
+    public function withMethod(string $method, callable|null $define = null, int $priority = Priority::NORMAL)
+    {
         return $this->withInterception(
             new MutableMethodInterception(
-                $this->bindMethodCall($method, $define)
+                $this->bindMethodCall($method, $define),
             ),
-            $priority
+            $priority,
         );
     }
 
-    public function withImmutableMethod(string $method, callable|null $define = null, int $priority = Priority::NORMAL) 
+    public function withImmutableMethod(string $method, callable|null $define = null, int $priority = Priority::NORMAL)
     {
         return $this->withInterception(
             new ImmutableMethodInterception(
                 $this->bindMethodCall($method, $define),
             ),
-            $priority
+            $priority,
         );
     }
 
-    public function withInterception(Interception $interception, int $priority = Priority::NORMAL) 
-    { 
+    public function withInterception(Interception $interception, int $priority = Priority::NORMAL)
+    {
         return ($this->create)($interception, $priority);
     }
 

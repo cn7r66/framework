@@ -13,9 +13,9 @@ namespace Vivarium\Container;
 /** @template T of Solver */
 interface Module
 {
-    /** 
+    /**
      * @param T $solver
-     * 
+     *
      * @return T
      */
     public function install($solver);
