@@ -12,13 +12,14 @@ namespace Vivarium\Container;
 
 use ReflectionFunction;
 use Vivarium\Assertion\Conditional\IsNotNull;
+use Vivarium\Assertion\String\IsClass;
 use Vivarium\Assertion\String\IsType;
 use Vivarium\Container\Provider\ContainerCall;
+use Vivarium\Container\Provider\Factory;
 use Vivarium\Container\Provider\Instance;
+use Vivarium\Container\Provider\StaticFactory;
 
-/**
- * @template T
- */
+/** @template T */
 final class Binder
 {
     /** @var callable(Provider):T */
@@ -51,6 +52,33 @@ final class Binder
                 ),
             ),
         );
+    }
+
+    public function toFactory(string $class, string $tag = Binding::DEFAULT, string $context = Binding::GLOBAL): FactoryBinder
+    {
+        return new FactoryBinder(function (string $method, callable $configure) use ($class, $tag, $context) {
+            return $this->toProvider(
+                (new Factory(
+                    $class,
+                    $method,
+                    $tag,
+                    $context,
+                ))->configure($configure),
+            );
+        });
+    }
+
+    public function toStaticFactory(string $class): FactoryBinder
+    {
+        (new IsClass())
+            ->assert($class);
+
+        return new FactoryBinder(function (string $method, callable $configure) use ($class) {
+            return $this->toProvider(
+                (new StaticFactory($class, $method))
+                    ->configure($configure),
+            );
+        });
     }
 
     /** @return T */

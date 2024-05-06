@@ -12,12 +12,17 @@ namespace Vivarium\Test\Container;
 
 use PHPUnit\Framework\TestCase;
 use Vivarium\Assertion\Exception\AssertionFailed;
+use Vivarium\Container\Binder;
 use Vivarium\Container\Binding\TypeBinding;
 use Vivarium\Container\Container;
-use Vivarium\Container\Binder;
 use Vivarium\Container\Provider;
 use Vivarium\Container\Provider\ContainerCall;
+use Vivarium\Container\Provider\Factory;
+use Vivarium\Container\Provider\StaticFactory;
+use Vivarium\Container\Reflection\CreationalMethod;
 use Vivarium\Test\Container\Stub\ConcreteStub;
+use Vivarium\Test\Container\Stub\StaticStub;
+use Vivarium\Test\Container\Stub\StubFactory;
 
 /** @coversDefaultClass \Vivarium\Container\Binder */
 final class BinderTest extends TestCase
@@ -75,6 +80,34 @@ final class BinderTest extends TestCase
         });
 
         $binder->toProvider($provider);
+    }
+
+    /** @covers ::toFactory */
+    public function testToFactory(): void
+    {
+        $binder = new Binder(static function (Provider $provider): void {
+            static::assertInstanceOf(Factory::class, $provider);
+        });
+
+        $binder->toFactory(StubFactory::class)
+               ->method('create', static function (CreationalMethod $method) {
+                    return $method->bindParameter('stub')
+                                  ->to(ConcreteStub::class);
+               });
+    }
+
+    /** @covers ::toStaticFactory */
+    public function testToStaticFactory(): void
+    {
+        $binder = new Binder(static function (Provider $provider): void {
+            static::assertInstanceOf(StaticFactory::class, $provider);
+        });
+
+        $binder->toStaticFactory(StaticStub::class)
+                ->method('get', static function (CreationalMethod $method) {
+                    return $method->bindParameter('stub')
+                                  ->to(ConcreteStub::class);
+                });
     }
 
     /** @covers ::__construct() */
