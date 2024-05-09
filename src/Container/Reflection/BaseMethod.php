@@ -28,6 +28,8 @@ use Vivarium\Container\Provider;
 use Vivarium\Container\Provider\ContainerCall;
 use Vivarium\Container\Provider\Fallback;
 use Vivarium\Container\Provider\Instance;
+use Vivarium\Equality\EqualsBuilder;
+use Vivarium\Equality\HashBuilder;
 
 abstract class BaseMethod implements Method
 {
@@ -127,5 +129,29 @@ abstract class BaseMethod implements Method
         }
 
         throw new ParameterNotSolvable($method->getName(), $parameter->getName());
+    }
+
+    public function equals(object $object): bool 
+    { 
+        if (! $object instanceof InstanceMethod) {
+            return false;
+        }
+
+        if ($object === $this) {
+            return true;
+        }
+
+        return (new EqualsBuilder())
+            ->append($this->getClass(), $object->getClass())
+            ->append($this->getName(), $object->getName())
+            ->isEquals();
+    }
+
+    public function hash(): string 
+    {
+        return (new HashBuilder())
+            ->append($this->getClass())
+            ->append($this->getName())
+            ->getHashCode();
     }
 }

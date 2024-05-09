@@ -14,8 +14,9 @@ use Vivarium\Collection\Sequence\Sequence;
 use Vivarium\Container\Binder;
 use Vivarium\Container\Container;
 use Vivarium\Container\Provider;
+use Vivarium\Equality\Equality;
 
-interface Method
+interface Method extends Equality
 {
     public function getClass(): string;
 

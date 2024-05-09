@@ -13,6 +13,8 @@ namespace Vivarium\Container\Reflection;
 use ReflectionClass;
 use Vivarium\Assertion\Hierarchy\IsAssignableTo;
 use Vivarium\Container\Container;
+use Vivarium\Equality\EqualsBuilder;
+use Vivarium\Equality\HashBuilder;
 
 final class MethodCall extends BaseMethod implements InstanceMethod
 {

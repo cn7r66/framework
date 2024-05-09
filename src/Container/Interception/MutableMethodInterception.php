@@ -14,27 +14,20 @@ use Vivarium\Assertion\Object\HasMethod;
 use Vivarium\Container\Container;
 use Vivarium\Container\Reflection\MethodCall;
 
-final class MutableMethodInterception implements MethodInterception
+final class MutableMethodInterception extends BaseMethodInterception
 {
-    public function __construct(private MethodCall $method)
+    public function __construct(MethodCall $method)
     {
+        parent::__construct($method);
     }
 
     public function intercept(Container $container, object $instance): object
     {
-        (new HasMethod($this->method->getName()))
+        (new HasMethod($this->getMethodCall()->getName()))
             ->assert($instance);
 
-        $this->method->invoke($container, $instance);
+        $this->getMethodCall()->invoke($container, $instance);
 
         return $instance;
-    }
-
-    public function configure(callable $configure): self
-    {
-        $interception         = clone $this;
-        $interception->method = $configure($this->method);
-
-        return $interception;
     }
 }
