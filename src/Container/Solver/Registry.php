@@ -15,7 +15,8 @@ use Vivarium\Collection\Map\HashMap;
 use Vivarium\Collection\Map\Map;
 use Vivarium\Collection\MultiMap\MultiMap;
 use Vivarium\Collection\MultiMap\MultiValueMap;
-use Vivarium\Collection\Queue\PriorityQueue;
+use Vivarium\Collection\Set\Set;
+use Vivarium\Collection\Set\SortedSet;
 use Vivarium\Comparator\SortableComparator;
 use Vivarium\Comparator\ValueAndPriority;
 use Vivarium\Container\Binder;
@@ -34,14 +35,14 @@ final class Registry implements Solver
     /** @var Map<Binding, Provider> */
     private Map $providers;
 
-    /** @var MultiMap<Binding, PriorityQueue<ValueAndPriority<Interception>>> */
+    /** @var MultiMap<Binding, Set<ValueAndPriority<Interception>>> */
     private MultiMap $interceptions;
 
     public function __construct()
     {
         $this->providers     = new HashMap();
-        $this->interceptions = new MultiValueMap(static function (): PriorityQueue {
-            return new PriorityQueue(new SortableComparator());
+        $this->interceptions = new MultiValueMap(static function (): Set {
+            return new SortedSet(new SortableComparator());
         });
     }
 
