@@ -10,8 +10,12 @@ declare(strict_types=1);
 
 namespace Vivarium\Comparator;
 
+use Vivarium\Equality\Equality;
+use Vivarium\Equality\EqualsBuilder;
+use Vivarium\Equality\HashBuilder;
+
 /** @template T */
-final class ValueAndPriority implements Sortable
+final class ValueAndPriority implements Sortable, Equality
 {
     /** @param T $value */
     public function __construct(private $value, private int $priority = Priority::NORMAL)
@@ -27,5 +31,27 @@ final class ValueAndPriority implements Sortable
     public function getPriority(): int
     {
         return $this->priority;
+    }
+
+    public function equals(object $object): bool 
+    { 
+        if (! $object instanceof ValueAndPriority) {
+            return false;
+        }
+
+        if ($object === $this) {
+            return true;
+        }
+
+        return (new EqualsBuilder())
+            ->append($this->value, $object->getValue())
+            ->isEquals();
+    }
+
+    public function hash(): string 
+    { 
+        return (new HashBuilder())
+            ->append($this->value)
+            ->getHashCode();
     }
 }
