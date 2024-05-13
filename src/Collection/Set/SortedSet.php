@@ -64,6 +64,10 @@ final class SortedSet implements Set
      */
     public function add($element): SortedSet
     {
+        if ($this->contains($element)) {
+            return $this;
+        }
+
         $set      = clone $this;
         $set->map = $set->map->put($element, self::PLACEHOLDER);
 

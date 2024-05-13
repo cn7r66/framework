@@ -66,6 +66,10 @@ final class HashSet implements Set
      */
     public function add($element): HashSet
     {
+        if ($this->contains($element)) {
+            return $this;
+        }
+
         $set      = clone $this;
         $set->map = $set->map->put($element, self::PLACEHOLDER);
 
