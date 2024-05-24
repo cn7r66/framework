@@ -8,12 +8,12 @@ declare(strict_types=1);
  * Copyright (c) 2023 Luca Cantoreggi
  */
 
-namespace Vivarium\Container;
+namespace Vivarium\Container\Binding;
 
 use Vivarium\Container\Reflection\CreationalMethod;
 
 /** @template T */
-final class FactoryBinder
+final class MethodBinder
 {
     /** callable(string, callable(CreationalMethod)): T */
     private $create;

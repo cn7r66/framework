@@ -8,17 +8,17 @@
 
 declare(strict_types=1);
 
-namespace Vivarium\Test\Container;
+namespace Vivarium\Test\Container\Binding;
 
 use PHPUnit\Framework\TestCase;
-use Vivarium\Container\FactoryBinder;
+use Vivarium\Container\Binding\MethodBinder;
 use Vivarium\Container\Reflection\CreationalMethod;
 use Vivarium\Container\Reflection\FactoryMethodCall;
 use Vivarium\Test\Container\Stub\ConcreteStub;
 use Vivarium\Test\Container\Stub\StubFactory;
 
-/** @coversDefaultClass \Vivarium\Container\FactoryBinder */
-final class FactoryBinderTest extends TestCase
+/** @coversDefaultClass \Vivarium\Container\Binding\MethodBinder */
+final class MethodBinderTest extends TestCase
 {
     /**
      * @covers ::__construct()
@@ -26,7 +26,7 @@ final class FactoryBinderTest extends TestCase
      */
     public function testMethod(): void
     {
-        $binder = new FactoryBinder(static function (string $method, callable $configure): void {
+        $binder = new MethodBinder(static function (string $method, callable $configure): void {
             $factoryMethod = $configure(new FactoryMethodCall(StubFactory::class, $method));
 
             static::assertSame('create', $factoryMethod->getName());
@@ -42,7 +42,7 @@ final class FactoryBinderTest extends TestCase
      */
     public function testMethodWithConfigure(): void
     {
-        $binder = new FactoryBinder(static function (string $method, callable $configure): void {
+        $binder = new MethodBinder(static function (string $method, callable $configure): void {
             $factoryMethod = $configure(new FactoryMethodCall(StubFactory::class, $method));
 
             static::assertSame('create', $factoryMethod->getName());

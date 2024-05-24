@@ -8,7 +8,7 @@ declare(strict_types=1);
  * Copyright (c) 2023 Luca Cantoreggi
  */
 
-namespace Vivarium\Container;
+namespace Vivarium\Container\Binding;
 
 use ReflectionFunction;
 use Vivarium\Assertion\Conditional\IsNotNull;
@@ -19,7 +19,7 @@ use Vivarium\Container\Interception\MutableMethodInterception;
 use Vivarium\Container\Reflection\MethodCall;
 
 /** @template T */
-final class Interceptor
+final class InterceptionBinder
 {
     /** @var class-string */
     private string $class;

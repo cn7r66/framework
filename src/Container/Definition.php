@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace Vivarium\Container;
 
 use Vivarium\Comparator\Priority;
+use Vivarium\Container\Binding\Binder;
 
 interface Definition extends Provider
 {

@@ -8,11 +8,11 @@
 
 declare(strict_types=1);
 
-namespace Vivarium\Test\Container;
+namespace Vivarium\Test\Container\Binding;
 
 use PHPUnit\Framework\TestCase;
 use Vivarium\Assertion\Exception\AssertionFailed;
-use Vivarium\Container\Binder;
+use Vivarium\Container\Binding\Binder;
 use Vivarium\Container\Binding\TypeBinding;
 use Vivarium\Container\Container;
 use Vivarium\Container\Provider;
@@ -24,7 +24,7 @@ use Vivarium\Test\Container\Stub\ConcreteStub;
 use Vivarium\Test\Container\Stub\StaticStub;
 use Vivarium\Test\Container\Stub\StubFactory;
 
-/** @coversDefaultClass \Vivarium\Container\Binder */
+/** @coversDefaultClass \Vivarium\Container\Binding\Binder */
 final class BinderTest extends TestCase
 {
     /**

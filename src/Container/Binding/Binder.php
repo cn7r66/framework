@@ -8,12 +8,14 @@ declare(strict_types=1);
  * Copyright (c) 2023 Luca Cantoreggi
  */
 
-namespace Vivarium\Container;
+namespace Vivarium\Container\Binding;
 
 use ReflectionFunction;
 use Vivarium\Assertion\Conditional\IsNotNull;
 use Vivarium\Assertion\String\IsClass;
 use Vivarium\Assertion\String\IsType;
+use Vivarium\Container\Binding;
+use Vivarium\Container\Provider;
 use Vivarium\Container\Provider\ContainerCall;
 use Vivarium\Container\Provider\Factory;
 use Vivarium\Container\Provider\Instance;
@@ -54,9 +56,9 @@ final class Binder
         );
     }
 
-    public function toFactory(string $class, string $tag = Binding::DEFAULT, string $context = Binding::GLOBAL): FactoryBinder
+    public function toFactory(string $class, string $tag = Binding::DEFAULT, string $context = Binding::GLOBAL): MethodBinder
     {
-        return new FactoryBinder(function (string $method, callable $configure) use ($class, $tag, $context) {
+        return new MethodBinder(function (string $method, callable $configure) use ($class, $tag, $context) {
             return $this->toProvider(
                 (new Factory(
                     $class,
@@ -68,12 +70,12 @@ final class Binder
         });
     }
 
-    public function toStaticFactory(string $class): FactoryBinder
+    public function toStaticFactory(string $class): MethodBinder
     {
         (new IsClass())
             ->assert($class);
 
-        return new FactoryBinder(function (string $method, callable $configure) use ($class) {
+        return new MethodBinder(function (string $method, callable $configure) use ($class) {
             return $this->toProvider(
                 (new StaticFactory($class, $method))
                     ->configure($configure),
