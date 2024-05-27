@@ -15,19 +15,25 @@ use Vivarium\Collection\Map\HashMap;
 use Vivarium\Collection\Map\Map;
 use Vivarium\Collection\MultiMap\MultiMap;
 use Vivarium\Collection\MultiMap\MultiValueMap;
+use Vivarium\Collection\Queue\PriorityQueue;
 use Vivarium\Collection\Set\Set;
 use Vivarium\Collection\Set\SortedSet;
 use Vivarium\Comparator\SortableComparator;
 use Vivarium\Comparator\ValueAndPriority;
-use Vivarium\Container\Binder;
+use Vivarium\Container\Binding\Binder;
 use Vivarium\Container\Binding;
 use Vivarium\Container\Binding\ClassBinding;
 use Vivarium\Container\Binding\TypeBinding;
 use Vivarium\Container\Definition;
+use Vivarium\Container\Interceptable;
 use Vivarium\Container\Interception;
-use Vivarium\Container\Interceptor;
+use Vivarium\Container\InterceptionBinder;
 use Vivarium\Container\Provider;
+use Vivarium\Container\Provider\Cloneable;
 use Vivarium\Container\Provider\Prototype;
+use Vivarium\Container\Provider\Service;
+use Vivarium\Container\Scope;
+use Vivarium\Container\ScopeBinder;
 use Vivarium\Container\Solver;
 
 final class Registry implements Solver
@@ -35,26 +41,44 @@ final class Registry implements Solver
     /** @var Map<Binding, Provider> */
     private Map $providers;
 
-    /** @var MultiMap<Binding, Set<ValueAndPriority<Interception>>> */
+    /** @var MultiMap<Binding, SortedSet<ValueAndPriority<Interception>>> */
     private MultiMap $interceptions;
+
+    /** @var MultiMap<Binding, Set<ValueAndPriprity<Pair<Definition, string>>>> */
+    private MultiMap $decorators;
+
+    /** @var Map<Binding, Scope> */
+    private Map $scopes;
 
     public function __construct()
     {
         $this->providers     = new HashMap();
-        $this->interceptions = new MultiValueMap(static function (): Set {
+        $this->interceptions = new MultiValueMap(static function (): PriorityQueue {
+            return new PriorityQueue(new SortableComparator());
+        });
+        $this->decorators    = new MultiValueMap(static function (): SortedSet {
             return new SortedSet(new SortableComparator());
         });
+
+        $this->scopes = new HashMap();
     }
 
     public function bind(string $type, string $tag = Binding::DEFAULT, string $context = Binding::GLOBAL): Binder
     {
         $binding = new TypeBinding($type, $tag, $context);
-
         if ($this->providers->containsKey($binding)) {
-            throw new RuntimeException();
+            throw new RuntimeException("Not implemented yet.");
         }
 
-        return $this->rebind($type, $tag, $context);
+        return new Binder(function (Provider $provider) use ($binding) {
+            return new ScopeBinder(function (Scope $scope) use ($binding, $provider) {
+                $registry            = clone $this;
+                $registry->providers = $registry->providers->put($binding, $provider);
+                $registry->scopes    = $registry->scopes->put($binding, $scope);
+
+                return $registry;
+            });
+        });
     }
 
     public function rebind(string $type, string $tag = Binding::DEFAULT, string $context = Binding::GLOBAL): Binder
@@ -99,19 +123,19 @@ final class Registry implements Solver
         string $type,
         string $tag = Binding::DEFAULT,
         string $context = Binding::GLOBAL,
-    ): Interceptor {
+    ): InterceptionBinder {
         $binding = new ClassBinding($type, $tag, $context);
 
-        return new Interceptor(
+        return new InterceptionBinder(
             $binding->getId(),
             function (Interception $interception, int $priority) use ($binding): Registry {
                 $registry                = clone $this;
                 $registry->interceptions = $registry->interceptions->put(
-                    $binding,
+                    $binding, 
                     new ValueAndPriority(
                         $interception,
-                        $priority,
-                    ),
+                        $priority
+                    )
                 );
 
                 return $registry;
@@ -119,12 +143,64 @@ final class Registry implements Solver
         );
     }
 
-    public function decorate(): self
+    /** @return Decorator<Registry> */
+    public function decorate(string $type, string $tag = Binding::DEFAULT, string $context = Binding::GLOBAL): Decorator
     {
+        $binding = new ClassBinding($type, $tag, $context);
     }
 
     public function solve(Binding $request, callable $next): Provider
     {
-        // TODO: Implement solve() method.
+        $provider = $this->providers->containsKey($request) ?
+            $this->providers->get($request) : $next();
+
+        $provider = $this->applyInterceptions($request, $provider);
+        $provider = $this->applyDecorator($request, $provider);
+        $provider = $this->applyScope($request, $provider);
+
+        return $provider;
+    }
+
+    private function applyInterceptions(Binding $request, Provider $provider): Provider
+    {
+        if (! $provider instanceof Interceptable) {
+            return $provider;
+        }
+
+        if ($provider instanceof Interceptable) {
+            foreach ($this->interceptions->get($request) as $interception) {
+                $provider = $provider->withInterception($interception->getValue());
+            }
+        }
+
+        return $provider;
+    }
+
+    private function applyDecorator(Binding $request, Provider $provider): Provider
+    {
+        foreach ($this->decorators->get($request) as $decorator) {
+            $binding   = $decorator->getValue()->getKey();
+            $parameter = $decorator->getValue()->getValue();
+
+            $provider = (new Prototype($binding->getId()))
+                ->bindParameter($parameter)
+                ->toProvider($provider);
+
+            $this->applyInterceptions($request, $provider);
+        }
+
+        return $provider;
+    }
+
+    private function applyScope(Binding $request, Provider $provider): Provider
+    {
+        $scope = $this->scopes->containsKey($request) ?
+            $this->scopes->get($request) : Scope::PROTOTYPE;
+
+        return match($scope) {
+            Scope::SERVICE   => new Service($provider),
+            Scope::CLONEABLE => new Cloneable($provider),
+            Scope::PROTOTYPE => $provider
+        };
     }
 }
