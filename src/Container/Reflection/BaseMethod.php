@@ -13,12 +13,14 @@ namespace Vivarium\Container\Reflection;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionParameter;
+use Vivarium\Assertion\Conditional\NullOr;
+use Vivarium\Assertion\Hierarchy\IsAssignableTo;
 use Vivarium\Assertion\Object\HasMethod;
 use Vivarium\Collection\Map\HashMap;
 use Vivarium\Collection\Map\Map;
 use Vivarium\Collection\Sequence\ArraySequence;
 use Vivarium\Collection\Sequence\Sequence;
-use Vivarium\Container\Binder;
+use Vivarium\Container\Binding\Binder;
 use Vivarium\Container\Binding;
 use Vivarium\Container\Binding\TypeBinding;
 use Vivarium\Container\Container;
@@ -80,9 +82,15 @@ abstract class BaseMethod implements Method
     }
 
     /** @return Sequence<Provider> */
-    public function getArguments(): Sequence
+    public function getArguments(string|null $class = null): Sequence
     {
-        $method = (new ReflectionClass($this->class))
+        (new NullOr(
+            new IsAssignableTo($this->class)
+        ))->assert($class);
+
+        $class = $class ?? $this->class;
+
+        $method = (new ReflectionClass($class))
             ->getMethod($this->method);
 
         $arguments = [];
@@ -93,10 +101,10 @@ abstract class BaseMethod implements Method
         return ArraySequence::fromArray($arguments);
     }
 
-    public function getArgumentsValue(Container $container): Sequence
+    public function getArgumentsValue(Container $container, string|null $class = null): Sequence
     {
         $values = [];
-        foreach ($this->getArguments() as $argument) {
+        foreach ($this->getArguments($class) as $argument) {
             $values[] = $argument->provide($container);
         }
 
