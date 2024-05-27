@@ -22,7 +22,7 @@ use Vivarium\Collection\Sequence\Sequence;
 use Vivarium\Comparator\Priority;
 use Vivarium\Comparator\SortableComparator;
 use Vivarium\Comparator\ValueAndPriority;
-use Vivarium\Container\Binder;
+use Vivarium\Container\Binding\Binder;
 use Vivarium\Container\Binding;
 use Vivarium\Container\Container;
 use Vivarium\Container\Definition;
@@ -41,7 +41,7 @@ use Vivarium\Container\Reflection\StaticMethodCall;
 
 use function array_map;
 
-final class Prototype implements Definition
+final class Prototype extends InterceptableProvider implements Definition
 {
     private CreationalMethod $constructor;
 
@@ -54,6 +54,8 @@ final class Prototype implements Definition
     /** @param class-string $class */
     public function __construct(private string $class)
     {
+        parent::__construct();
+
         (new IsClass())
             ->assert($class);
 
@@ -67,28 +69,6 @@ final class Prototype implements Definition
         $this->constructor = new Constructor($class);
         $this->properties  = new HashMap();
         $this->methods     = new PriorityQueue(new SortableComparator());
-    }
-
-    public function provide(Container $container): mixed
-    {
-        $instance = $this->constructor->invoke($container);
-
-        $reflector = new ReflectionClass($instance);
-        foreach ($this->properties as $property => $provider) {
-            if (! $reflector->hasProperty($property)) {
-                throw new PropertyNotFound($this->class, $property);
-            }
-
-            $reflector->getProperty($property)
-                      ->setValue($instance, $provider->provide($container));
-        }
-
-        foreach ($this->methods as $method) {
-            $instance = $method->getValue()
-                               ->intercept($container, $instance);
-        }
-
-        return $instance;
     }
 
     public function bindConstructorFactory(
@@ -184,6 +164,28 @@ final class Prototype implements Definition
                 return $method->getValue();
             }, $this->methods->toArray()),
         );
+    }
+
+    protected function provideInstance(Container $container): object 
+    { 
+        $instance = $this->constructor->invoke($container);
+
+        $reflector = new ReflectionClass($instance);
+        foreach ($this->properties as $property => $provider) {
+            if (! $reflector->hasProperty($property)) {
+                throw new PropertyNotFound($this->class, $property);
+            }
+
+            $reflector->getProperty($property)
+                      ->setValue($instance, $provider->provide($container));
+        }
+
+        foreach ($this->methods as $method) {
+            $instance = $method->getValue()
+                               ->intercept($container, $instance);
+        }
+
+        return $instance;
     }
 
     private function bindMethodCall(string $method, callable|null $define = null): MethodCall

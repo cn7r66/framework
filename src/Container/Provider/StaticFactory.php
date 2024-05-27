@@ -10,17 +10,19 @@ declare(strict_types=1);
 
 namespace Vivarium\Container\Provider;
 
+use Vivarium\Container\BaseInterceptable;
 use Vivarium\Container\Container;
-use Vivarium\Container\Provider;
 use Vivarium\Container\Reflection\CreationalMethod;
 use Vivarium\Container\Reflection\StaticMethodCall;
 
-final class StaticFactory implements Provider
+final class StaticFactory extends InterceptableProvider
 {
     private CreationalMethod $method;
 
     public function __construct(string $class, string $method)
     {
+        parent::__construct();
+        
         $this->method = new StaticMethodCall($class, $method);
     }
 
@@ -32,8 +34,8 @@ final class StaticFactory implements Provider
         return $factory;
     }
 
-    public function provide(Container $container): mixed
-    {
+    protected function provideInstance(Container $container): object 
+    { 
         return $this->method->invoke($container);
     }
 }

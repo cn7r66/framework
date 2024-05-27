@@ -12,11 +12,10 @@ namespace Vivarium\Container\Provider;
 
 use Vivarium\Container\Binding;
 use Vivarium\Container\Container;
-use Vivarium\Container\Provider;
 use Vivarium\Container\Reflection\CreationalMethod;
 use Vivarium\Container\Reflection\FactoryMethodCall;
 
-final class Factory implements Provider
+final class Factory extends InterceptableProvider
 {
     private CreationalMethod $method;
 
@@ -26,6 +25,8 @@ final class Factory implements Provider
         string $tag = Binding::DEFAULT,
         string $context = Binding::GLOBAL,
     ) {
+        parent::__construct();
+
         $this->method = new FactoryMethodCall(
             $class,
             $method,
@@ -42,7 +43,7 @@ final class Factory implements Provider
         return $factory;
     }
 
-    public function provide(Container $container): mixed
+    protected function provideInstance(Container $container): object 
     {
         return $this->method->invoke($container);
     }
