@@ -11,7 +11,7 @@ declare(strict_types=1);
 namespace Vivarium\Container\Reflection;
 
 use Vivarium\Collection\Sequence\Sequence;
-use Vivarium\Container\Binder;
+use Vivarium\Container\Binding\Binder;
 use Vivarium\Container\Container;
 use Vivarium\Container\Provider;
 use Vivarium\Equality\Equality;
@@ -30,7 +30,7 @@ interface Method extends Equality
     public function hasParameter(string $parameter): bool;
 
     /** @return Sequence<Provider> */
-    public function getArguments(): Sequence;
+    public function getArguments(string|null $class = null): Sequence;
 
-    public function getArgumentsValue(Container $container): Sequence;
+    public function getArgumentsValue(Container $container, string|null $class = null): Sequence;
 }

@@ -22,7 +22,7 @@ final class Constructor extends BaseMethod implements CreationalMethod
         parent::__construct($class, '__construct');
     }
 
-    public function getArguments(): Sequence
+    public function getArguments(string|null $class = null): Sequence
     {
         $reflector = new ReflectionClass($this->getClass());
         if (! $reflector->hasMethod($this->getName())) {

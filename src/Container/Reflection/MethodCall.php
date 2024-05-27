@@ -13,8 +13,6 @@ namespace Vivarium\Container\Reflection;
 use ReflectionClass;
 use Vivarium\Assertion\Hierarchy\IsAssignableTo;
 use Vivarium\Container\Container;
-use Vivarium\Equality\EqualsBuilder;
-use Vivarium\Equality\HashBuilder;
 
 final class MethodCall extends BaseMethod implements InstanceMethod
 {
@@ -27,7 +25,7 @@ final class MethodCall extends BaseMethod implements InstanceMethod
             ->getMethod($this->getName())
             ->invokeArgs(
                 $instance,
-                $this->getArgumentsValue($container)
+                $this->getArgumentsValue($container, $instance::class)
                      ->toArray(),
             );
     }
