@@ -10,9 +10,9 @@ declare(strict_types=1);
 
 namespace Vivarium\Container;
 
+use Vivarium\Comparator\Priority;
+
 interface Interceptable extends Provider
 {
-    public function withInjection(Interception $injection): self;
-
-    public function withUniqueInjection(Interception $injection): self;
+    public function withInterception(Interception $interception, int $priority = Priority::NORMAL): self;
 }
