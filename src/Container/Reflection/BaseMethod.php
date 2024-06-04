@@ -118,16 +118,14 @@ abstract class BaseMethod implements Method
         }
 
         if ($parameter->hasType()) {
-            $provider = new ContainerCall(
-                new TypeBinding(
-                    $parameter->isVariadic() ? 'array' : (string) $parameter->getType(),
-                    Binding::DEFAULT,
-                    $method->getDeclaringClass()->getName(),
-                ),
+            $binding = new TypeBinding(
+                $parameter->isVariadic() ? 'array' : (string) $parameter->getType(),
+                Binding::DEFAULT,
+                $method->getDeclaringClass()->getName(),
             );
 
             return $parameter->isOptional() ?
-                new Fallback($provider, new Instance($parameter->getDefaultValue())) : $provider;
+                new Fallback($binding, $parameter->getDefaultValue()) : new ContainerCall($binding);
         }
 
         if ($parameter->isOptional()) {
