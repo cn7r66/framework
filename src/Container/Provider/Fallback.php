@@ -5,7 +5,11 @@ declare(strict_types=1);
 namespace Vivarium\Container\Provider;
 
 use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
+use Vivarium\Assertion\String\IsPrimitive;
+use Vivarium\Container\Binding;
 use Vivarium\Container\Container;
+use Vivarium\Container\Interceptable;
 use Vivarium\Container\Provider;
 
 /*
@@ -16,16 +20,28 @@ use Vivarium\Container\Provider;
 
 final class Fallback implements Provider
 {
-    public function __construct(private Provider $provider, private Provider $fallback)
+    public function __construct(private Binding $binding, private mixed $value)
     {
+        (new IsPrimitive())
+            ->assert(gettype($value));
     }
 
     public function provide(Container $container): mixed
     {
         try {
-            return $this->provider->provide($container);
-        } catch (ContainerExceptionInterface) {
-            return $this->fallback->provide($container);
+            return $container->get($this->binding);
+        } catch (NotFoundExceptionInterface) {
+            return $this->value;
         }
+    }
+
+    public function getBinding(): Binding
+    {
+        return $this->binding;
+    }
+
+    public function getValue(): mixed
+    {
+        return $this->value;
     }
 }

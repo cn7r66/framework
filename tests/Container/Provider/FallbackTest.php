@@ -12,6 +12,8 @@ namespace Vivarium\Test\Container\Provider;
 
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
+use Vivarium\Container\Binding;
 use Vivarium\Container\Container;
 use Vivarium\Container\Provider;
 use Vivarium\Container\Provider\Fallback;
@@ -25,22 +27,17 @@ final class FallbackTest extends TestCase
      */
     public function testProvide(): void
     {
-        $container = $this->getMockBuilder(Container::class)
-                          ->getMock();
+        $binding = $this->createMock(Binding::class);
 
-        $provider = $this->createMock(Provider::class);
-        $provider->expects(static::once())
-                 ->method('provide')
-                 ->with(static::equalTo($container))
-                 ->willReturn(1);
+        $container = $this->createMock(Container::class);
+        $container->expects(static::once())
+                  ->method('get')
+                  ->with(static::equalTo($binding))
+                  ->willReturn(1);
 
-        $provider2 = $this->createMock(Provider::class);
-        $provider2->expects(static::never())
-                  ->method('provide');
+        $fallback = new Fallback($binding, 2);
 
-        $fallback = new Fallback($provider, $provider2);
-
-        $fallback->provide($container);
+        static::assertSame(1, $fallback->provide($container));
     }
 
         /**
@@ -49,25 +46,18 @@ final class FallbackTest extends TestCase
          */
     public function testProvideFallback(): void
     {
-        $container = $this->getMockBuilder(Container::class)
-                          ->getMock();
+        $binding = $this->createMock(Binding::class);
 
-        $exception = $this->createMock(ContainerExceptionInterface::class);
+        $exception = $this->createMock(NotFoundExceptionInterface::class);
 
-        $provider = $this->createMock(Provider::class);
-        $provider->expects(static::once())
-                 ->method('provide')
-                 ->with(static::equalTo($container))
-                 ->willThrowException($exception);
+        $container = $this->createMock(Container::class);
+        $container->expects(static::once())
+                  ->method('get')
+                  ->with(static::equalTo($binding))
+                  ->willThrowException($exception);
 
-        $provider2 = $this->createMock(Provider::class);
-        $provider2->expects(static::once())
-                  ->method('provide')
-                  ->with(static::equalTo($container))
-                  ->willReturn(1);
+        $fallback = new Fallback($binding, 2);
 
-        $fallback = new Fallback($provider, $provider2);
-
-        $fallback->provide($container);
+        static::assertSame(2, $fallback->provide($container));
     }
 }
