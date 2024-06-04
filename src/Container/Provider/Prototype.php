@@ -41,7 +41,7 @@ use Vivarium\Container\Reflection\StaticMethodCall;
 
 use function array_map;
 
-final class Prototype extends InterceptableProvider implements Definition
+final class Prototype implements Definition
 {
     private CreationalMethod $constructor;
 
@@ -54,8 +54,6 @@ final class Prototype extends InterceptableProvider implements Definition
     /** @param class-string $class */
     public function __construct(private string $class)
     {
-        parent::__construct();
-
         (new IsClass())
             ->assert($class);
 
@@ -166,7 +164,7 @@ final class Prototype extends InterceptableProvider implements Definition
         );
     }
 
-    protected function provideInstance(Container $container): object 
+    public function provide(Container $container): object 
     { 
         $instance = $this->constructor->invoke($container);
 
