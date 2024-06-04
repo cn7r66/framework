@@ -23,17 +23,18 @@ use Vivarium\Comparator\ValueAndPriority;
 use Vivarium\Container\Binding\Binder;
 use Vivarium\Container\Binding;
 use Vivarium\Container\Binding\ClassBinding;
+use Vivarium\Container\Binding\InterceptionBinder;
+use Vivarium\Container\Binding\ScopeBinder;
 use Vivarium\Container\Binding\TypeBinding;
 use Vivarium\Container\Definition;
-use Vivarium\Container\Interceptable;
 use Vivarium\Container\Interception;
-use Vivarium\Container\InterceptionBinder;
 use Vivarium\Container\Provider;
 use Vivarium\Container\Provider\Cloneable;
+use Vivarium\Container\Provider\Interceptor;
 use Vivarium\Container\Provider\Prototype;
 use Vivarium\Container\Provider\Service;
 use Vivarium\Container\Scope;
-use Vivarium\Container\ScopeBinder;
+use Vivarium\Container\Skippable;
 use Vivarium\Container\Solver;
 
 final class Registry implements Solver
@@ -44,7 +45,7 @@ final class Registry implements Solver
     /** @var MultiMap<Binding, SortedSet<ValueAndPriority<Interception>>> */
     private MultiMap $interceptions;
 
-    /** @var MultiMap<Binding, Set<ValueAndPriprity<Pair<Definition, string>>>> */
+    /** @var MultiMap<Binding, Set<ValueAndPriprity<Decorator>>> */
     private MultiMap $decorators;
 
     /** @var Map<Binding, Scope> */
@@ -163,13 +164,21 @@ final class Registry implements Solver
 
     private function applyInterceptions(Binding $request, Provider $provider): Provider
     {
-        if (! $provider instanceof Interceptable) {
+        if ($provider instanceof Skippable) {
             return $provider;
         }
 
-        if ($provider instanceof Interceptable) {
-            foreach ($this->interceptions->get($request) as $interception) {
-                $provider = $provider->withInterception($interception->getValue());
+        if (! $provider instanceof Interceptor) {
+            $provider = new Interceptor($provider);
+        }
+
+        $hierarchy = $request->hierarchy();
+        foreach ($hierarchy as $binding) {
+            foreach ($this->interceptions->get($binding) as $interception) {
+                $provider = $provider->withInterception(
+                    $interception->getValue(),
+                    $interception->getPriority()
+                );
             }
         }
 
@@ -178,13 +187,17 @@ final class Registry implements Solver
 
     private function applyDecorator(Binding $request, Provider $provider): Provider
     {
-        foreach ($this->decorators->get($request) as $decorator) {
-            $binding   = $decorator->getValue()->getKey();
-            $parameter = $decorator->getValue()->getValue();
+        if (! $this->decorators->containsKey($request)) {
+            return $provider;
+        }
 
-            $provider = (new Prototype($binding->getId()))
-                ->bindParameter($parameter)
-                ->toProvider($provider);
+        $provider = new Interceptor($provider);
+
+        foreach ($this->decorators->get($request) as $decorator) {
+            $provider = $provider->withInterception(
+                $decorator->getValue(),
+                $decorator->getPriority()
+            );
 
             $this->applyInterceptions($request, $provider);
         }
