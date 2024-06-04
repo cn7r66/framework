@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace Vivarium\Container;
 
+use Vivarium\Collection\Sequence\Sequence;
 use Vivarium\Equality\Equality;
 
 interface Binding extends Equality
@@ -23,6 +24,8 @@ interface Binding extends Equality
     public function getTag(): string;
 
     public function getContext(): string;
+
+    public function hierarchy(): Sequence;
 
     public function widen(): Binding;
 

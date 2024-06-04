@@ -15,6 +15,8 @@ use Vivarium\Assertion\Conditional\Either;
 use Vivarium\Assertion\String\IsClassOrInterface;
 use Vivarium\Assertion\String\IsNamespace;
 use Vivarium\Assertion\String\IsNotEmpty;
+use Vivarium\Collection\Sequence\ArraySequence;
+use Vivarium\Collection\Sequence\Sequence;
 use Vivarium\Container\Binding;
 use Vivarium\Container\Exception\CannotBeWidened;
 use Vivarium\Equality\EqualsBuilder;
@@ -58,6 +60,11 @@ abstract class BaseBinding implements Binding
     public function getTag(): string
     {
         return $this->tag;
+    }
+
+    public function hierarchy(): Sequence
+    {
+        return new ArraySequence($this);
     }
 
     public function widen(): Binding
