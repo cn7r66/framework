@@ -14,6 +14,7 @@ use ReflectionFunction;
 use Vivarium\Assertion\Conditional\IsNotNull;
 use Vivarium\Assertion\String\IsClassOrInterface;
 use Vivarium\Comparator\Priority;
+use Vivarium\Container\Interception;
 use Vivarium\Container\Interception\ImmutableMethodInterception;
 use Vivarium\Container\Interception\MutableMethodInterception;
 use Vivarium\Container\Reflection\MethodCall;
@@ -27,7 +28,7 @@ final class InterceptionBinder
     /** @var callable(Interception):T */
     private $create;
 
-        /** @param callable(Interception): T $create */
+    /** @param callable(Interception): T $create */
     public function __construct(string $class, callable $create)
     {
         (new IsClassOrInterface())
@@ -39,6 +40,7 @@ final class InterceptionBinder
                 '"Missing type hint on callback function."',
             );
 
+        $this->class  = $class;
         $this->create = $create;
     }
 
@@ -57,6 +59,11 @@ final class InterceptionBinder
         );
     }
 
+    /**
+     * @param callable(InstanceMethod): InstanceMethod $define
+     *
+     * @return T
+     */
     public function withImmutableMethod(string $method, callable|null $define = null, int $priority = Priority::NORMAL)
     {
         return $this->withInterception(
