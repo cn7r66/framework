@@ -12,6 +12,7 @@ namespace Vivarium\Container\Binding;
 
 use ReflectionFunction;
 use Vivarium\Assertion\Conditional\IsNotNull;
+use Vivarium\Container\Scope;
 
 /** @template T */
 final class ScopeBinder
