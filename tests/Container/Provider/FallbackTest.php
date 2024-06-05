@@ -60,4 +60,19 @@ final class FallbackTest extends TestCase
 
         static::assertSame(2, $fallback->provide($container));
     }
+
+    /** 
+     * @covers ::getBinding()
+     * @covers ::getValue() 
+     */
+    public function testGetters(): void
+    {
+        $binding = $this->createMock(Binding::class);
+        $value   = 42;
+
+        $provider = new Fallback($binding, $value);
+
+        static::assertSame($binding, $provider->getBinding());
+        static::assertSame($value, $provider->getValue());
+    }
 }
