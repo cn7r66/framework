@@ -64,7 +64,7 @@ abstract class BaseBinding implements Binding
 
     public function hierarchy(): Sequence
     {
-        return new ArraySequence($this);
+        return $this->expand([$this]);
     }
 
     public function widen(): Binding
@@ -121,5 +121,22 @@ abstract class BaseBinding implements Binding
             ->append($this->tag)
             ->append($this->context)
             ->getHashCode();
+    }
+
+    protected function expand(array $bindings): Sequence
+    {
+        $hierarchy = [];
+        foreach ($bindings as $binding) {
+            $hierarchy[] = $binding;
+            while ($binding->couldBeWidened()) {
+                $binding     = $binding->widen();
+                $hierarchy[] = $binding;
+            }
+        }
+
+        /** @var Sequence<Binding> */
+        return ArraySequence::fromArray(
+            array_reverse($hierarchy)
+        );
     }
 }

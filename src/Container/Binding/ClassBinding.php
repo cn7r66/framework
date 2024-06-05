@@ -11,7 +11,6 @@ declare(strict_types=1);
 namespace Vivarium\Container\Binding;
 
 use Vivarium\Assertion\String\IsClassOrInterface;
-use Vivarium\Collection\Sequence\ArraySequence;
 use Vivarium\Collection\Sequence\Sequence;
 use Vivarium\Container\Binding;
 
@@ -57,23 +56,13 @@ final class ClassBinding extends BaseBinding
     /** @return Sequence<Binding> */
     public function hierarchy(): Sequence
     {
-        $bindings = array_merge(
-            [$this],
-            $this->extends(),
-            $this->interfaces(),
+        return $this->expand(
+            array_merge(
+                [$this],
+                $this->extends(),
+                $this->interfaces(),
+            )
         );
-
-        /** @var Sequence<Binding> $hierarchy */
-        $hierarchy = new ArraySequence();
-        foreach ($bindings as $binding) {
-            $hierarchy = $hierarchy->add($binding);
-            while ($binding->couldBeWidened()) {
-                $binding   = $binding->widen();
-                $hierarchy = $hierarchy->add($binding);
-            }
-        }
-
-        return $hierarchy;
     }
 
     /** @return array<Binding> */
