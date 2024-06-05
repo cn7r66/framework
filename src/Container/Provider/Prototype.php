@@ -22,8 +22,8 @@ use Vivarium\Collection\Sequence\Sequence;
 use Vivarium\Comparator\Priority;
 use Vivarium\Comparator\SortableComparator;
 use Vivarium\Comparator\ValueAndPriority;
-use Vivarium\Container\Binding\Binder;
 use Vivarium\Container\Binding;
+use Vivarium\Container\Binding\Binder;
 use Vivarium\Container\Container;
 use Vivarium\Container\Definition;
 use Vivarium\Container\Exception\PropertyNotFound;
@@ -164,8 +164,8 @@ final class Prototype implements Definition
         );
     }
 
-    public function provide(Container $container): object 
-    { 
+    public function provide(Container $container): object
+    {
         $instance = $this->constructor->invoke($container);
 
         $reflector = new ReflectionClass($instance);

@@ -11,27 +11,30 @@ declare(strict_types=1);
 namespace Vivarium\Test\Container\Binding;
 
 use PHPUnit\Framework\TestCase;
+use Vivarium\Container\Binding;
 use Vivarium\Container\Binding\BaseBinding;
 use Vivarium\Test\Container\Stub\SimpleStub;
+
+use function assert;
 
 /** @coversDefaultClass \Vivarium\Container\Binding\BaseBinding */
 final class BaseBindingTest extends TestCase
 {
-    /** 
-     * @covers ::hierarchy() 
+    /**
+     * @covers ::hierarchy()
      * @covers ::expand()
      */
     public function testHierarchy(): void
     {
-        /** @var \Vivarium\Container\Binding $binding */
         $binding = $this->getMockBuilder(BaseBinding::class)
                         ->setConstructorArgs([
                             'integer',
                             'myInt',
-                            SimpleStub::class
+                            SimpleStub::class,
                         ])
                         ->onlyMethods([])
                         ->getMock();
+        assert($binding instanceof Binding);
 
         $hierarchy = $binding->hierarchy();
 

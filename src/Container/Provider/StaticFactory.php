@@ -20,7 +20,7 @@ final class StaticFactory implements Provider
     private CreationalMethod $method;
 
     public function __construct(string $class, string $method)
-    {        
+    {
         $this->method = new StaticMethodCall($class, $method);
     }
 
@@ -32,8 +32,8 @@ final class StaticFactory implements Provider
         return $factory;
     }
 
-    public function provide(Container $container): mixed 
-    { 
+    public function provide(Container $container): mixed
+    {
         return $this->method->invoke($container);
     }
 }

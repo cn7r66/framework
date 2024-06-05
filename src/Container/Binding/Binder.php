@@ -56,8 +56,11 @@ final class Binder
         );
     }
 
-    public function toFactory(string $class, string $tag = Binding::DEFAULT, string $context = Binding::GLOBAL): MethodBinder
-    {
+    public function toFactory(
+        string $class,
+        string $tag = Binding::DEFAULT,
+        string $context = Binding::GLOBAL,
+    ): MethodBinder {
         return new MethodBinder(function (string $method, callable $configure) use ($class, $tag, $context) {
             return $this->toProvider(
                 (new Factory(

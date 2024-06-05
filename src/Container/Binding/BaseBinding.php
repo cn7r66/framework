@@ -22,6 +22,7 @@ use Vivarium\Container\Exception\CannotBeWidened;
 use Vivarium\Equality\EqualsBuilder;
 use Vivarium\Equality\HashBuilder;
 
+use function array_reverse;
 use function strrpos;
 use function substr;
 
@@ -62,6 +63,7 @@ abstract class BaseBinding implements Binding
         return $this->tag;
     }
 
+    /** @return Sequence<Binding> */
     public function hierarchy(): Sequence
     {
         return $this->expand([$this]);
@@ -123,6 +125,11 @@ abstract class BaseBinding implements Binding
             ->getHashCode();
     }
 
+    /**
+     * @param array<Binding> $bindings
+     *
+     * @return Sequence<Binding>
+     */
     protected function expand(array $bindings): Sequence
     {
         $hierarchy = [];
@@ -134,9 +141,8 @@ abstract class BaseBinding implements Binding
             }
         }
 
-        /** @var Sequence<Binding> */
         return ArraySequence::fromArray(
-            array_reverse($hierarchy)
+            array_reverse($hierarchy),
         );
     }
 }

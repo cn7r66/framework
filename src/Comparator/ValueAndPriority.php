@@ -33,8 +33,8 @@ final class ValueAndPriority implements Sortable, Equality
         return $this->priority;
     }
 
-    public function equals(object $object): bool 
-    { 
+    public function equals(object $object): bool
+    {
         if (! $object instanceof ValueAndPriority) {
             return false;
         }
@@ -48,8 +48,8 @@ final class ValueAndPriority implements Sortable, Equality
             ->isEquals();
     }
 
-    public function hash(): string 
-    { 
+    public function hash(): string
+    {
         return (new HashBuilder())
             ->append($this->value)
             ->getHashCode();

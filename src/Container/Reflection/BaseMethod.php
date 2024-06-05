@@ -20,8 +20,8 @@ use Vivarium\Collection\Map\HashMap;
 use Vivarium\Collection\Map\Map;
 use Vivarium\Collection\Sequence\ArraySequence;
 use Vivarium\Collection\Sequence\Sequence;
-use Vivarium\Container\Binding\Binder;
 use Vivarium\Container\Binding;
+use Vivarium\Container\Binding\Binder;
 use Vivarium\Container\Binding\TypeBinding;
 use Vivarium\Container\Container;
 use Vivarium\Container\Exception\ParameterNotFound;
@@ -85,10 +85,10 @@ abstract class BaseMethod implements Method
     public function getArguments(string|null $class = null): Sequence
     {
         (new NullOr(
-            new IsAssignableTo($this->class)
+            new IsAssignableTo($this->class),
         ))->assert($class);
 
-        $class = $class ?? $this->class;
+        $class ??= $this->class;
 
         $method = (new ReflectionClass($class))
             ->getMethod($this->method);
@@ -137,8 +137,8 @@ abstract class BaseMethod implements Method
         throw new ParameterNotSolvable($method->getName(), $parameter->getName());
     }
 
-    public function equals(object $object): bool 
-    { 
+    public function equals(object $object): bool
+    {
         if (! $object instanceof InstanceMethod) {
             return false;
         }
@@ -153,7 +153,7 @@ abstract class BaseMethod implements Method
             ->isEquals();
     }
 
-    public function hash(): string 
+    public function hash(): string
     {
         return (new HashBuilder())
             ->append($this->getClass())

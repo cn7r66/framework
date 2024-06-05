@@ -15,10 +15,9 @@ use Vivarium\Container\Reflection\CreationalMethod;
 /** @template T */
 final class MethodBinder
 {
-    /** callable(string, callable(CreationalMethod)): T */
+    /** @var callable(string, callable(CreationalMethod):CreationalMethod): T */
     private $create;
 
-    /** @param callable(Provider): T $name */
     public function __construct(callable $create)
     {
         $this->create = $create;

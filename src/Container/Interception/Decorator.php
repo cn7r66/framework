@@ -40,15 +40,15 @@ final class Decorator implements Interception, Equality
         return $this->parameter;
     }
 
-    public function intercept(Container $container, object $instance): object 
+    public function intercept(Container $container, object $instance): object
     {
         return $this->prototype->bindParameter($this->parameter)
                                ->toInstance($instance)
                                ->provide($container);
     }
 
-    public function equals(object $object): bool 
-    { 
+    public function equals(object $object): bool
+    {
         if (! $object instanceof Decorator) {
             return false;
         }
@@ -61,11 +61,10 @@ final class Decorator implements Interception, Equality
             ->append($this->class, $object->class)
             ->append($this->parameter, $object->parameter)
             ->isEquals();
-
     }
 
-    public function hash(): string 
-    { 
+    public function hash(): string
+    {
         return (new HashBuilder())
             ->append($this->class)
             ->append($this->parameter)

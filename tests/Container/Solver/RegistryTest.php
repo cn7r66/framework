@@ -11,8 +11,6 @@ declare(strict_types=1);
 namespace Vivarium\Test\Container\Solver;
 
 use PHPUnit\Framework\TestCase;
-use Vivarium\Container\Solver\Registry;
-use Vivarium\Container\Reflection\InstanceMethod;
 
 /** @coversDefaultClass \Vivarium\Container\RegistryTest */
 final class RegistryTest extends TestCase

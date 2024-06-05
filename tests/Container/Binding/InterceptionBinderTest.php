@@ -82,7 +82,7 @@ final class InterceptionBinderTest extends TestCase
             static::assertInstanceOf(Instance::class, $provider);
         });
 
-        $binder->withImmutableMethod('withInt', function(InstanceMethod $method): InstanceMethod {
+        $binder->withImmutableMethod('withInt', static function (InstanceMethod $method): InstanceMethod {
             return $method->bindParameter('n')
                           ->toInstance(42);
         });

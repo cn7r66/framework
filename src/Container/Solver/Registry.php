@@ -20,8 +20,8 @@ use Vivarium\Collection\Set\Set;
 use Vivarium\Collection\Set\SortedSet;
 use Vivarium\Comparator\SortableComparator;
 use Vivarium\Comparator\ValueAndPriority;
-use Vivarium\Container\Binding\Binder;
 use Vivarium\Container\Binding;
+use Vivarium\Container\Binding\Binder;
 use Vivarium\Container\Binding\ClassBinding;
 use Vivarium\Container\Binding\InterceptionBinder;
 use Vivarium\Container\Binding\ScopeBinder;
@@ -68,7 +68,7 @@ final class Registry implements Solver
     {
         $binding = new TypeBinding($type, $tag, $context);
         if ($this->providers->containsKey($binding)) {
-            throw new RuntimeException("Not implemented yet.");
+            throw new RuntimeException('Not implemented yet.');
         }
 
         return new Binder(function (Provider $provider) use ($binding) {
@@ -100,8 +100,12 @@ final class Registry implements Solver
      * @param non-empty-string                 $tag
      * @param non-empty-string                 $context
      */
-    public function define(string $class, callable $define, string $tag = Binding::DEFAULT, string $context = Binding::GLOBAL): self
-    {
+    public function define(
+        string $class,
+        callable $define,
+        string $tag = Binding::DEFAULT,
+        string $context = Binding::GLOBAL,
+    ): self {
         $binding = new ClassBinding($class, $tag, $context);
         if ($this->providers->containsKey($binding)) {
             throw new RuntimeException();
@@ -116,8 +120,12 @@ final class Registry implements Solver
         return $solver;
     }
 
-    public function extend(string $type, callable $extend, string $tag = Binding::DEFAULT, string $context = Binding::GLOBAL): self
-    {
+    public function extend(
+        string $type,
+        callable $extend,
+        string $tag = Binding::DEFAULT,
+        string $context = Binding::GLOBAL,
+    ): self {
     }
 
     public function intercept(
@@ -132,11 +140,11 @@ final class Registry implements Solver
             function (Interception $interception, int $priority) use ($binding): Registry {
                 $registry                = clone $this;
                 $registry->interceptions = $registry->interceptions->put(
-                    $binding, 
+                    $binding,
                     new ValueAndPriority(
                         $interception,
-                        $priority
-                    )
+                        $priority,
+                    ),
                 );
 
                 return $registry;
@@ -177,7 +185,7 @@ final class Registry implements Solver
             foreach ($this->interceptions->get($binding) as $interception) {
                 $provider = $provider->withInterception(
                     $interception->getValue(),
-                    $interception->getPriority()
+                    $interception->getPriority(),
                 );
             }
         }
@@ -196,7 +204,7 @@ final class Registry implements Solver
         foreach ($this->decorators->get($request) as $decorator) {
             $provider = $provider->withInterception(
                 $decorator->getValue(),
-                $decorator->getPriority()
+                $decorator->getPriority(),
             );
 
             $this->applyInterceptions($request, $provider);
@@ -210,7 +218,7 @@ final class Registry implements Solver
         $scope = $this->scopes->containsKey($request) ?
             $this->scopes->get($request) : Scope::PROTOTYPE;
 
-        return match($scope) {
+        return match ($scope) {
             Scope::SERVICE   => new Service($provider),
             Scope::CLONEABLE => new Cloneable($provider),
             Scope::PROTOTYPE => $provider

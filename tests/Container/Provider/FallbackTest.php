@@ -11,11 +11,9 @@ declare(strict_types=1);
 namespace Vivarium\Test\Container\Provider;
 
 use PHPUnit\Framework\TestCase;
-use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Vivarium\Container\Binding;
 use Vivarium\Container\Container;
-use Vivarium\Container\Provider;
 use Vivarium\Container\Provider\Fallback;
 
 /** @coversDefaultClass Vivarium\Container\Provider\Fallback */
@@ -61,9 +59,9 @@ final class FallbackTest extends TestCase
         static::assertSame(2, $fallback->provide($container));
     }
 
-    /** 
+    /**
      * @covers ::getBinding()
-     * @covers ::getValue() 
+     * @covers ::getValue()
      */
     public function testGetters(): void
     {

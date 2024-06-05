@@ -33,8 +33,8 @@ abstract class BaseMethodInterception implements MethodInterception
         return $interception;
     }
 
-    public function equals(object $object): bool 
-    { 
+    public function equals(object $object): bool
+    {
         if (! $object instanceof MethodInterception) {
             return false;
         }
@@ -48,7 +48,7 @@ abstract class BaseMethodInterception implements MethodInterception
             ->isEquals();
     }
 
-    public function hash(): string 
+    public function hash(): string
     {
         return (new HashBuilder())
             ->append($this->method)

@@ -22,14 +22,11 @@ use Vivarium\Container\Reflection\MethodCall;
 /** @template T */
 final class InterceptionBinder
 {
-    /** @var class-string */
-    private string $class;
-
     /** @var callable(Interception):T */
     private $create;
 
     /** @param callable(Interception): T $create */
-    public function __construct(string $class, callable $create)
+    public function __construct(private string $class, callable $create)
     {
         (new IsClassOrInterface())
             ->assert($class);
@@ -40,7 +37,6 @@ final class InterceptionBinder
                 '"Missing type hint on callback function."',
             );
 
-        $this->class  = $class;
         $this->create = $create;
     }
 
@@ -74,6 +70,7 @@ final class InterceptionBinder
         );
     }
 
+    /** @return T */
     public function withInterception(Interception $interception, int $priority = Priority::NORMAL)
     {
         return ($this->create)($interception, $priority);

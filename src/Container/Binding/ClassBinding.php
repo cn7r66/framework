@@ -61,7 +61,7 @@ final class ClassBinding extends BaseBinding
                 [$this],
                 $this->extends(),
                 $this->interfaces(),
-            )
+            ),
         );
     }
 

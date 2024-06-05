@@ -35,7 +35,7 @@ final class Interceptor implements Provider
     {
         $interception = new ValueAndPriority($interception, $priority);
 
-        $interceptor = clone $this;
+        $interceptor                = clone $this;
         $interceptor->interceptions = $interceptor->interceptions->add($interception);
 
         return $interceptor;
@@ -52,7 +52,7 @@ final class Interceptor implements Provider
         return $sequence;
     }
 
-    public function provide(Container $container): mixed 
+    public function provide(Container $container): mixed
     {
         $instance = $this->provider->provide($container);
         foreach ($this->interceptions as $interception) {

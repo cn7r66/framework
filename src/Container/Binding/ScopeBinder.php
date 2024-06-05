@@ -49,5 +49,4 @@ final class ScopeBinder
     {
         return ($this->create)(Scope::PROTOTYPE);
     }
-
 }
