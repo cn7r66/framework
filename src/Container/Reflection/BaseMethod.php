@@ -139,7 +139,7 @@ abstract class BaseMethod implements Method
 
     public function equals(object $object): bool
     {
-        if (! $object instanceof InstanceMethod) {
+        if (! $object instanceof Method) {
             return false;
         }
 
