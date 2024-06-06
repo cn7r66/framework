@@ -8,7 +8,7 @@
 
 declare(strict_types=1);
 
-namespace Vivarium\Test\Container\Solver;
+namespace Vivarium\Test\Container;
 
 use PHPUnit\Framework\TestCase;
 use Vivarium\Container\Binding\ClassBinding;
