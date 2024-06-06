@@ -10,17 +10,17 @@ declare(strict_types=1);
 
 namespace Vivarium\Container\Interception;
 
-use Vivarium\Container\Reflection\MethodCall;
+use Vivarium\Container\Reflection\InstanceMethod;
 use Vivarium\Equality\EqualsBuilder;
 use Vivarium\Equality\HashBuilder;
 
 abstract class BaseMethodInterception implements MethodInterception
 {
-    public function __construct(private MethodCall $method)
+    public function __construct(private InstanceMethod $method)
     {
     }
 
-    public function getMethodCall(): MethodCall
+    public function getMethodCall(): InstanceMethod
     {
         return $this->method;
     }
@@ -44,14 +44,14 @@ abstract class BaseMethodInterception implements MethodInterception
         }
 
         return (new EqualsBuilder())
-            ->append($this->method, $object->method)
+            ->append($this->method->getName(), $object->method->getName())
             ->isEquals();
     }
 
     public function hash(): string
     {
         return (new HashBuilder())
-            ->append($this->method)
+            ->append($this->method->getName())
             ->getHashCode();
     }
 }
