@@ -11,11 +11,8 @@ declare(strict_types=1);
 namespace Vivarium\Test\Container\Binding;
 
 use PHPUnit\Framework\TestCase;
-use Vivarium\Container\Binding;
 use Vivarium\Container\Binding\BaseBinding;
 use Vivarium\Test\Container\Stub\SimpleStub;
-
-use function assert;
 
 /** @coversDefaultClass \Vivarium\Container\Binding\BaseBinding */
 final class BaseBindingTest extends TestCase
@@ -34,7 +31,6 @@ final class BaseBindingTest extends TestCase
                         ])
                         ->onlyMethods([])
                         ->getMock();
-        assert($binding instanceof Binding);
 
         $hierarchy = $binding->hierarchy();
 
