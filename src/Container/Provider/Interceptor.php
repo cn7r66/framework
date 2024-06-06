@@ -56,7 +56,7 @@ final class Interceptor implements Provider
     {
         $instance = $this->provider->provide($container);
         foreach ($this->interceptions as $interception) {
-            $instance = $interception->getValue()->intercept($instance);
+            $instance = $interception->getValue()->intercept($container, $instance);
         }
 
         return $instance;
