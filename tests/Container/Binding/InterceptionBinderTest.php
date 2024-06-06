@@ -45,7 +45,7 @@ final class InterceptionBinderTest extends TestCase
      * @covers ::__construct()
      * @covers ::withImmutableMethod()
      * @covers ::withInterception()
-     * @covers:: bindMethodCall()
+     * @covers ::bindMethodCall()
      */
     public function testWithImmutableMethod(): void
     {
@@ -64,7 +64,7 @@ final class InterceptionBinderTest extends TestCase
      * @covers ::__construct()
      * @covers ::withImmutableMethod()
      * @covers ::withInterception()
-     * @covers:: bindMethodCall()
+     * @covers ::bindMethodCall()
      */
     public function testWithMethodWithConfiguredArguments(): void
     {
