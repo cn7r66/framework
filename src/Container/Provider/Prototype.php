@@ -189,10 +189,7 @@ final class Prototype implements Definition
     private function bindMethodCall(string $method, callable|null $define = null): MethodCall
     {
         $call = new MethodCall($this->class, $method);
-        if ($define !== null) {
-            $call = $define($call);
-        }
 
-        return $call;
+        return $define !== null ? $define($call) : $call;
     }
 }
