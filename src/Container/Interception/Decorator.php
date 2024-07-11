@@ -59,7 +59,6 @@ final class Decorator implements Interception, Equality
 
         return (new EqualsBuilder())
             ->append($this->class, $object->class)
-            ->append($this->parameter, $object->parameter)
             ->isEquals();
     }
 
@@ -67,7 +66,6 @@ final class Decorator implements Interception, Equality
     {
         return (new HashBuilder())
             ->append($this->class)
-            ->append($this->parameter)
             ->getHashCode();
     }
 }
