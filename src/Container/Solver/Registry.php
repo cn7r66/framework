@@ -11,11 +11,15 @@ declare(strict_types=1);
 namespace Vivarium\Container\Solver;
 
 use RuntimeException;
+use Vivarium\Assertion\Boolean\IsFalse;
+use Vivarium\Assertion\Boolean\IsTrue;
 use Vivarium\Collection\Map\HashMap;
 use Vivarium\Collection\Map\Map;
 use Vivarium\Collection\MultiMap\MultiMap;
 use Vivarium\Collection\MultiMap\MultiValueMap;
 use Vivarium\Collection\Queue\PriorityQueue;
+use Vivarium\Collection\Sequence\ArraySequence;
+use Vivarium\Collection\Sequence\Sequence;
 use Vivarium\Collection\Set\Set;
 use Vivarium\Collection\Set\SortedSet;
 use Vivarium\Comparator\SortableComparator;
@@ -23,19 +27,24 @@ use Vivarium\Comparator\ValueAndPriority;
 use Vivarium\Container\Binding;
 use Vivarium\Container\Binding\Binder;
 use Vivarium\Container\Binding\ClassBinding;
+use Vivarium\Container\Binding\DecoratorBinder;
+use Vivarium\Container\Binding\ProviderBinder;
 use Vivarium\Container\Binding\InterceptionBinder;
 use Vivarium\Container\Binding\ScopeBinder;
 use Vivarium\Container\Binding\TypeBinding;
 use Vivarium\Container\Definition;
+use Vivarium\Container\Exception\BindingNotFound;
 use Vivarium\Container\Interception;
+use Vivarium\Container\Interception\Decorator;
 use Vivarium\Container\Provider;
 use Vivarium\Container\Provider\Cloneable;
 use Vivarium\Container\Provider\Interceptor;
 use Vivarium\Container\Provider\Prototype;
 use Vivarium\Container\Provider\Service;
 use Vivarium\Container\Scope;
-use Vivarium\Container\Skippable;
+use Vivarium\Container\RecursiveProvider;
 use Vivarium\Container\Solver;
+use Vivarium\Equality\Equal;
 
 final class Registry implements Solver
 {
@@ -64,70 +73,82 @@ final class Registry implements Solver
         $this->scopes = new HashMap();
     }
 
+    /** @return Binder<Registry> */
     public function bind(string $type, string $tag = Binding::DEFAULT, string $context = Binding::GLOBAL): Binder
     {
         $binding = new TypeBinding($type, $tag, $context);
-        if ($this->providers->containsKey($binding)) {
-            throw new RuntimeException('Not implemented yet.');
-        }
+        
+        return new Binder(function (Provider $provider) use ($binding) : Registry {
+            $registry            = clone $this;
+            $registry->providers = $registry->providers->put($binding, $provider);
 
-        return new Binder(function (Provider $provider) use ($binding) {
-            return new ScopeBinder(function (Scope $scope) use ($binding, $provider) {
-                $registry            = clone $this;
-                $registry->providers = $registry->providers->put($binding, $provider);
-                $registry->scopes    = $registry->scopes->put($binding, $scope);
-
-                return $registry;
-            });
-        });
-    }
-
-    public function rebind(string $type, string $tag = Binding::DEFAULT, string $context = Binding::GLOBAL): Binder
-    {
-        $binding = new TypeBinding($type, $tag, $context);
-
-        return new Binder(function (Provider $provider) use ($binding) {
-            $solver            = clone $this;
-            $solver->providers = $solver->providers->put($binding, $provider);
-
-            return $solver;
+            return $registry;
         });
     }
 
     /**
      * @param class-string                     $class
-     * @param callable(Definition): Definition $define
      * @param non-empty-string                 $tag
      * @param non-empty-string                 $context
+     * 
+     * @return ProviderBinder<Registry,Definition>
      */
     public function define(
         string $class,
-        callable $define,
         string $tag = Binding::DEFAULT,
         string $context = Binding::GLOBAL,
-    ): self {
+    ): ProviderBinder {
         $binding = new ClassBinding($class, $tag, $context);
-        if ($this->providers->containsKey($binding)) {
-            throw new RuntimeException();
-        }
 
-        $solver            = clone $this;
-        $solver->providers = $solver->providers->put(
-            $binding,
-            $define(new Prototype($class)),
-        );
+        return new ProviderBinder(new Prototype($class), function (Definition $definition) use ($binding): Registry {
+            $registry            = clone $this;
+            $registry->providers = $registry->providers->put($binding, $definition);
 
-        return $solver;
+            return $registry;
+        });
     }
 
+    /** @return ProviderBinder<Registry,Provider> */
     public function extend(
         string $type,
-        callable $extend,
         string $tag = Binding::DEFAULT,
         string $context = Binding::GLOBAL,
-    ): self {
+    ): ProviderBinder {
+        $binding = new TypeBinding($type, $tag, $context);
+
+        (new IsTrue())
+            ->assert(
+                $this->providers->containsKey($binding),
+                sprintf("Binding (%s, %s, %s) does not exists.", $type, $tag, $context)
+            );
+        
+        return new ProviderBinder(
+            $this->providers->get($binding), 
+            function (Provider $provider) use ($binding): Registry {
+                $registry = clone $this;
+                $registry->providers = $registry->providers->put($binding, $provider);
+                
+                return $registry;
+        });
     }
 
+    /** @return ScopeBinder<Registry> */
+    public function scope(
+        string $type, 
+        string $tag = Binding::DEFAULT, 
+        string $context = Binding::GLOBAL
+    ): ScopeBinder {
+        $binding = new TypeBinding($type, $tag, $context);
+
+        return new ScopeBinder(function (Scope $scope) use ($binding): Registry {
+            $registry         = clone $this;
+            $registry->scopes = $registry->scopes->put($binding, $scope);
+
+            return $registry;
+        });
+    }
+
+    /** @return InterceptionBinder<Registry> */
     public function intercept(
         string $type,
         string $tag = Binding::DEFAULT,
@@ -152,10 +173,85 @@ final class Registry implements Solver
         );
     }
 
-    /** @return Decorator<Registry> */
-    public function decorate(string $type, string $tag = Binding::DEFAULT, string $context = Binding::GLOBAL): Decorator
+    /** @return DecoratorBinder<Registry> */
+    public function decorate(
+        string $type, 
+        string $tag = Binding::DEFAULT, 
+        string $context = Binding::GLOBAL
+    ): DecoratorBinder
     {
         $binding = new ClassBinding($type, $tag, $context);
+
+        return new DecoratorBinder(function (Decorator $decorator, int $priority) use ($binding): Registry {
+            $registry             = clone $this;
+            $registry->decorators = $registry->decorators->put(
+                $binding,
+                new ValueAndPriority(
+                    $decorator,
+                    $priority
+                )
+            );
+
+            return $registry;
+        });
+    }
+
+    public function hasProvider(string $type, string $tag = Binding::DEFAULT, string $context = Binding::GLOBAL): bool
+    {
+        $binding = new TypeBinding($type, $tag, $context);
+        if ($this->providers->containsKey($binding)) {
+            return true;
+        }
+
+        if ($binding->couldBeWidened()) {
+            $binding = $binding->widen();
+            return $this->hasProvider(
+                $binding->getId(),
+                $binding->getTag(),
+                $binding->getContext()
+            );
+        }
+
+        return false;
+    }
+
+    public function hasInterceptions(
+        string $type, 
+        string $tag = Binding::DEFAULT, 
+        string $context = Binding::GLOBAL
+    ): bool {
+        $binding = new TypeBinding($type, $tag, $context);
+        foreach ($binding->hierarchy() as $check)
+        if ($this->interceptions->containsKey($check)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function hasDecorator(
+        string $type,
+        string $tag = Binding::DEFAULT,
+        string $context = Binding::GLOBAL
+    ) {
+        $binding = new TypeBinding($type, $tag, $context);
+        if ($binding->couldBeWidened()) {
+            $binding = $binding->widen();
+            return $this->hasProvider(
+                $binding->getId(),
+                $binding->getTag(),
+                $binding->getContext()
+            );
+        }
+
+        return false;
+    }
+
+    public function hasScope(string $type, string $tag = Binding::DEFAULT, string $context = Binding::GLOBAL): bool
+    {
+        return $this->scopes->containsKey(
+            new TypeBinding($type, $tag, $context)
+        );
     }
 
     public function solve(Binding $request, callable $next): Provider
@@ -172,16 +268,11 @@ final class Registry implements Solver
 
     private function applyInterceptions(Binding $request, Provider $provider): Provider
     {
-        if ($provider instanceof Skippable) {
-            return $provider;
-        }
-
         if (! $provider instanceof Interceptor) {
             $provider = new Interceptor($provider);
         }
 
-        $hierarchy = $request->hierarchy();
-        foreach ($hierarchy as $binding) {
+        foreach ($this->getHierarchy($request, $provider) as $binding) {
             foreach ($this->interceptions->get($binding) as $interception) {
                 $provider = $provider->withInterception(
                     $interception->getValue(),
@@ -191,6 +282,20 @@ final class Registry implements Solver
         }
 
         return $provider;
+    }
+
+    private function getHierarchy(Binding $request, Provider $provider): Sequence
+    {
+        if (! $provider instanceof RecursiveProvider) {
+            return $request->hierarchy();
+        }
+
+        $hierarchy = new ArraySequence();
+        if (! Equal::areEquals($request, $provider->getTarget()) && $request->getTag() !== Binding::DEFAULT) {
+            $hierarchy = $hierarchy->add($request);
+        }
+
+        return $hierarchy;
     }
 
     private function applyDecorator(Binding $request, Provider $provider): Provider
