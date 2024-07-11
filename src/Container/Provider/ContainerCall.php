@@ -13,8 +13,9 @@ namespace Vivarium\Container\Provider;
 use Vivarium\Container\Binding;
 use Vivarium\Container\Container;
 use Vivarium\Container\Provider;
+use Vivarium\Container\RecursiveProvider;
 
-final class ContainerCall implements Provider
+final class ContainerCall implements RecursiveProvider
 {
     public function __construct(private Binding $target)
     {
@@ -23,5 +24,10 @@ final class ContainerCall implements Provider
     public function provide(Container $container): mixed
     {
         return $container->get($this->target);
+    }
+
+    public function getTarget(): Binding
+    {
+        return $this->target;
     }
 }
