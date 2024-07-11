@@ -9,6 +9,7 @@ use Vivarium\Assertion\String\IsPrimitive;
 use Vivarium\Container\Binding;
 use Vivarium\Container\Container;
 use Vivarium\Container\Provider;
+use Vivarium\Container\RecursiveProvider;
 
 use function gettype;
 
@@ -18,7 +19,7 @@ use function gettype;
  * Copyright (c) 2023 Luca Cantoreggi
  */
 
-final class Fallback implements Provider
+final class Fallback implements RecursiveProvider
 {
     public function __construct(private Binding $binding, private mixed $value)
     {
@@ -35,7 +36,7 @@ final class Fallback implements Provider
         }
     }
 
-    public function getBinding(): Binding
+    public function getTarget(): Binding
     {
         return $this->binding;
     }
