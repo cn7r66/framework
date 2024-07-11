@@ -60,7 +60,7 @@ final class FallbackTest extends TestCase
     }
 
     /**
-     * @covers ::getBinding()
+     * @covers ::getTarget()
      * @covers ::getValue()
      */
     public function testGetters(): void
@@ -70,7 +70,7 @@ final class FallbackTest extends TestCase
 
         $provider = new Fallback($binding, $value);
 
-        static::assertSame($binding, $provider->getBinding());
+        static::assertSame($binding, $provider->getTarget());
         static::assertSame($value, $provider->getValue());
     }
 }
