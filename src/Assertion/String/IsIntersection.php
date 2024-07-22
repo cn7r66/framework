@@ -31,7 +31,9 @@ final class IsIntersection implements Assertion
             ->assert($value);
 
         try {
-            $types = explode('&', $value);
+            $types = array_map(function ($type) {
+                return trim($type);
+            }, explode('&', $value));
 
             if (count($types) <= 1) {
                 throw new AssertionFailed('Intersection must be composed at least by two elements.');
