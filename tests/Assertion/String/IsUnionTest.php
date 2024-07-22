@@ -7,6 +7,9 @@ namespace Vivarium\Test\Assertion\String;
 use PHPUnit\Framework\TestCase;
 use Vivarium\Assertion\Exception\AssertionFailed;
 use Vivarium\Assertion\String\IsUnion;
+use Vivarium\Test\Assertion\Stub\InvokableStub;
+use Vivarium\Test\Assertion\Stub\StubClass;
+use Vivarium\Test\Assertion\Stub\StubClassExtension;
 
 /** @coversDefaultClass \Vivarium\Assertion\String\IsUnion */
 final class IsUnionTest extends TestCase
@@ -63,6 +66,14 @@ final class IsUnionTest extends TestCase
 
         static::assertFalse(
             (new IsUnion())('stdClass'),
+        );
+
+        static::assertTrue(
+            (new IsUnion())(
+                'Vivarium\Test\Assertion\Stub\StubClassExtension|
+                (Vivarium\Test\Assertion\Stub\InvokableStub&Vivarium\Test\Assertion\Stub\StubClass)|
+                stdClass'
+            )
         );
     }
 }

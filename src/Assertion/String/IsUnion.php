@@ -12,6 +12,7 @@ namespace Vivarium\Assertion\String;
 
 use Vivarium\Assertion\Assertion;
 use Vivarium\Assertion\Conditional\Each;
+use Vivarium\Assertion\Conditional\Either;
 use Vivarium\Assertion\Exception\AssertionFailed;
 use Vivarium\Assertion\Helpers\TypeToString;
 use Vivarium\Assertion\Type\IsString;
@@ -30,14 +31,19 @@ final class IsUnion implements Assertion
             ->assert($value);
 
         try {
-            $types = explode('|', $value);
+            $types = array_map(function ($type) {
+                return trim(str_replace(['(', ')'], '', $type));
+            }, explode('|', $value));
 
             if (count($types) <= 1) {
                 throw new AssertionFailed('Union must be composed at least by two elements.');
             }
 
             (new Each(
-                new IsBasicType(),
+                new Either(
+                    new IsBasicType(),
+                    new IsIntersection()
+                )
             ))->assert($types);
         } catch (AssertionFailed $ex) {
             $message = sprintf(
