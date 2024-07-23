@@ -14,5 +14,5 @@ enum Scope
 {
     case SERVICE;
     case CLONEABLE;
-    case PROTOTYPE;
+    case TRANSIENT;
 }

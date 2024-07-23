@@ -45,8 +45,8 @@ final class ScopeBinder
     }
 
     /** @return T */
-    public function prototype()
+    public function transient()
     {
-        return ($this->create)(Scope::PROTOTYPE);
+        return ($this->create)(Scope::TRANSIENT);
     }
 }

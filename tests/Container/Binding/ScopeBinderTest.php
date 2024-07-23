@@ -45,14 +45,14 @@ final class ScopeBinderTest extends TestCase
 
     /**
      * @covers ::__construct()
-     * @covers ::prototype()
+     * @covers ::transient()
      */
-    public function testPrototype(): void
+    public function testTransient(): void
     {
         $binder = new ScopeBinder(static function (Scope $scope): void {
-            static::assertSame(Scope::PROTOTYPE, $scope);
+            static::assertSame(Scope::TRANSIENT, $scope);
         });
 
-        $binder->prototype();
+        $binder->transient();
     }
 }
