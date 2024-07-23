@@ -11,8 +11,10 @@ declare(strict_types=1);
 namespace Vivarium\Container\Binding;
 
 use ReflectionFunction;
+use Vivarium\Assertion\Boolean\IsTrue;
 use Vivarium\Assertion\Conditional\IsNotNull;
 use Vivarium\Assertion\String\IsClassOrInterface;
+use Vivarium\Assertion\String\IsType;
 use Vivarium\Comparator\Priority;
 use Vivarium\Container\Interception;
 use Vivarium\Container\Interception\ImmutableMethodInterception;
@@ -26,10 +28,10 @@ final class InterceptionBinder
     private $create;
 
     /** @param callable(Interception): T $create */
-    public function __construct(private string $class, callable $create)
+    public function __construct(private string $type, callable $create)
     {
-        (new IsClassOrInterface())
-            ->assert($class);
+        (new IsType())
+            ->assert($type);
 
         (new IsNotNull())
             ->assert(
@@ -73,12 +75,22 @@ final class InterceptionBinder
     /** @return T */
     public function withInterception(Interception $interception, int $priority = Priority::NORMAL)
     {
+        (new IsTrue())
+            ->assert(
+                $interception->accept($this->type),
+                sprintf(
+                    'Interception %s cannot accept type %s', 
+                    $interception::class,
+                    $this->type
+                )
+            );
+
         return ($this->create)($interception, $priority);
     }
 
     private function bindMethodCall(string $method, callable|null $define = null): MethodCall
     {
-        $call = new MethodCall($this->class, $method);
+        $call = new MethodCall($this->type, $method);
 
         return $define !== null ? $define($call) : $call;
     }

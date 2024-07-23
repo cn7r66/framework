@@ -10,6 +10,8 @@ declare(strict_types=1);
 
 namespace Vivarium\Container\Interception;
 
+use Vivarium\Assertion\Hierarchy\IsAssignableTo;
+use Vivarium\Assertion\String\IsClassOrInterface;
 use Vivarium\Container\Reflection\InstanceMethod;
 use Vivarium\Equality\EqualsBuilder;
 use Vivarium\Equality\HashBuilder;
@@ -18,6 +20,11 @@ abstract class BaseMethodInterception implements MethodInterception
 {
     public function __construct(private InstanceMethod $method)
     {
+    }
+
+    public function accept(string $type): bool
+    {
+        return (new IsAssignableTo($type))($this->method->getClass());
     }
 
     public function getMethodCall(): InstanceMethod

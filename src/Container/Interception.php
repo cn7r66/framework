@@ -20,4 +20,6 @@ interface Interception
      * @template T of object
      */
     public function intercept(Container $container, object $instance): object;
+
+    public function accept(string $type): bool;
 }
