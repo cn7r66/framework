@@ -18,6 +18,7 @@ use Vivarium\Container\Reflection\InstanceMethod;
 use Vivarium\Container\Solver\Registry;
 use Vivarium\Test\Container\Stub\BaseStub;
 use Vivarium\Test\Container\Stub\ConcreteStub;
+use Vivarium\Test\Container\Stub\SimpleStub;
 use Vivarium\Test\Container\Stub\StaticStub;
 use Vivarium\Test\Container\Stub\Stub;
 
@@ -100,7 +101,6 @@ final class RegistryTest extends TestCase
     /**
      * @covers ::__construct()
      * @covers ::intercept()
-     * @covers ::hasInterceptions()
      */
     public function testIntercept(): void
     {
@@ -112,6 +112,24 @@ final class RegistryTest extends TestCase
             });
 
         static::assertTrue($registry->hasInterceptions(Stub::class));
+    }
+
+    /**
+     * @covers ::hasInterceptions()
+     */
+    public function testHasInterceptions(): void
+    {
+        $registry = (new Registry())
+            ->intercept(Stub::class)
+            ->withMethod('setInt', function (InstanceMethod $method) {
+                return $method->bindParameter('n')
+                              ->toInstance(42);
+            });
+
+        static::assertTrue($registry->hasInterceptions(Stub::class));
+        static::assertTrue($registry->hasInterceptions(BaseStub::class));
+        static::assertTrue($registry->hasInterceptions(ConcreteStub::class));
+        static::assertFalse($registry->hasInterceptions(SimpleStub::class));
     }
 
     /**
