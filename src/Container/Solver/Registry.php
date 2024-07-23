@@ -13,6 +13,11 @@ namespace Vivarium\Container\Solver;
 use RuntimeException;
 use Vivarium\Assertion\Boolean\IsFalse;
 use Vivarium\Assertion\Boolean\IsTrue;
+use Vivarium\Assertion\Conditional\Either;
+use Vivarium\Assertion\Exception\AssertionFailed;
+use Vivarium\Assertion\String\IsClass;
+use Vivarium\Assertion\String\IsClassOrInterface;
+use Vivarium\Assertion\String\IsType;
 use Vivarium\Collection\Map\HashMap;
 use Vivarium\Collection\Map\Map;
 use Vivarium\Collection\MultiMap\MultiMap;
@@ -154,7 +159,7 @@ final class Registry implements Solver
         string $tag = Binding::DEFAULT,
         string $context = Binding::GLOBAL,
     ): InterceptionBinder {
-        $binding = new ClassBinding($type, $tag, $context);
+        $binding = $this->createBinding($type, $tag, $context);
 
         return new InterceptionBinder(
             $binding->getId(),
@@ -216,14 +221,15 @@ final class Registry implements Solver
     }
 
     public function hasInterceptions(
-        string $type, 
+        string $class, 
         string $tag = Binding::DEFAULT, 
         string $context = Binding::GLOBAL
     ): bool {
-        $binding = new TypeBinding($type, $tag, $context);
-        foreach ($binding->hierarchy() as $check)
-        if ($this->interceptions->containsKey($check)) {
-            return true;
+        $binding = new ClassBinding($class, $tag, $context);
+        foreach ($binding->hierarchy() as $check) {
+            if ($this->interceptions->containsKey($check)) {
+                return true;
+            }
         }
 
         return false;
@@ -234,7 +240,7 @@ final class Registry implements Solver
         string $tag = Binding::DEFAULT,
         string $context = Binding::GLOBAL
     ) {
-        $binding = new TypeBinding($type, $tag, $context);
+        $binding = new ClassBinding($type, $tag, $context);
         if ($binding->couldBeWidened()) {
             $binding = $binding->widen();
             return $this->hasProvider(
@@ -321,12 +327,23 @@ final class Registry implements Solver
     private function applyScope(Binding $request, Provider $provider): Provider
     {
         $scope = $this->scopes->containsKey($request) ?
-            $this->scopes->get($request) : Scope::PROTOTYPE;
+            $this->scopes->get($request) : Scope::TRANSIENT;
 
         return match ($scope) {
             Scope::SERVICE   => new Service($provider),
             Scope::CLONEABLE => new Cloneable($provider),
-            Scope::PROTOTYPE => $provider
+            Scope::TRANSIENT => $provider
         };
+    }
+
+    private function createBinding(string $type, string $tag, string $context)
+    {
+        (new Either(
+            new IsType(),
+            new IsClassOrInterface()
+        ))->assert($type);
+
+        return (new IsClassOrInterface)($type) ?
+            new ClassBinding($type, $tag, $context) : new TypeBinding($type, $tag, $context);
     }
 }
