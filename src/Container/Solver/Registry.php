@@ -10,12 +10,8 @@ declare(strict_types=1);
 
 namespace Vivarium\Container\Solver;
 
-use RuntimeException;
-use Vivarium\Assertion\Boolean\IsFalse;
 use Vivarium\Assertion\Boolean\IsTrue;
 use Vivarium\Assertion\Conditional\Either;
-use Vivarium\Assertion\Exception\AssertionFailed;
-use Vivarium\Assertion\String\IsClass;
 use Vivarium\Assertion\String\IsClassOrInterface;
 use Vivarium\Assertion\String\IsType;
 use Vivarium\Collection\Map\HashMap;
@@ -38,7 +34,6 @@ use Vivarium\Container\Binding\InterceptionBinder;
 use Vivarium\Container\Binding\ScopeBinder;
 use Vivarium\Container\Binding\TypeBinding;
 use Vivarium\Container\Definition;
-use Vivarium\Container\Exception\BindingNotFound;
 use Vivarium\Container\Interception;
 use Vivarium\Container\Interception\Decorator;
 use Vivarium\Container\Provider;
