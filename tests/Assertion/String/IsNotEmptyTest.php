@@ -12,44 +12,84 @@ namespace Vivarium\Test\Assertion\String;
 
 use PHPUnit\Framework\TestCase;
 use Vivarium\Assertion\Exception\AssertionFailed;
-use Vivarium\Assertion\String\IsEmpty;
 use Vivarium\Assertion\String\IsNotEmpty;
 
 /** @coversDefaultClass \Vivarium\Assertion\String\IsNotEmpty */
 final class IsNotEmptyTest extends TestCase
 {
     /**
+     * @covers ::__construct()
      * @covers ::assert()
-     * @covers ::__invoke()
+     * @dataProvider provideSuccess()
      */
-    public function testAssert(): void
+    public function testAssert(string $string): void
     {
         static::expectNotToPerformAssertions();
 
         (new IsNotEmpty())
-            ->assert('Foo');
+            ->assert($string);
     }
 
     /**
+     * @covers ::__construct()
      * @covers ::assert()
-     * @covers ::__invoke()
+     * @dataProvider provideFailure()
+     * @dataProvider provideNonValid()
      */
-    public function testAssertException(): void
+    public function testAssertException(string|int $string, string $message): void
     {
         static::expectException(AssertionFailed::class);
-        static::expectExceptionMessage('Expected string to be not empty.');
+        static::expectExceptionMessage($message);
 
         (new IsNotEmpty())
-            ->assert('       ');
+            ->assert($string);
     }
 
-    /** @covers ::assert() */
-    public function testAssertWithoutString(): void
+    /**
+     * @covers ::__construct()
+     * @covers ::__invoke()
+     * @dataProvider provideSuccess()
+     */
+    public function testInvoke(string $string): void
     {
-        static::expectException(AssertionFailed::class);
-        static::expectExceptionMessage('Expected value to be string. Got integer.');
+        static::assertTrue((new IsNotEmpty())($string));
+    }
 
-        (new IsEmpty())
-            ->assert(42);
+    /**
+     * @covers ::__construct()
+     * @covers ::__invoke()
+     * @dataProvider provideFailure()
+     */
+    public function testInvokeFailure(string $string): void
+    {
+        static::assertFalse((new IsNotEmpty())($string));
+    }
+
+    /** @return array<array<string>> */
+    public static function provideSuccess(): array
+    {
+        return [
+            ['Foo'],
+            ['A'],
+            ['Hello World'],
+        ];
+    }
+
+    /** @return array<array<string>> */
+    public static function provideFailure(): array
+    {
+        return [
+            ['', 'Expected string to be not empty.'],
+            [' ', 'Expected string to be not empty.'],
+            ['       ', 'Expected string to be not empty.'],
+        ];
+    }
+
+    /** @return array<array{0:int, 1:string}> */
+    public static function provideNonValid(): array
+    {
+        return [
+            [42, 'Expected value to be string. Got integer.'],
+        ];
     }
 }

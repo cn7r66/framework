@@ -16,7 +16,6 @@ use Vivarium\Assertion\Helpers\TypeToString;
 use Vivarium\Assertion\String\IsEmpty;
 use Vivarium\Equality\EqualsBuilder;
 
-use function array_merge;
 use function is_object;
 use function sprintf;
 
@@ -26,16 +25,9 @@ use function sprintf;
  */
 final class IsOneOf implements Assertion
 {
-    /** @var array<T> */
-    private array $choices;
-
-    /**
-     * @param T $choice
-     * @param T ...$choices
-     */
-    public function __construct($choice, ...$choices)
+    /** @param array<T> $choices */
+    public function __construct(private array $choices)
     {
-        $this->choices = array_merge([$choice], $choices);
     }
 
     /** @psalm-assert T $value */
@@ -56,7 +48,11 @@ final class IsOneOf implements Assertion
     public function __invoke(mixed $value): bool
     {
         foreach ($this->choices as $choice) {
-            if ((new EqualsBuilder())->append($value, $choice)->isEquals()) {
+            if (
+                (new EqualsBuilder())
+                ->append($value, $choice)
+                ->isEquals()
+            ) {
                 return true;
             }
         }

@@ -14,7 +14,7 @@ use Vivarium\Assertion\Assertion;
 use Vivarium\Assertion\Exception\AssertionFailed;
 use Vivarium\Assertion\Helpers\TypeToString;
 use Vivarium\Assertion\String\IsEmpty;
-use Vivarium\Assertion\Type\IsArray;
+use Vivarium\Assertion\Var\IsArray;
 
 use function sprintf;
 
@@ -32,11 +32,13 @@ final class Each implements Assertion
     /** @psalm-assert array<T> $value */
     public function assert(mixed $value, string $message = ''): void
     {
-        (new IsArray())->assert($value);
+        (new IsArray())
+            ->assert($value);
 
         foreach ($value as $key => $element) {
             try {
-                $this->assertion->assert($element);
+                $this->assertion
+                    ->assert($element);
             } catch (AssertionFailed $ex) {
                 $message = sprintf(
                     ! (new IsEmpty())($message) ?

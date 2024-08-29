@@ -14,7 +14,7 @@ use Vivarium\Assertion\Assertion;
 use Vivarium\Assertion\Encoding\IsSystemEncoding;
 use Vivarium\Assertion\Exception\AssertionFailed;
 use Vivarium\Assertion\Helpers\TypeToString;
-use Vivarium\Assertion\Type\IsString;
+use Vivarium\Assertion\Var\IsString;
 
 use function mb_strlen;
 use function sprintf;
@@ -24,7 +24,8 @@ final class IsLongBetween implements Assertion
 {
     public function __construct(private int $min, private int $max, private string $encoding = 'UTF-8')
     {
-        (new IsSystemEncoding())->assert($encoding);
+        (new IsSystemEncoding())
+            ->assert($encoding);
     }
 
     /** @psalm-assert string $value */
@@ -47,7 +48,8 @@ final class IsLongBetween implements Assertion
     /** @psalm-assert string $value */
     public function __invoke(mixed $value): bool
     {
-        (new IsString())->assert($value);
+        (new IsString())
+            ->assert($value);
 
         $length = mb_strlen($value, $this->encoding);
 

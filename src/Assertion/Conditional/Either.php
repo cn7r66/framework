@@ -15,6 +15,7 @@ use Vivarium\Assertion\Exception\AssertionFailed;
 use Vivarium\Assertion\Helpers\TypeToString;
 use Vivarium\Assertion\String\IsEmpty;
 
+use function gettype;
 use function sprintf;
 
 /**
@@ -42,6 +43,7 @@ final class Either implements Assertion
                 ! (new IsEmpty())($message) ?
                      $message : 'Failed all assertions in either condition.',
                 (new TypeToString())($value),
+                gettype($value),
             );
 
             throw new AssertionFailed($message);

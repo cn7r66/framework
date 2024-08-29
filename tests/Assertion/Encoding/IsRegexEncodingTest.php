@@ -14,56 +14,78 @@ use PHPUnit\Framework\TestCase;
 use Vivarium\Assertion\Encoding\IsRegexEncoding;
 use Vivarium\Assertion\Exception\AssertionFailed;
 
-use function mb_regex_encoding;
-
 /** @coversDefaultClass \Vivarium\Assertion\Encoding\IsRegexEncoding */
 final class IsRegexEncodingTest extends TestCase
 {
     /**
      * @covers ::assert()
-     * @covers ::__invoke()
+     * @dataProvider provideSuccess()
      */
-    public function testAssert(): void
+    public function testAssert(string $encoding): void
     {
         static::expectNotToPerformAssertions();
 
-        (new IsRegexEncoding())->assert('UTF-8');
-        (new IsRegexEncoding())('UTF-8');
+        (new IsRegexEncoding())->assert($encoding);
     }
 
     /**
      * @covers ::assert()
-     * @covers ::__invoke()
+     * @dataProvider provideFailure()
+     * @dataProvider provideInvalid()
      */
-    public function testAssertException(): void
+    public function testAssertException(string|int $encoding, string $message): void
     {
         static::expectException(AssertionFailed::class);
-        static::expectExceptionMessage('"Windows-1251" is not a valid regex encoding.');
+        static::expectExceptionMessage($message);
 
-        (new IsRegexEncoding())->assert('UTF-8');
-        (new IsRegexEncoding())('UTF-8');
-        (new IsRegexEncoding())->assert('Windows-1251');
-    }
-
-    /** @covers ::__invoke() */
-    public function testDefaultEncodingUntouched(): void
-    {
-        $valid = mb_regex_encoding('UTF-8');
-
-        static::assertTrue($valid);
-        static::assertTrue((new IsRegexEncoding())('ASCII'));
-        static::assertSame('UTF-8', mb_regex_encoding());
+        (new IsRegexEncoding())->assert($encoding);
     }
 
     /**
-     * @covers ::assert()
      * @covers ::__invoke()
+     * @dataProvider provideSuccess()
      */
-    public function testAssertWithoutString(): void
+    public function testInvoke(string $encoding): void
     {
-        static::expectException(AssertionFailed::class);
-        static::expectExceptionMessage('Expected value to be string. Got integer.');
+        static::assertTrue(
+            (new IsRegexEncoding())($encoding),
+        );
+    }
 
-        (new IsRegexEncoding())->assert(42);
+    /**
+     * @covers ::__invoke()
+     * @dataProvider provideFailure()
+     */
+    public function testInvokeFailure(string|int $encoding): void
+    {
+        static::assertFalse(
+            (new IsRegexEncoding())($encoding),
+        );
+    }
+
+    /** @return array<array<string>> */
+    public static function provideSuccess(): array
+    {
+        return [
+            ['UTF-8'],
+            ['UTF-32'],
+            ['ASCII'],
+        ];
+    }
+
+    /** @return array<array<string>> */
+    public static function provideFailure(): array
+    {
+        return [
+            ['Windows-1251', '"Windows-1251" is not a valid regex encoding.'],
+        ];
+    }
+
+    /** @return array<array{0:int, 1:string}> */
+    public static function provideInvalid(): array
+    {
+        return [
+            [42, 'Expected value to be string. Got integer.'],
+        ];
     }
 }

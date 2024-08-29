@@ -20,71 +20,76 @@ final class IsLongBetweenTest extends TestCase
     /**
      * @covers ::__construct()
      * @covers ::assert()
-     * @covers ::__invoke()
+     * @dataProvider provideSuccess()
      */
-    public function testAssert(): void
+    public function testAssert(string $string, int $min, int $max, string $encoding): void
     {
         static::expectNotToPerformAssertions();
 
-        (new IsLongBetween(1, 5))
-            ->assert('Hello');
-
-        (new IsLongBetween(2, 5))
-            ->assert('Hi');
+        (new IsLongBetween($min, $max, $encoding))
+            ->assert($string);
     }
 
     /**
      * @covers ::__construct()
      * @covers ::assert()
-     * @covers ::__invoke()
+     * @dataProvider provideFailure()
+     * @dataProvider provideNonValid()
      */
-    public function testAssertException(): void
+    public function testAssertException(string|int $string, int $min, int $max, string $encoding, string $message): void
     {
         static::expectException(AssertionFailed::class);
-        static::expectExceptionMessage('Expected string to be long between 5 and 10. Got 11');
+        static::expectExceptionMessage($message);
 
-        (new IsLongBetween(5, 10))->assert('Hello World');
+        (new IsLongBetween($min, $max, $encoding))
+            ->assert($string);
+    }
+
+        /**
+         * @covers ::__construct()
+         * @covers ::__invoke()
+         * @dataProvider provideSuccess()
+         */
+    public function testInvoke(string $string, int $min, int $max, string $encoding): void
+    {
+        static::assertTrue((new IsLongBetween($min, $max, $encoding))($string));
     }
 
     /**
      * @covers ::__construct()
-     * @covers ::assert()
      * @covers ::__invoke()
+     * @dataProvider provideFailure()
      */
-    public function testIsLongAtLeastWithWrongEncoding(): void
+    public function testInvokeFailure(string $string, int $min, int $max, string $encoding, string $message): void
     {
-        static::expectException(AssertionFailed::class);
-        static::expectExceptionMessage('"Foo" is not a valid system encoding.');
-
-        (new IsLongBetween(3, 5, 'Foo'))
-            ->assert('Hello');
+        static::assertFalse((new IsLongBetween($min, $max, $encoding))($string));
     }
 
-    /** @covers ::assert() */
-    public function testAssertWithoutString(): void
+    /** @return array<array{0:string, 1:int, 2:int, 3:string}> */
+    public static function provideSuccess(): array
     {
-        static::expectException(AssertionFailed::class);
-        static::expectExceptionMessage('Expected value to be string. Got integer.');
-
-        (new IsLongBetween(0, 5))
-            ->assert(42);
+        return [
+            ['Hello', 1, 5, 'UTF-8'],
+            ['Hi', 2, 5, 'UTF-8'],
+            ['ππ', 1, 3, 'UTF-8'],
+        ];
     }
 
-    /** @covers ::assert() */
-    public function testAssertWithMultibyte(): void
+    /** @return array<array{0:string, 1:int, 2:int, 3:string, 4:string}> */
+    public static function provideFailure(): array
     {
-        static::expectException(AssertionFailed::class);
-        static::expectExceptionMessage('Expected string to be long between 0 and 1. Got 2.');
-
-        (new IsLongBetween(0, 1, 'UTF-8'))
-            ->assert('ππ');
+        return [
+            ['Hello World', 5, 10, 'UTF-8', 'Expected string to be long between 5 and 10. Got 11'],
+            ['ππ', 0, 1, 'UTF-8', 'Expected string to be long between 0 and 1. Got 2.'],
+        ];
     }
 
-    /** @covers ::assert() */
-    public function testInvokeWithMultibyte(): void
+    /** @return array<array{0:int|string, 1:int, 2:int, 3:string, 4:string}> */
+    public static function provideNonValid(): array
     {
-        static::assertTrue(
-            (new IsLongBetween(0, 2, 'UTF-8'))('ππ'),
-        );
+        return [
+            ['Hello', 3, 5, 'Foo', '"Foo" is not a valid system encoding.'],
+            [42, 0, 5, 'UTF-8', 'Expected value to be string. Got integer.'],
+        ];
     }
 }

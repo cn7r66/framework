@@ -19,39 +19,73 @@ final class IsEncodingTest extends TestCase
 {
     /**
      * @covers ::assert()
-     * @covers ::__invoke()
+     * @dataProvider provideSuccess()
      */
-    public function testAssert(): void
+    public function testAssert(string $encoding): void
     {
         static::expectNotToPerformAssertions();
 
-        (new IsEncoding())->assert('UTF-8');
-        (new IsEncoding())('UTF-8');
+        (new IsEncoding())->assert($encoding);
     }
 
     /**
      * @covers ::assert()
-     * @covers ::__invoke()
+     * @dataProvider provideFailure()
+     * @dataProvider provideInvalid()
      */
-    public function testAssertException(): void
+    public function testAssertException(string|int $encoding, string $message): void
     {
         static::expectException(AssertionFailed::class);
-        static::expectExceptionMessage('"Windows-1251" is not a valid encoding.');
+        static::expectExceptionMessage($message);
 
-        (new IsEncoding())->assert('UTF-8');
-        (new IsEncoding())('UTF-8');
-        (new IsEncoding())->assert('Windows-1251');
+        (new IsEncoding())->assert($encoding);
     }
 
     /**
-     * @covers ::assert()
      * @covers ::__invoke()
+     * @dataProvider provideSuccess()
      */
-    public function testAssertWithoutString(): void
+    public function testInvoke(string $encoding): void
     {
-        static::expectException(AssertionFailed::class);
-        static::expectExceptionMessage('Expected value to be string. Got integer.');
+        static::assertTrue(
+            (new IsEncoding())($encoding),
+        );
+    }
 
-        (new IsEncoding())->assert(42);
+    /**
+     * @covers ::__invoke()
+     * @dataProvider provideFailure()
+     */
+    public function testInvokeFailure(string|int $encoding): void
+    {
+        static::assertFalse(
+            (new IsEncoding())($encoding),
+        );
+    }
+
+    /** @return array<array<string>> */
+    public static function provideSuccess(): array
+    {
+        return [
+            ['UTF-8'],
+            ['UTF-32'],
+            ['ASCII'],
+        ];
+    }
+
+    /** @return array<array<string>> */
+    public static function provideFailure(): array
+    {
+        return [
+            ['Windows-1251', '"Windows-1251" is not a valid encoding.'],
+        ];
+    }
+
+    /** @return array<array{0:int, 1:string}> */
+    public static function provideInvalid(): array
+    {
+        return [
+            [42, 'Expected value to be string. Got integer.'],
+        ];
     }
 }

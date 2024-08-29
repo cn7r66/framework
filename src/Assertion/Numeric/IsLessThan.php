@@ -14,7 +14,7 @@ use Vivarium\Assertion\Assertion;
 use Vivarium\Assertion\Exception\AssertionFailed;
 use Vivarium\Assertion\Helpers\TypeToString;
 use Vivarium\Assertion\String\IsEmpty;
-use Vivarium\Assertion\Type\IsNumeric;
+use Vivarium\Assertion\Var\IsNumeric;
 
 use function sprintf;
 
@@ -27,7 +27,8 @@ final class IsLessThan implements Assertion
     /** @param T $compare */
     public function __construct(private $compare)
     {
-        (new IsNumeric())->assert($compare);
+        (new IsNumeric())
+            ->assert($compare);
     }
 
     /** @psalm-assert T $value */
@@ -36,7 +37,7 @@ final class IsLessThan implements Assertion
         if (! $this($value)) {
             $message = sprintf(
                 ! (new IsEmpty())($message) ?
-                     $message : 'Expected value to be less than %2$s. Got %s.',
+                     $message : 'Expected number to be less than %2$s. Got %s.',
                 (new TypeToString())($value),
                 (new TypeToString())($this->compare),
             );
@@ -48,7 +49,8 @@ final class IsLessThan implements Assertion
     /** @psalm-assert T $value */
     public function __invoke(mixed $value): bool
     {
-        (new IsNumeric())->assert($value);
+        (new IsNumeric())
+            ->assert($value);
 
         return $value < $this->compare;
     }

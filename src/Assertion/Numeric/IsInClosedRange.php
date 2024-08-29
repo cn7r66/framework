@@ -14,7 +14,7 @@ use Vivarium\Assertion\Assertion;
 use Vivarium\Assertion\Exception\AssertionFailed;
 use Vivarium\Assertion\Helpers\TypeToString;
 use Vivarium\Assertion\String\IsEmpty;
-use Vivarium\Assertion\Type\IsNumeric;
+use Vivarium\Assertion\Var\IsNumeric;
 
 use function sprintf;
 
@@ -53,7 +53,8 @@ final class IsInClosedRange implements Assertion
     /** @psalm-assert T $value */
     public function __invoke(mixed $value): bool
     {
-        (new IsNumeric())->assert($value);
+        (new IsNumeric())
+            ->assert($value);
 
         return ($this->min <= $value) && ($value <= $this->max);
     }

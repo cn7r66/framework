@@ -13,7 +13,7 @@ namespace Vivarium\Test\Assertion\Conditional;
 use PHPUnit\Framework\TestCase;
 use Vivarium\Assertion\Conditional\Not;
 use Vivarium\Assertion\Exception\AssertionFailed;
-use Vivarium\Assertion\Type\IsString;
+use Vivarium\Assertion\Var\IsString;
 
 /** @coversDefaultClass \Vivarium\Assertion\Conditional\Not */
 final class NotTest extends TestCase
@@ -38,7 +38,7 @@ final class NotTest extends TestCase
     {
         static::expectException(AssertionFailed::class);
         static::expectExceptionMessage(
-            'Failed negating the assertion "Vivarium\Assertion\Type\IsString" with value "Hello World".',
+            'Failed negating the assertion "Vivarium\Assertion\Var\IsString" with value "Hello World".',
         );
 
         (new Not(new IsString()))

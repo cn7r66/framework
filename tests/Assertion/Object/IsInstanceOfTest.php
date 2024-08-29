@@ -16,63 +16,111 @@ use Traversable;
 use Vivarium\Assertion\Exception\AssertionFailed;
 use Vivarium\Assertion\Object\IsInstanceOf;
 use Vivarium\Test\Assertion\Stub\Stub;
+use Vivarium\Test\Assertion\Stub\StubClass;
+use Vivarium\Test\Assertion\Stub\StubClassExtension;
 
 /** @coversDefaultClass \Vivarium\Assertion\Object\IsInstanceOf */
 final class IsInstanceOfTest extends TestCase
 {
     /**
+     * @param class-string $class
+     *
      * @covers ::__construct()
      * @covers ::assert()
-     * @covers ::__invoke()
+     * @dataProvider provideSuccess()
      */
-    public function testAssert(): void
+    public function testAssert(object $target, string $class): void
     {
         static::expectNotToPerformAssertions();
 
-        $stub = $this->createMock(Traversable::class);
-
-        (new IsInstanceOf(Traversable::class))
-            ->assert($stub);
+        (new IsInstanceOf($class))
+            ->assert($target);
     }
 
     /**
      * @covers ::__construct()
      * @covers ::assert()
-     * @covers ::__invoke()
+     * @dataProvider provideFailure()
+     * @dataProvider provideInvalid()
      */
-    public function testAssertException(): void
+    public function testAssertException(object|string $target, string $class, string $message): void
     {
         static::expectException(AssertionFailed::class);
-        static::expectExceptionMessage('Expected object to be instance of "Traversable". Got "stdClass".');
-
-        (new IsInstanceOf(Traversable::class))
-            ->assert(new stdClass());
-    }
-
-    /** @covers ::__construct() */
-    public function testConstructorWithoutClass(): void
-    {
-        static::expectException(AssertionFailed::class);
-        static::expectExceptionMessage('Argument must be a class or interface name. Got "RandomString"');
+        static::expectExceptionMessage($message);
 
         /**
-         * This is covered by static analysis, but it is a valid runtime call
-         *
          * @psalm-suppress ArgumentTypeCoercion
-         * @psalm-suppress UndefinedClass
-         * @phpstan-ignore-next-line
+         * @phpstan-ignore argument.type
          */
-        (new IsInstanceOf('RandomString'))
-            ->assert(new stdClass());
+        (new IsInstanceOf($class))
+            ->assert($target);
     }
 
-    /** @covers ::__construct() */
-    public function testAssertWithoutObject(): void
+        /**
+         * @param class-string $class
+         *
+         * @covers ::__construct()
+         * @covers ::__invoke()
+         * @dataProvider provideSuccess()
+         */
+    public function testInvoke(object $target, string $class): void
     {
-        static::expectException(AssertionFailed::class);
-        static::expectExceptionMessage('Expected value to be object. Got string.');
+        static::assertTrue(
+            (new IsInstanceOf($class))($target),
+        );
+    }
 
-        (new IsInstanceOf(Stub::class))
-            ->assert('Random');
+    /**
+     * @param class-string $class
+     *
+     * @covers ::__construct()
+     * @covers ::__invoke()
+     * @dataProvider provideFailure()
+     */
+    public function testInvokeFailure(object $target, string $class): void
+    {
+        static::assertFalse(
+            (new IsInstanceOf($class))($target),
+        );
+    }
+
+    /** @return array<array{0:object, 1:class-string}> */
+    public static function provideSuccess(): array
+    {
+        return [
+            [new StubClass(), Stub::class],
+            [new StubClassExtension(), Stub::class],
+            [new StubClassExtension(), StubClass::class],
+            [new StubClassExtension(), StubClassExtension::class],
+        ];
+    }
+
+    /** @return array<array{0:object, 1:class-string, 2:string}> */
+    public static function provideFailure(): array
+    {
+        return [
+            [
+                new stdClass(),
+                Traversable::class,
+                'Expected object to be instance of "Traversable". Got "stdClass".',
+            ],
+        ];
+    }
+
+    /** @return array<array{0:string|object, 1:string, 2:string}> */
+    public static function provideInvalid(): array
+    {
+        return [
+            [
+                'RandomString',
+                Traversable::class,
+                'Expected value to be object. Got string.',
+            ],
+            [
+                new stdClass(),
+                'RandomString',
+                'Argument must be a class or interface name. Got "RandomString"',
+            ],
+        ];
     }
 }

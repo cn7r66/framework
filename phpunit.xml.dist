@@ -32,6 +32,9 @@
     <testsuite name="Assertion Tests">
       <directory>tests/Assertion</directory>
     </testsuite>
+    <testsuite name="Check Tests">
+      <directory>tests/Check</directory>
+    </testsuite>
     <testsuite name="Collection Tests">
       <directory>tests/Collection</directory>
     </testsuite>

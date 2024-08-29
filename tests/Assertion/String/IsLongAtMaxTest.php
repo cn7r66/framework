@@ -20,83 +20,77 @@ final class IsLongAtMaxTest extends TestCase
     /**
      * @covers ::__construct()
      * @covers ::assert()
-     * @covers ::__invoke()
+     * @dataProvider provideSuccess()
      */
-    public function testAssert(): void
+    public function testAssert(string $string, int $length, string $encoding): void
     {
         static::expectNotToPerformAssertions();
 
-        (new IsLongAtMax(6))->assert('Hello');
-        (new IsLongAtMax(5))->assert('Hello');
+        (new IsLongAtMax($length, $encoding))
+            ->assert($string);
     }
 
     /**
      * @covers ::__construct()
      * @covers ::assert()
-     * @covers ::__invoke()
+     * @dataProvider provideFailure()
+     * @dataProvider provideNonValid()
      */
-    public function testAssertException(): void
+    public function testAssertException(string|int $string, int $length, string $encoding, string $message): void
     {
         static::expectException(AssertionFailed::class);
-        static::expectExceptionMessage('Expected string to be long at max 5. Got 11');
+        static::expectExceptionMessage($message);
 
-        (new IsLongAtMax(5))
-            ->assert('Hello World');
+        (new IsLongAtMax($length, $encoding))
+            ->assert($string);
+    }
+
+        /**
+         * @covers ::__construct()
+         * @covers ::__invoke()
+         * @dataProvider provideSuccess()
+         */
+    public function testInvoke(string $string, int $length, string $encoding): void
+    {
+        static::assertTrue((new IsLongAtMax($length, $encoding))($string));
     }
 
     /**
      * @covers ::__construct()
-     * @covers ::assert()
      * @covers ::__invoke()
+     * @dataProvider provideFailure()
      */
-    public function testIsLongAtLeastWithWrongEncoding(): void
+    public function testInvokeFailure(string $string, int $length, string $encoding, string $message): void
     {
-        static::expectException(AssertionFailed::class);
-        static::expectExceptionMessage('"Foo" is not a valid system encoding.');
-
-        (new IsLongAtMax(3, 'Foo'))
-            ->assert('Hello');
+        static::assertFalse((new IsLongAtMax($length, $encoding))($string));
     }
 
-    /**
-     * @covers ::__construct()
-     * @covers ::assert()
-     * @covers ::__invoke()
-     */
-    public function testiIsLongAtLeastWithZeroLenght(): void
+    /** @return array<array{0:string, 1:int, 2:string}> */
+    public static function provideSuccess(): array
     {
-        static::expectException(AssertionFailed::class);
-        static::expectExceptionMessage('Expected number to be greater than 0. Got 0.');
-
-        (new IsLongAtMax(0))
-            ->assert('Hello');
+        return [
+            ['Hello', 6, 'UTF-8'],
+            ['Hello', 5, 'UTF-8'],
+            ['ππ', 2, 'UTF-8'],
+        ];
     }
 
-    /** @covers ::assert() */
-    public function testAssertWithoutString(): void
+    /** @return array<array{0:string, 1:int, 2:string, 3:string}> */
+    public static function provideFailure(): array
     {
-        static::expectException(AssertionFailed::class);
-        static::expectExceptionMessage('Expected value to be string. Got integer.');
-
-        (new IsLongAtMax(5))
-            ->assert(42);
+        return [
+            ['Hello World', 5, 'UTF-8', 'Expected string to be long at max 5. Got 11'],
+            ['ππ', 1, 'UTF-8', 'Expected string to be long at max 1. Got 2.'],
+        ];
     }
 
-    /** @covers ::assert() */
-    public function testAssertWithMultibyte(): void
+    /** @return array<array{0:int|string, 1:int, 2:string, 3:string}> */
+    public static function provideNonValid(): array
     {
-        static::expectException(AssertionFailed::class);
-        static::expectExceptionMessage('Expected string to be long at max 1. Got 2.');
-
-        (new IsLongAtMax(1, 'UTF-8'))
-            ->assert('ππ');
-    }
-
-    /** @covers ::assert() */
-    public function testInvokeWithMultibyte(): void
-    {
-        static::assertTrue(
-            (new IsLongAtMax(2, 'UTF-8'))('ππ'),
-        );
+        return [
+            [42, 5, 'UTF-8', 'Expected value to be string. Got integer.'],
+            ['Hello World', 3, 'Foo', '"Foo" is not a valid system encoding.'],
+            ['Hello World', 0, 'UTF-8', 'Expected number to be greater than 0. Got 0.'],
+        ];
     }
 }

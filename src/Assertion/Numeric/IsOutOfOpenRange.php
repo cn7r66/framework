@@ -14,7 +14,7 @@ use Vivarium\Assertion\Assertion;
 use Vivarium\Assertion\Exception\AssertionFailed;
 use Vivarium\Assertion\Helpers\TypeToString;
 use Vivarium\Assertion\String\IsEmpty;
-use Vivarium\Assertion\Type\IsNumeric;
+use Vivarium\Assertion\Var\IsNumeric;
 
 use function sprintf;
 
@@ -40,7 +40,7 @@ final class IsOutOfOpenRange implements Assertion
         if (! $this($value)) {
             $message = sprintf(
                 ! (new IsEmpty())($message) ?
-                     $message : 'Expected value to be out of open range (%2$s, %3$s). Got %s.',
+                     $message : 'Expected number to be out of open range (%2$s, %3$s). Got %s.',
                 (new TypeToString())($value),
                 (new TypeToString())($this->min),
                 (new TypeToString())($this->max),
@@ -53,7 +53,8 @@ final class IsOutOfOpenRange implements Assertion
     /** @psalm-assert T $value */
     public function __invoke(mixed $value): bool
     {
-        (new IsNumeric())->assert($value);
+        (new IsNumeric())
+            ->assert($value);
 
         return ($value <= $this->min) || ($this->max <= $value);
     }

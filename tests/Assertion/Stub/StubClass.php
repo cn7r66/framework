@@ -12,6 +12,8 @@ namespace Vivarium\Test\Assertion\Stub;
 
 class StubClass implements Stub
 {
+    public int $prop = 42;
+
     public function __toString(): string
     {
         return 'StubClass';

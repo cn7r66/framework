@@ -13,9 +13,9 @@ namespace Vivarium\Test\Assertion\Conditional;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Vivarium\Assertion\Conditional\NullOr;
-use Vivarium\Assertion\Type\IsArray;
-use Vivarium\Assertion\Type\IsInteger;
-use Vivarium\Assertion\Type\IsString;
+use Vivarium\Assertion\Var\IsArray;
+use Vivarium\Assertion\Var\IsInteger;
+use Vivarium\Assertion\Var\IsString;
 
 /** @coversDefaultClass \Vivarium\Assertion\Conditional\NullOr */
 final class NullOrTest extends TestCase

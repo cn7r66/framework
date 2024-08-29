@@ -38,8 +38,11 @@ final class All implements Assertion
     public function assert(mixed $value, string $message = ''): void
     {
         try {
-            $this->assertion1->assert($value);
-            $this->assertion2->assert($value);
+            $this->assertion1
+                ->assert($value);
+
+            $this->assertion2
+                ->assert($value);
         } catch (AssertionFailed $ex) {
             $message = sprintf(
                 ! (new IsEmpty())($message) ?

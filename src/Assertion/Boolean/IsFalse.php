@@ -14,7 +14,7 @@ use Vivarium\Assertion\Assertion;
 use Vivarium\Assertion\Exception\AssertionFailed;
 use Vivarium\Assertion\Helpers\TypeToString;
 use Vivarium\Assertion\String\IsEmpty;
-use Vivarium\Assertion\Type\IsBoolean;
+use Vivarium\Assertion\Var\IsBoolean;
 
 use function sprintf;
 
@@ -38,7 +38,8 @@ final class IsFalse implements Assertion
     /** @psalm-assert-if-true false $value */
     public function __invoke(mixed $value): bool
     {
-        (new IsBoolean())->assert($value);
+        (new IsBoolean())
+            ->assert($value);
 
         return $value === false;
     }

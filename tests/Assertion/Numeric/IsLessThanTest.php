@@ -20,39 +20,78 @@ final class IsLessThanTest extends TestCase
     /**
      * @covers ::__construct()
      * @covers ::assert()
-     * @covers ::__invoke()
+     * @dataProvider provideSuccess()
      */
-    public function testAssert(): void
+    public function testAssert(int|float $test, int|float $limit): void
     {
         static::expectNotToPerformAssertions();
 
-        (new IsLessThan(10))->assert(5);
+        (new IsLessThan($limit))
+            ->assert($test);
     }
 
     /**
      * @covers ::__construct()
      * @covers ::assert()
-     * @covers ::__invoke()
+     * @dataProvider provideFailure()
+     * @dataProvider provideInvalid()
      */
-    public function testAssertException(): void
+    public function testAssertException(int|float|string $test, int|float $limit, string $message): void
     {
         static::expectException(AssertionFailed::class);
-        static::expectExceptionMessage('Expected value to be less than 10. Got 10.');
+        static::expectExceptionMessage($message);
 
-        (new IsLessThan(10))
-            ->assert(10);
+        (new IsLessThan($limit))
+            ->assert($test);
     }
 
     /**
-     * @covers ::assert()
+     * @covers ::__construct()
      * @covers ::__invoke()
+     * @dataProvider provideSuccess()
      */
-    public function testAssertWithoutNumeric(): void
+    public function testInvoke(int|float $test, int|float $limit): void
     {
-        static::expectException(AssertionFailed::class);
-        static::expectExceptionMessage('Expected value to be either integer or float. Got "String".');
+        static::assertTrue(
+            (new IsLessThan($limit))($test),
+        );
+    }
 
-        (new IsLessThan(10))
-            ->assert('String');
+    /**
+     * @covers ::__construct()
+     * @covers ::__invoke()
+     * @dataProvider provideFailure()
+     */
+    public function testInvokeFailure(int|float $test, int|float $limit): void
+    {
+        static::assertFalse(
+            (new IsLessThan($limit))($test),
+        );
+    }
+
+    /** @return array<array<int|float>> */
+    public static function provideSuccess(): array
+    {
+        return [
+            [10, 11],
+            [10, 42],
+        ];
+    }
+
+    /** @return array<array{0:int|float, 1:int|float, 2:string}> */
+    public static function provideFailure(): array
+    {
+        return [
+            [10, 3, 'Expected number to be less than 3. Got 10.'],
+            [10, 9.99, 'Expected number to be less than 9.99. Got 10.'],
+        ];
+    }
+
+    /** @return array<array{0:string, 1:int|float, 2:string}> */
+    public static function provideInvalid(): array
+    {
+        return [
+            ['String', 10, 'Expected value to be either integer or float. Got string.'],
+        ];
     }
 }

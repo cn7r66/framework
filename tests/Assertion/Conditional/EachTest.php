@@ -17,7 +17,7 @@ use Vivarium\Assertion\Exception\AssertionFailed;
 use Vivarium\Assertion\Numeric\IsInClosedRange;
 use Vivarium\Assertion\Object\IsInstanceOf;
 use Vivarium\Assertion\String\IsLongAtLeast;
-use Vivarium\Assertion\Type\IsInteger;
+use Vivarium\Assertion\Var\IsInteger;
 
 /** @coversDefaultClass \Vivarium\Assertion\Conditional\Each */
 final class EachTest extends TestCase

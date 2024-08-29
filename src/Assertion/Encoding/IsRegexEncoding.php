@@ -14,8 +14,8 @@ use ValueError;
 use Vivarium\Assertion\Assertion;
 use Vivarium\Assertion\Exception\AssertionFailed;
 use Vivarium\Assertion\Helpers\TypeToString;
-use Vivarium\Assertion\Type\IsBoolean;
-use Vivarium\Assertion\Type\IsString;
+use Vivarium\Assertion\Var\IsBoolean;
+use Vivarium\Assertion\Var\IsString;
 
 use function mb_regex_encoding;
 use function sprintf;
@@ -43,14 +43,17 @@ final class IsRegexEncoding implements Assertion
      */
     public function __invoke(mixed $value): bool
     {
-        (new IsString())->assert($value);
+        (new IsString())
+            ->assert($value);
 
         $encoding = mb_regex_encoding();
-        (new IsString())->assert($encoding);
+        (new IsString())
+            ->assert($encoding);
 
         try {
             $valid = @mb_regex_encoding($value);
-            (new IsBoolean())->assert($valid);
+            (new IsBoolean())
+                ->assert($valid);
         } catch (ValueError) {
             $valid = false;
         } finally {

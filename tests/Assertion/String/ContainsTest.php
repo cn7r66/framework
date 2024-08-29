@@ -20,43 +20,78 @@ class ContainsTest extends TestCase
     /**
      * @covers ::__construct()
      * @covers ::assert()
-     * @covers ::__invoke()
+     * @dataProvider provideSuccess()
      */
-    public function testAssert(): void
+    public function testAssert(string $string, string $substring): void
     {
         static::expectNotToPerformAssertions();
 
-        (new Contains('Bar'))->assert('Foo Bar');
+        (new Contains($substring))
+            ->assert($string);
     }
 
     /**
      * @covers ::__construct()
      * @covers ::assert()
-     * @covers ::__invoke()
+     * @dataProvider provideFailure()
+     * @dataProvider provideNonValid()
      */
-    public function testAssertException(): void
+    public function testAssertException(string|int $string, string $substring, string $message): void
     {
         static::expectException(AssertionFailed::class);
-        static::expectExceptionMessage('Expected that string contains "Hello".');
+        static::expectExceptionMessage($message);
 
-        (new Contains('Hello'))->assert('Foo Bar');
+        (new Contains($substring))
+            ->assert($string);
     }
 
-    /** @covers ::__invoke() */
-    public function testInvoke(): void
+    /**
+     * @covers ::__construct()
+     * @covers ::__invoke()
+     * @dataProvider provideSuccess()
+     */
+    public function testInvoke(string $string, string $substring): void
     {
-        static::assertTrue((new Contains('H'))('Hello World'));
-        static::assertTrue((new Contains('Hello'))('Hello World'));
-        static::assertFalse((new Contains('Foo'))('Hello World'));
+        static::assertTrue((new Contains($substring))($string));
     }
 
-    /** @covers ::assert() */
-    public function testAssertWithoutString(): void
+    /**
+     * @covers ::__construct()
+     * @covers ::__invoke()
+     * @dataProvider provideFailure()
+     */
+    public function testInvokeFailure(string $string, string $substring): void
     {
-        static::expectException(AssertionFailed::class);
-        static::expectExceptionMessage('Expected value to be string. Got integer.');
+        static::assertFalse((new Contains($substring))($string));
+    }
 
-        (new Contains('Hello'))
-            ->assert(42);
+    /** @return array<array<string>> */
+    public static function provideSuccess(): array
+    {
+        return [
+            ['Foo Bar', 'Bar'],
+            ['Hello World', 'H'],
+            ['Hello World', 'Hello'],
+            ['Hello World', 'World'],
+            ['Hello World', 'lo Wo'],
+            ['Hello World', ' '],
+        ];
+    }
+
+    /** @return array<array<string>> */
+    public static function provideFailure(): array
+    {
+        return [
+            ['Hello World', 'Foo', 'Expected that string contains "Foo".'],
+            ['Hello World', '  ', 'Expected that string contains "  ".'],
+        ];
+    }
+
+    /** @return array<array{0:int, 1:string, 2:string}> */
+    public static function provideNonValid(): array
+    {
+        return [
+            [42, 'Foo', 'Expected value to be string. Got integer.'],
+        ];
     }
 }

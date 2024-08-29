@@ -15,7 +15,7 @@ use Vivarium\Assertion\Encoding\IsSystemEncoding;
 use Vivarium\Assertion\Exception\AssertionFailed;
 use Vivarium\Assertion\Helpers\TypeToString;
 use Vivarium\Assertion\Numeric\IsGreaterThan;
-use Vivarium\Assertion\Type\IsString;
+use Vivarium\Assertion\Var\IsString;
 
 use function mb_strlen;
 use function sprintf;
@@ -25,8 +25,11 @@ final class IsLongAtLeast implements Assertion
 {
     public function __construct(private int $length, private string $encoding = 'UTF-8')
     {
-        (new IsSystemEncoding())->assert($encoding);
-        (new IsGreaterThan(0))->assert($length);
+        (new IsSystemEncoding())
+            ->assert($encoding);
+
+        (new IsGreaterThan(0))
+            ->assert($length);
     }
 
     /** @psalm-assert string $value */
@@ -48,7 +51,8 @@ final class IsLongAtLeast implements Assertion
     /** @psalm-assert string $value */
     public function __invoke(mixed $value): bool
     {
-        (new IsString())->assert($value);
+        (new IsString())
+            ->assert($value);
 
         return mb_strlen($value, $this->encoding) >= $this->length;
     }

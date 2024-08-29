@@ -15,7 +15,7 @@ use Vivarium\Assertion\Conditional\All;
 use Vivarium\Assertion\Exception\AssertionFailed;
 use Vivarium\Assertion\String\Contains;
 use Vivarium\Assertion\String\IsLongAtLeast;
-use Vivarium\Assertion\Type\IsString;
+use Vivarium\Assertion\Var\IsString;
 
 /** @coversDefaultClass \Vivarium\Assertion\Conditional\All */
 final class AllTest extends TestCase

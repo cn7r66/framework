@@ -14,10 +14,10 @@ use Vivarium\Assertion\Assertion;
 use Vivarium\Assertion\Conditional\Either;
 use Vivarium\Assertion\Exception\AssertionFailed;
 use Vivarium\Assertion\Helpers\TypeToString;
-use Vivarium\Assertion\String\IsClass;
 use Vivarium\Assertion\String\IsEmpty;
-use Vivarium\Assertion\String\IsInterface;
-use Vivarium\Assertion\Type\IsObject;
+use Vivarium\Assertion\Type\IsClass;
+use Vivarium\Assertion\Type\IsInterface;
+use Vivarium\Assertion\Var\IsObject;
 
 use function sprintf;
 
@@ -58,7 +58,8 @@ final class IsInstanceOf implements Assertion
     /** @psalm-assert-if-true T $value */
     public function __invoke(mixed $value): bool
     {
-        (new IsObject())->assert($value);
+        (new IsObject())
+            ->assert($value);
 
         return $value instanceof $this->class;
     }
