@@ -77,7 +77,7 @@ final class IsBooleanTest extends TestCase
     public static function provideFailure(): array
     {
         return [
-            [42, 'Expected value to be boolean. Got integer.'],
+            [42, 'Expected value to be boolean. Got int.'],
             ['string', 'Expected value to be boolean. Got string.'],
         ];
     }

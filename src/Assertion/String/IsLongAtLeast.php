@@ -13,9 +13,9 @@ namespace Vivarium\Assertion\String;
 use Vivarium\Assertion\Assertion;
 use Vivarium\Assertion\Encoding\IsSystemEncoding;
 use Vivarium\Assertion\Exception\AssertionFailed;
-use Vivarium\Assertion\Helpers\TypeToString;
 use Vivarium\Assertion\Numeric\IsGreaterThan;
 use Vivarium\Assertion\Var\IsString;
+use Vivarium\Type\Type;
 
 use function mb_strlen;
 use function sprintf;
@@ -39,9 +39,9 @@ final class IsLongAtLeast implements Assertion
             $message = sprintf(
                 ! (new IsEmpty())($message) ?
                      $message : 'Expected string to be long at least %3$s. Got %2$s.',
-                (new TypeToString())($value),
-                (new TypeToString())(mb_strlen($value, $this->encoding)),
-                (new TypeToString())($this->length),
+                Type::toLiteral($value),
+                Type::toLiteral(mb_strlen($value, $this->encoding)),
+                Type::toLiteral($this->length),
             );
 
             throw new AssertionFailed($message);

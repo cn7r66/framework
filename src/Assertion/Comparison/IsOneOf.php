@@ -12,9 +12,9 @@ namespace Vivarium\Assertion\Comparison;
 
 use Vivarium\Assertion\Assertion;
 use Vivarium\Assertion\Exception\AssertionFailed;
-use Vivarium\Assertion\Helpers\TypeToString;
 use Vivarium\Assertion\String\IsEmpty;
 use Vivarium\Equality\EqualsBuilder;
+use Vivarium\Type\Type;
 
 use function is_object;
 use function sprintf;
@@ -37,7 +37,7 @@ final class IsOneOf implements Assertion
             $message = sprintf(
                 ! (new IsEmpty())($message) ?
                     $message : 'Expected value to be one of the values provided. Got %s.',
-                is_object($value) ? 'different object' : (new TypeToString())($value),
+                is_object($value) ? 'different object' : Type::toLiteral($value),
             );
 
             throw new AssertionFailed($message);

@@ -12,8 +12,8 @@ namespace Vivarium\Assertion\Type;
 
 use Vivarium\Assertion\Assertion;
 use Vivarium\Assertion\Exception\AssertionFailed;
-use Vivarium\Assertion\Helpers\TypeToString;
 use Vivarium\Assertion\String\IsEmpty;
+use Vivarium\Type\Type;
 
 use function is_a;
 use function sprintf;
@@ -38,8 +38,8 @@ final class IsAssignableToClass implements Assertion
             $message = sprintf(
                 ! (new IsEmpty())($message) ?
                     $message : 'Expected class %s to be assignable to %2$s.',
-                (new TypeToString())($value),
-                (new TypeToString())($this->class),
+                Type::toLiteral($value),
+                Type::toLiteral($this->class),
             );
 
             throw new AssertionFailed($message);

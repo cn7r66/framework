@@ -78,8 +78,8 @@ final class IsIntegerTest extends TestCase
     public static function provideFailure(): array
     {
         return [
-            [42.0, 'Expected value to be integer. Got double.'],
-            [0.99999, 'Expected value to be integer. Got double.'],
+            [42.0, 'Expected value to be integer. Got float.'],
+            [0.99999, 'Expected value to be integer. Got float.'],
             ['string', 'Expected value to be integer. Got string.'],
         ];
     }

@@ -12,9 +12,9 @@ namespace Vivarium\Assertion\Boolean;
 
 use Vivarium\Assertion\Assertion;
 use Vivarium\Assertion\Exception\AssertionFailed;
-use Vivarium\Assertion\Helpers\TypeToString;
 use Vivarium\Assertion\String\IsEmpty;
 use Vivarium\Assertion\Var\IsBoolean;
+use Vivarium\Type\Type;
 
 use function sprintf;
 
@@ -28,7 +28,7 @@ final class IsFalse implements Assertion
             $message = sprintf(
                 ! (new IsEmpty())($message) ?
                     $message : 'Expected boolean to be false. Got %s.',
-                (new TypeToString())($value),
+                Type::toLiteral($value),
             );
 
             throw new AssertionFailed($message);

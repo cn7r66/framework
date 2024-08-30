@@ -14,9 +14,9 @@ namespace Vivarium\Assertion\Type;
 use Vivarium\Assertion\Assertion;
 use Vivarium\Assertion\Comparison\IsOneOf;
 use Vivarium\Assertion\Exception\AssertionFailed;
-use Vivarium\Assertion\Helpers\TypeToString;
 use Vivarium\Assertion\String\IsEmpty;
 use Vivarium\Assertion\Var\IsString;
+use Vivarium\Type\Type;
 
 use function sprintf;
 
@@ -30,7 +30,7 @@ final class IsPrimitive implements Assertion
             $message = sprintf(
                 ! (new IsEmpty())($message) ?
                     $message : 'Expected string to be a primitive type. Got %s.',
-                (new TypeToString())($value),
+                Type::toLiteral($value),
             );
 
             throw new AssertionFailed($message);

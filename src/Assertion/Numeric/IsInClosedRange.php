@@ -12,9 +12,9 @@ namespace Vivarium\Assertion\Numeric;
 
 use Vivarium\Assertion\Assertion;
 use Vivarium\Assertion\Exception\AssertionFailed;
-use Vivarium\Assertion\Helpers\TypeToString;
 use Vivarium\Assertion\String\IsEmpty;
 use Vivarium\Assertion\Var\IsNumeric;
+use Vivarium\Type\Type;
 
 use function sprintf;
 
@@ -41,9 +41,9 @@ final class IsInClosedRange implements Assertion
             $message = sprintf(
                 ! (new IsEmpty())($message) ?
                      $message : 'Expected number to be in closed range [%2$s, %3$s]. Got %s.',
-                (new TypeToString())($value),
-                (new TypeToString())($this->min),
-                (new TypeToString())($this->max),
+                Type::toLiteral($value),
+                Type::toLiteral($this->min),
+                Type::toLiteral($this->max),
             );
 
             throw new AssertionFailed($message);

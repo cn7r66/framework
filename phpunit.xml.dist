@@ -53,6 +53,9 @@
     <testsuite name="Float Tests">
       <directory>tests/Float</directory>
     </testsuite>
+    <testsuite name="Type Tests">
+      <directory>tests/Type</directory>
+    </testsuite>
   </testsuites>
 
 </phpunit>

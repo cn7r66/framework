@@ -12,10 +12,9 @@ namespace Vivarium\Assertion\Var;
 
 use Vivarium\Assertion\Assertion;
 use Vivarium\Assertion\Exception\AssertionFailed;
-use Vivarium\Assertion\Helpers\TypeToString;
 use Vivarium\Assertion\String\IsEmpty;
+use Vivarium\Type\Type;
 
-use function gettype;
 use function is_object;
 use function sprintf;
 
@@ -29,8 +28,8 @@ final class IsObject implements Assertion
             $message = sprintf(
                 ! (new IsEmpty())($message) ?
                      $message : 'Expected value to be object. Got %2$s.',
-                (new TypeToString())($value),
-                gettype($value),
+                Type::toLiteral($value),
+                Type::toString($value),
             );
 
             throw new AssertionFailed($message);

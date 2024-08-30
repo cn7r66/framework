@@ -21,7 +21,8 @@
                     \Vivarium\Check\Check,
                     \Vivarium\Collection\Util\KeyHash,
                     \Vivarium\Collection\Util\Vector,
-                    \Vivarium\Equality\Equal
+                    \Vivarium\Equality\Equal,
+                    \Vivarium\Type\Type
                 </value>
             </property>
         </properties>

@@ -13,8 +13,8 @@ namespace Vivarium\Assertion\Type;
 use ReflectionClass;
 use Vivarium\Assertion\Assertion;
 use Vivarium\Assertion\Exception\AssertionFailed;
-use Vivarium\Assertion\Helpers\TypeToString;
 use Vivarium\Assertion\String\IsEmpty;
+use Vivarium\Type\Type;
 
 use function sprintf;
 
@@ -34,8 +34,8 @@ final class IsAssignableToPrimitive implements Assertion
             $message = sprintf(
                 ! (new IsEmpty())($message) ?
                     $message : 'Expected type to be assignable to primitive type %2$s. Got %1$s.',
-                (new TypeToString())($value),
-                (new TypeToString())($this->primitive),
+                Type::toLiteral($value),
+                Type::toLiteral($this->primitive),
             );
 
             throw new AssertionFailed($message);

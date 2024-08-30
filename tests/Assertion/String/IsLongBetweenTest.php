@@ -89,7 +89,7 @@ final class IsLongBetweenTest extends TestCase
     {
         return [
             ['Hello', 3, 5, 'Foo', '"Foo" is not a valid system encoding.'],
-            [42, 0, 5, 'UTF-8', 'Expected value to be string. Got integer.'],
+            [42, 0, 5, 'UTF-8', 'Expected value to be string. Got int.'],
         ];
     }
 }

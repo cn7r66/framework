@@ -78,7 +78,7 @@ final class IsFloatTest extends TestCase
     public static function provideFailure(): array
     {
         return [
-            [42, 'Expected value to be float. Got integer.'],
+            [42, 'Expected value to be float. Got int.'],
             ['string', 'Expected value to be float. Got string.'],
         ];
     }

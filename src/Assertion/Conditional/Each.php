@@ -12,9 +12,9 @@ namespace Vivarium\Assertion\Conditional;
 
 use Vivarium\Assertion\Assertion;
 use Vivarium\Assertion\Exception\AssertionFailed;
-use Vivarium\Assertion\Helpers\TypeToString;
 use Vivarium\Assertion\String\IsEmpty;
 use Vivarium\Assertion\Var\IsArray;
+use Vivarium\Type\Type;
 
 use function sprintf;
 
@@ -43,8 +43,8 @@ final class Each implements Assertion
                 $message = sprintf(
                     ! (new IsEmpty())($message) ?
                          $message : 'Element at index %2$s failed the assertion.',
-                    (new TypeToString())($element),
-                    (new TypeToString())($key),
+                    Type::toLiteral($element),
+                    Type::toLiteral($key),
                 );
 
                 throw new AssertionFailed($message, 0, $ex);

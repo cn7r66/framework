@@ -7,10 +7,10 @@ namespace Vivarium\Assertion\Object;
 use Vivarium\Assertion\Assertion;
 use Vivarium\Assertion\Conditional\Either;
 use Vivarium\Assertion\Exception\AssertionFailed;
-use Vivarium\Assertion\Helpers\TypeToString;
 use Vivarium\Assertion\String\IsEmpty;
 use Vivarium\Assertion\Type\IsClassOrInterface;
 use Vivarium\Assertion\Var\IsObject;
+use Vivarium\Type\Type;
 
 use function property_exists;
 use function sprintf;
@@ -28,8 +28,8 @@ final class HasProperty implements Assertion
             $message = sprintf(
                 ! (new IsEmpty())($message) ?
                     $message : 'Expected %s to have a property named %2$s.',
-                (new TypeToString())($value),
-                (new TypeToString())($this->property),
+                Type::toLiteral($value),
+                Type::toLiteral($this->property),
             );
 
             throw new AssertionFailed($message);

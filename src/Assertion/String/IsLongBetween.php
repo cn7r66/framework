@@ -13,8 +13,8 @@ namespace Vivarium\Assertion\String;
 use Vivarium\Assertion\Assertion;
 use Vivarium\Assertion\Encoding\IsSystemEncoding;
 use Vivarium\Assertion\Exception\AssertionFailed;
-use Vivarium\Assertion\Helpers\TypeToString;
 use Vivarium\Assertion\Var\IsString;
+use Vivarium\Type\Type;
 
 use function mb_strlen;
 use function sprintf;
@@ -35,10 +35,10 @@ final class IsLongBetween implements Assertion
             $message = sprintf(
                 ! (new IsEmpty())($message) ?
                      $message : 'Expected string to be long between %3$s and %4$s. Got %2$s.',
-                (new TypeToString())($value),
-                (new TypeToString())(mb_strlen($value)),
-                (new TypeToString())($this->min),
-                (new TypeToString())($this->max),
+                Type::toLiteral($value),
+                Type::toLiteral(mb_strlen($value)),
+                Type::toLiteral($this->min),
+                Type::toLiteral($this->max),
             );
 
             throw new AssertionFailed($message);

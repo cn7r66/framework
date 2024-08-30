@@ -49,7 +49,7 @@ final class IsTrueTest extends TestCase
     public function testAssertWithoutBoolean(): void
     {
         static::expectException(AssertionFailed::class);
-        static::expectExceptionMessage('Expected value to be boolean. Got integer.');
+        static::expectExceptionMessage('Expected value to be boolean. Got int.');
 
         (new IsTrue())
             ->assert(42);

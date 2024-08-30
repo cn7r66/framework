@@ -80,7 +80,7 @@ final class IsStringTest extends TestCase
     {
         return [
             [[], 'Expected value to be string. Got array.'],
-            [42, 'Expected value to be string. Got integer.'],
+            [42, 'Expected value to be string. Got int.'],
         ];
     }
 }

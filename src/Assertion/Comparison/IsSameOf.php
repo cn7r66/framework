@@ -12,8 +12,8 @@ namespace Vivarium\Assertion\Comparison;
 
 use Vivarium\Assertion\Assertion;
 use Vivarium\Assertion\Exception\AssertionFailed;
-use Vivarium\Assertion\Helpers\TypeToString;
 use Vivarium\Assertion\String\IsEmpty;
+use Vivarium\Type\Type;
 
 use function is_object;
 use function sprintf;
@@ -36,8 +36,8 @@ final class IsSameOf implements Assertion
             $message = sprintf(
                 ! (new IsEmpty())($message) ?
                     $message : 'Expected value to be the same of %2$s. Got %s.',
-                is_object($value) ? 'different object' : (new TypeToString())($value),
-                (new TypeToString())($this->compare),
+                is_object($value) ? 'different object' : Type::toLiteral($value),
+                Type::toLiteral($this->compare),
             );
 
             throw new AssertionFailed($message);

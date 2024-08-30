@@ -91,7 +91,7 @@ class ContainsTest extends TestCase
     public static function provideNonValid(): array
     {
         return [
-            [42, 'Foo', 'Expected value to be string. Got integer.'],
+            [42, 'Foo', 'Expected value to be string. Got int.'],
         ];
     }
 }

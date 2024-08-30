@@ -88,7 +88,7 @@ final class StartsWithTest extends TestCase
     public static function provideNonString(): array
     {
         return [
-            [42, 'H', 'Expected value to be string. Got integer.'],
+            [42, 'H', 'Expected value to be string. Got int.'],
         ];
     }
 }

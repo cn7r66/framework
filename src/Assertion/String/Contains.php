@@ -12,8 +12,8 @@ namespace Vivarium\Assertion\String;
 
 use Vivarium\Assertion\Assertion;
 use Vivarium\Assertion\Exception\AssertionFailed;
-use Vivarium\Assertion\Helpers\TypeToString;
 use Vivarium\Assertion\Var\IsString;
+use Vivarium\Type\Type;
 
 use function sprintf;
 use function str_contains;
@@ -32,8 +32,8 @@ final class Contains implements Assertion
             $message = sprintf(
                 ! (new IsEmpty())($message) ?
                      $message : 'Expected that string contains %2$s.',
-                (new TypeToString())($value),
-                (new TypeToString())($this->substring),
+                Type::toLiteral($value),
+                Type::toLiteral($this->substring),
             );
 
             throw new AssertionFailed($message);

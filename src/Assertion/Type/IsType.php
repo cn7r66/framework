@@ -13,8 +13,8 @@ namespace Vivarium\Assertion\Type;
 use Vivarium\Assertion\Assertion;
 use Vivarium\Assertion\Conditional\Either;
 use Vivarium\Assertion\Exception\AssertionFailed;
-use Vivarium\Assertion\Helpers\TypeToString;
 use Vivarium\Assertion\String\IsEmpty;
+use Vivarium\Type\Type;
 
 use function sprintf;
 
@@ -28,7 +28,7 @@ final class IsType implements Assertion
             $message = sprintf(
                 ! (new IsEmpty())($message) ?
                     $message : 'Expected string to be a primitive, class, interface, union or intersection. Got %s.',
-                (new TypeToString())($value),
+                Type::toLiteral($value),
             );
 
             throw new AssertionFailed($message);

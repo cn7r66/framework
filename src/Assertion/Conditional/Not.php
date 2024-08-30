@@ -12,8 +12,8 @@ namespace Vivarium\Assertion\Conditional;
 
 use Vivarium\Assertion\Assertion;
 use Vivarium\Assertion\Exception\AssertionFailed;
-use Vivarium\Assertion\Helpers\TypeToString;
 use Vivarium\Assertion\String\IsEmpty;
+use Vivarium\Type\Type;
 
 use function get_class;
 use function sprintf;
@@ -36,8 +36,8 @@ final class Not implements Assertion
             $message = sprintf(
                 ! (new IsEmpty())($message) ?
                      $message : 'Failed negating the assertion %2$s with value %s.',
-                (new TypeToString())($value),
-                (new TypeToString())(get_class($this->assertion)),
+                Type::toLiteral($value),
+                Type::toLiteral(get_class($this->assertion)),
             );
 
             throw new AssertionFailed($message);

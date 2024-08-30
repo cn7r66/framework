@@ -85,7 +85,7 @@ final class IsEncodingTest extends TestCase
     public static function provideInvalid(): array
     {
         return [
-            [42, 'Expected value to be string. Got integer.'],
+            [42, 'Expected value to be string. Got int.'],
         ];
     }
 }

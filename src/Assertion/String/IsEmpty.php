@@ -12,8 +12,8 @@ namespace Vivarium\Assertion\String;
 
 use Vivarium\Assertion\Assertion;
 use Vivarium\Assertion\Exception\AssertionFailed;
-use Vivarium\Assertion\Helpers\TypeToString;
 use Vivarium\Assertion\Var\IsString;
+use Vivarium\Type\Type;
 
 use function sprintf;
 use function strlen;
@@ -29,7 +29,7 @@ final class IsEmpty implements Assertion
             $message = sprintf(
                 ! (new IsEmpty())($message) ?
                      $message : 'Expected string to be empty. Got %s.',
-                (new TypeToString())($value),
+                Type::toLiteral($value),
             );
 
             throw new AssertionFailed($message);

@@ -6,9 +6,9 @@ namespace Vivarium\Assertion\Type;
 
 use Vivarium\Assertion\Assertion;
 use Vivarium\Assertion\Exception\AssertionFailed;
-use Vivarium\Assertion\Helpers\TypeToString;
 use Vivarium\Assertion\String\IsEmpty;
 use Vivarium\Assertion\Var\IsString;
+use Vivarium\Type\Type;
 
 use function explode;
 use function preg_match;
@@ -24,7 +24,7 @@ final class IsNamespace implements Assertion
             $message = sprintf(
                 ! (new IsEmpty())($message) ?
                     $message : 'Expected string to be namespace. Got %s.',
-                (new TypeToString())($value),
+                Type::toLiteral($value),
             );
 
             throw new AssertionFailed($message);

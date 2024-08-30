@@ -92,7 +92,7 @@ final class IsLongTest extends TestCase
     {
         return [
             ['Hello', 6, 'Foo', '"Foo" is not a valid system encoding.'],
-            [42, 3, 'UTF-8', 'Expected value to be string. Got integer.'],
+            [42, 3, 'UTF-8', 'Expected value to be string. Got int.'],
         ];
     }
 }

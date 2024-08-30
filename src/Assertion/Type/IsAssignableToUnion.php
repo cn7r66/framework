@@ -12,8 +12,8 @@ namespace Vivarium\Assertion\Type;
 
 use Vivarium\Assertion\Assertion;
 use Vivarium\Assertion\Exception\AssertionFailed;
-use Vivarium\Assertion\Helpers\TypeToString;
 use Vivarium\Assertion\String\IsEmpty;
+use Vivarium\Type\Type;
 
 use function explode;
 use function sprintf;
@@ -34,8 +34,8 @@ final class IsAssignableToUnion implements Assertion
             $message = sprintf(
                 ! (new IsEmpty())($message) ?
                     $message : 'Expected type to be assignable to union %2$s Got %1$s.',
-                (new TypeToString())($value),
-                (new TypeToString())($this->union),
+                Type::toLiteral($value),
+                Type::toLiteral($this->union),
             );
 
             throw new AssertionFailed($message);

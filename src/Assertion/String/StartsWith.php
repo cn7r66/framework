@@ -12,8 +12,8 @@ namespace Vivarium\Assertion\String;
 
 use Vivarium\Assertion\Assertion;
 use Vivarium\Assertion\Exception\AssertionFailed;
-use Vivarium\Assertion\Helpers\TypeToString;
 use Vivarium\Assertion\Var\IsString;
+use Vivarium\Type\Type;
 
 use function sprintf;
 use function strcmp;
@@ -34,8 +34,8 @@ final class StartsWith implements Assertion
             $message = sprintf(
                 ! (new IsEmpty())($message) ?
                      $message : 'Expected that string %s starts with %2$s.',
-                (new TypeToString())($value),
-                (new TypeToString())($this->start),
+                Type::toLiteral($value),
+                Type::toLiteral($this->start),
             );
 
             throw new AssertionFailed($message);

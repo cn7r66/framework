@@ -12,8 +12,8 @@ namespace Vivarium\Assertion\Type;
 
 use Vivarium\Assertion\Assertion;
 use Vivarium\Assertion\Exception\AssertionFailed;
-use Vivarium\Assertion\Helpers\TypeToString;
 use Vivarium\Assertion\String\IsEmpty;
+use Vivarium\Type\Type;
 
 use function class_implements;
 use function in_array;
@@ -39,8 +39,8 @@ final class ImplementsInterface implements Assertion
             $message = sprintf(
                 ! (new IsEmpty())($message) ?
                      $message : 'Expected class %s to implements %2$s.',
-                (new TypeToString())($value),
-                (new TypeToString())($this->interface),
+                Type::toLiteral($value),
+                Type::toLiteral($this->interface),
             );
 
             throw new AssertionFailed($message);

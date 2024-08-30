@@ -80,7 +80,7 @@ final class IsObjectTest extends TestCase
     {
         return [
             [[], 'Expected value to be object. Got array.'],
-            [42, 'Expected value to be object. Got integer.'],
+            [42, 'Expected value to be object. Got int.'],
         ];
     }
 }

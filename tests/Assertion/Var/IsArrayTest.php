@@ -78,7 +78,7 @@ final class IsArrayTest extends TestCase
     public static function provideFailure(): array
     {
         return [
-            [42, 'Expected value to be array. Got integer.'],
+            [42, 'Expected value to be array. Got int.'],
             ['string', 'Expected value to be array. Got string.'],
         ];
     }

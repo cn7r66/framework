@@ -13,11 +13,11 @@ namespace Vivarium\Assertion\Object;
 use Vivarium\Assertion\Assertion;
 use Vivarium\Assertion\Conditional\Either;
 use Vivarium\Assertion\Exception\AssertionFailed;
-use Vivarium\Assertion\Helpers\TypeToString;
 use Vivarium\Assertion\String\IsEmpty;
 use Vivarium\Assertion\Type\IsClass;
 use Vivarium\Assertion\Type\IsInterface;
 use Vivarium\Assertion\Var\IsObject;
+use Vivarium\Type\Type;
 
 use function sprintf;
 
@@ -47,8 +47,8 @@ final class IsInstanceOf implements Assertion
             $message = sprintf(
                 ! (new IsEmpty())($message) ?
                      $message : 'Expected object to be instance of %2$s. Got %s.',
-                (new TypeToString())($value),
-                (new TypeToString())($this->class),
+                Type::toLiteral($value),
+                Type::toLiteral($this->class),
             );
 
             throw new AssertionFailed($message);

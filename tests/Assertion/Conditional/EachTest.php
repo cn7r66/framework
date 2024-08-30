@@ -67,7 +67,7 @@ final class EachTest extends TestCase
     public function testAssertWithoutArray(): void
     {
         static::expectException(AssertionFailed::class);
-        static::expectExceptionMessage('Expected value to be array. Got integer.');
+        static::expectExceptionMessage('Expected value to be array. Got int.');
 
         (new Each(
             new IsLongAtLeast(27),
@@ -89,7 +89,7 @@ final class EachTest extends TestCase
     public function testInvokeWithoutArray(): void
     {
         static::expectException(AssertionFailed::class);
-        static::expectExceptionMessage('Expected value to be array. Got integer.');
+        static::expectExceptionMessage('Expected value to be array. Got int.');
 
         (new Each(
             new IsLongAtLeast(27),

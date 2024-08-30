@@ -13,8 +13,8 @@ namespace Vivarium\Assertion\Encoding;
 use Vivarium\Assertion\Assertion;
 use Vivarium\Assertion\Conditional\All;
 use Vivarium\Assertion\Exception\AssertionFailed;
-use Vivarium\Assertion\Helpers\TypeToString;
 use Vivarium\Assertion\Var\IsString;
+use Vivarium\Type\Type;
 
 use function sprintf;
 
@@ -27,7 +27,7 @@ final class IsEncoding implements Assertion
         if (! ($this)($value)) {
             $message = sprintf(
                 '%s is not a valid encoding.',
-                (new TypeToString())($value),
+                Type::toLiteral($value),
             );
 
             throw new AssertionFailed($message);

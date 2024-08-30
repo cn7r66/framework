@@ -90,7 +90,7 @@ final class IsLongAtLeastTest extends TestCase
         return [
             ['Hello', 3, 'Foo', '"Foo" is not a valid system encoding.'],
             ['Hello', 0, 'UTF-8', 'Expected number to be greater than 0. Got 0.'],
-            [42, 5, 'UTF-8', 'Expected value to be string. Got integer.'],
+            [42, 5, 'UTF-8', 'Expected value to be string. Got int.'],
         ];
     }
 }

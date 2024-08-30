@@ -12,8 +12,8 @@ namespace Vivarium\Assertion\Conditional;
 
 use Vivarium\Assertion\Assertion;
 use Vivarium\Assertion\Exception\AssertionFailed;
-use Vivarium\Assertion\Helpers\TypeToString;
 use Vivarium\Assertion\String\IsEmpty;
+use Vivarium\Type\Type;
 
 use function sprintf;
 
@@ -47,7 +47,7 @@ final class All implements Assertion
             $message = sprintf(
                 ! (new IsEmpty())($message) ?
                     $message : $ex->getMessage(),
-                (new TypeToString())($value),
+                Type::toLiteral($value),
             );
 
             throw new AssertionFailed($message);

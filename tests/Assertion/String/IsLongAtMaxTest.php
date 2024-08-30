@@ -88,7 +88,7 @@ final class IsLongAtMaxTest extends TestCase
     public static function provideNonValid(): array
     {
         return [
-            [42, 5, 'UTF-8', 'Expected value to be string. Got integer.'],
+            [42, 5, 'UTF-8', 'Expected value to be string. Got int.'],
             ['Hello World', 3, 'Foo', '"Foo" is not a valid system encoding.'],
             ['Hello World', 0, 'UTF-8', 'Expected number to be greater than 0. Got 0.'],
         ];

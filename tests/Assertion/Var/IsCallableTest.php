@@ -83,7 +83,7 @@ final class IsCallableTest extends TestCase
     public static function provideFailure(): array
     {
         return [
-            [42, 'Expected value to be callable. Got integer.'],
+            [42, 'Expected value to be callable. Got int.'],
             ['string', 'Expected value to be callable. Got string.'],
         ];
     }
