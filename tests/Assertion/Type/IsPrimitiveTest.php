@@ -64,11 +64,15 @@ final class IsPrimitiveTest extends TestCase
     {
         return [
             ['int'],
+            ['integer'],
             ['float'],
+            ['double'],
             ['string'],
+            ['bool'],
+            ['boolean'],
+            ['array'],
             ['callable'],
             ['object'],
-            ['array'],
         ];
     }
 
