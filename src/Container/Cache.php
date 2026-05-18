@@ -10,12 +10,9 @@ declare(strict_types=1);
 
 namespace Vivarium\Container;
 
-use Closure;
-
-interface ResolutionNode
+interface Cache
 {
-    /**
-     * @param Closure(): Definition $next
-     */
-    public function resolve(Binding $binding, Closure $next): Definition;
+    public function lookup(Binding $binding): bool;
+
+    public function restore(Binding $binding): Definition;
 }

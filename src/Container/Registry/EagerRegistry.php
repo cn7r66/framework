@@ -23,7 +23,7 @@ use Vivarium\Container\Binding\ProviderBinder;
 use Vivarium\Container\Binding\ScopeBinder;
 use Vivarium\Container\Provider\ContainerCall;
 
-final class EagerRegistry implements Binder, Registry
+final class EagerRegistry implements Registry, Binder
 {
     /** @var HashMap<string, Provider> */
     private HashMap $providers;
@@ -152,21 +152,22 @@ final class EagerRegistry implements Binder, Registry
 
     // Registry
 
-    public function findProvider(Binding $binding): ?Provider
+    public function findProvider(Binding $binding): Provider
     {
         foreach ($binding->hierarchy() as $candidate) {
-            $hash = $candidate->hash();
-
-            if ($this->providers->containsKey($hash)) {
-                return $this->providers->get($hash);
+            if ($this->providers->containsKey($candidate)) {
+                return $this->providers->get($candidate);
             }
 
-            if ($this->chains->containsKey($hash)) {
-                return new ContainerCall($this->chains->get($hash));
+            if ($this->chains->containsKey($candidate)) {
+                return new ContainerCall($this->chains->get($candidate));
             }
         }
+    }
 
-        return null;
+    public function hasProvider(Binding $binding): bool
+    {
+        return $this->providers->containsKey($binding);
     }
 
     public function findScope(Binding $binding): Scope

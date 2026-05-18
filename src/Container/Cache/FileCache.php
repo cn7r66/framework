@@ -10,7 +10,9 @@ declare(strict_types=1);
 
 namespace Vivarium\Container;
 
-final class FileCache
+use Cache;
+
+final class FileCache implements Cache
 {
     public function __construct(private string $path)
     {

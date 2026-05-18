@@ -13,139 +13,131 @@ namespace Vivarium\Container;
 use ReflectionClass;
 use Vivarium\Check\CheckIfType;
 use Vivarium\Collection\Map\HashMap;
-use Vivarium\Collection\MultiMap\MultiMap;
-use Vivarium\Collection\MultiMap\MultiValueMap;
-use Vivarium\Collection\Sequence\ArraySequence;
-use Vivarium\Container\Binding\ProviderBinder;
-use Vivarium\Container\Binding\ScopeBinder;
+use Vivarium\Collection\Map\Map;
+use Vivarium\Container\Cache;
+use Vivarium\Container\Cache\NoOpCache;
+use Vivarium\Container\Definition\Cloneable;
+use Vivarium\Container\Definition\Service;
+use Vivarium\Container\Definition\Transient;
+use Vivarium\Container\Exception\BindingNotFound;
+use Vivarium\Container\Collector\NoOpCollector;
+use Vivarium\Container\Provider\Constructor;
 
-final class Injector implements Container, Bindable
+final class Injector implements Container
 {
-    /** @var HashMap<Binding, Provider> */
-    private HashMap $providers;
+    /** @var Map<Binding, Definition> */
+    private Map $solved;
 
-    /** @var MultiMap<Binding, ValueAndPriority<Interception>> */
-    private MultiMap $injections;
+    private Cache $cache;
 
-    /** @var MultiMap<Binding, ValueAndPriority<Interception>> */
-    private MultiMap $interceptions;
+    private Collector $collector;
 
-    /** @var HashMap<Binding, Scope> */
-    private HashMap $scopes;
-
-    public function __construct()
+    public function __construct(private Registry $registry)
     {
-        $this->providers = new HashMap();
-
-        $this->injections = new MultiValueMap(function () {
-            return new ArraySequence();
-        });
-        
-        $this->interceptions = new MultiValueMap(function () {
-            return new ArraySequence();
-        });
-
-        $this->scopes = new HashMap();
+        $this->solved    = new HashMap();
+        $this->cache     = new NoOpCache();
+        $this->collector = new NoOpCollector();
     }
 
-    public function get(Binding $binding)
+    public function get(Binding|string $request): mixed
     {
+        $binding = $this->makeBinding($request);
 
+        if ($this->cache->lookup($binding)) {
+            $this->solved = $this->solved->put(
+                $binding,
+                $this->cache->restore($binding)
+            );
+        }
+
+        if ($this->solved->containsKey($binding)) {
+            return $this->solved
+                ->get($binding)
+                ->solve($this);
+        }
+
+        $provider   = $this->getProvider($binding);
+        $definition = $this->applyScope($binding, $provider);
+        $definition = $this->applyEnhancements($binding, $definition);
+
+        $this->solved = $this->solved->put($binding, $definition);
+
+        return $definition->solve($this);
     }
 
-    public function has(Binding $binding) : bool
+    public function has(Binding|string $request) : bool
     {
-        if ($this->providers->containsKey($binding)) {
+        $binding = $this->makeBinding($request);
+
+        if ($this->solved->containsKey($binding)) {
             return true;
         }
 
-        if (! CheckIfType::IsClass($binding->getId())) {
+        if ($this->cache->lookup($binding)) {
+            return true;
+        }
+
+        if ($this->registry->hasProvider($binding)) {
+            return true;
+        }
+
+        if (! CheckIfType::isClass($binding->getType())) {
             return false;
         }
 
-        return (new ReflectionClass($binding->getId()))
+        return (new ReflectionClass($binding->getType()))
             ->isInstantiable();
     }
 
-    /**
-     * @return ProviderBinder<Injector>
-     */
-    public function bind(
-        string $type, 
-        string $tag = Binding::DEFAULT, 
-        string $context = Binding::GLOBAL
-    ) : ProviderBinder
+    public function withCache(Cache $cache): self
     {
-        return new ProviderBinder(
-            function (Binding $binding, Provider $provider) {
-                $container            = clone $this;
-                $container->providers = $this->providers->put(
-                    $binding,
-                    $provider
-                );
+        $container        = clone $this;
+        $container->cache = $cache;
 
-                return $container;
-            },
-            new Binding($type, $tag, $context)
-        );
+        return $container;
     }
 
-    /**
-     * @return InjectionBinder<T>
-     */
-    public function inject(
-        string $type,
-        string $tag = Binding::DEFAULT, 
-        string $context = Binding::GLOBAL
-    ) : InterceptionBinder
+    public function withCollector(Collector $collector): self
     {
+        $container            = clone $this;
+        $container->collector = $collector;
 
+        return $container;
     }
 
-    /**
-     * @return InterceptionBinder<T>
-     */
-    public function enhance(
-        string $type,
-        string $tag = Binding::DEFAULT, 
-        string $context = Binding::GLOBAL
-    ) : InterceptionBinder
+    private function makeBinding(Binding|string $request): Binding
     {
+        if ($request instanceof Binding) {
+            return $request;
+        }
 
+        return new Binding($request);
     }
 
-    /**
-     * @return DecoratorBinder<T>
-     */
-    public function decorate(
-        string $type,
-        string $tag = Binding::DEFAULT, 
-        string $context = Binding::GLOBAL
-    ) : DecoratorBinder
+    private function getProvider(Binding $binding): Provider
     {
+        if ($this->registry->hasProvider($binding)) {
+            return $this->registry->findProvider($binding);
+        }
 
+        if (CheckIfType::isClass($binding->getType())) {
+            return new Constructor($binding->getType());
+        }
+
+        throw new BindingNotFound();
     }
 
-    /**
-     * @return ScopeBinder<Injector>
-     */
-    public function scope(
-        string $type, 
-        string $tag = Binding::DEFAULT, 
-        string $context = Binding::GLOBAL
-    ): ScopeBinder
+    private function applyScope(Binding $binding, Provider $provider): Definition
     {
-        return new ScopeBinder(
-            function (Scope $scope) use ($type, $tag, $context) {
-                $container         = clone $this;
-                $container->scopes = $this->scopes->put(
-                    new Binding($type, $tag, $context),
-                    $scope
-                );
+        return match ($this->registry->findScope($binding)) {
+            Scope::SERVICE   => new Service($provider),
+            Scope::CLONEABLE => new Cloneable($provider),
+            Scope::TRANSIENT => new Transient($provider),
+        };
+    }
 
-                return $container;
-            },
-            
-        );
+    private function applyEnhancements(Binding $binding, Definition $definition): Definition    
+    {
+        return $definition;
     }
 }

@@ -10,9 +10,7 @@ declare(strict_types=1);
 
 namespace Vivarium\Container;
 
-final class JsonCollector
+interface Collector
 {
-    public function __construct(private string $path)
-    {
-    }
+    public function collect(): void;
 }

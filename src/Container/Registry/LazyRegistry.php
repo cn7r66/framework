@@ -10,7 +10,50 @@ declare(strict_types=1);
 
 namespace Vivarium\Container;
 
+use Vivarium\Container\Provider;
+use Vivarium\Container\Scope;
+
 final class LazyRegistry implements Registry
 {
+    private Registry|null $registry;
 
+    /** @var callable */
+    private $factory;
+
+    public function __construct(callable $factory)
+    {
+        $this->registry = null;
+        $this->factory  = $factory;
+    }
+
+    public function findProvider(Binding $binding): Provider
+    {
+        return $this
+            ->getRealRegistry()
+            ->findProvider($binding);
+    }
+
+    public function findScope(Binding $binding): Scope
+    {
+        return $this
+            ->getRealRegistry()
+            ->findScope($binding);
+    }
+
+    /** @return iterable<Enhancement> */
+    public function findEnhancements(Binding $binding): iterable
+    {
+        return $this
+            ->getRealRegistry()
+            ->findEnhancements($binding);
+    }
+
+    private function getRealRegistry(): Registry
+    {
+        if ($this->registry === null) {
+            $this->registry = ($this->factory)();
+        }
+
+        return $this->registry;
+    }
 }

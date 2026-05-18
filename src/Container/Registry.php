@@ -12,7 +12,9 @@ namespace Vivarium\Container;
 
 interface Registry
 {
-    public function findProvider(Binding $binding): ?Provider;
+    public function hasProvider(Binding $binding): bool;
+
+    public function findProvider(Binding $binding): Provider;
 
     public function findScope(Binding $binding): Scope;
 

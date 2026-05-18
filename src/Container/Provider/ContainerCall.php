@@ -25,9 +25,7 @@ final class ContainerCall implements Provider
 
     public function provide(Container $container): mixed
     {
-        return $container->get(
-            $this->target,
-        );
+        return $container->get($this->target);
     }
 
     public function getTarget(): string
