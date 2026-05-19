@@ -11,38 +11,34 @@ declare(strict_types=1);
 namespace Vivarium\Container\Provider;
 
 use ReflectionClass;
-use RuntimeException;
-use Vivarium\Assertion\Object\HasPublicMethod;
-use Vivarium\Assertion\Type\IsClass;
 use Vivarium\Collection\Set\HashSet;
 use Vivarium\Collection\Set\Set;
+use Vivarium\Container\BaseMethod;
 use Vivarium\Container\Capability;
 use Vivarium\Container\Container;
 use Vivarium\Container\Provider;
 
-final class StaticFactory implements Provider
+final class StaticFactory extends BaseMethod implements Provider
 {
-    public function __construct(
-        private string $class,
-        private string $method,
-    ) {
-        (new IsClass())
-            ->assert($class);
-
-        (new HasPublicMethod($method))
-            ->assert($class);
+    public function __construct(string $class, string $method)
+    {
+        parent::__construct($class, $method);
     }
 
     public function provide(Container $container): mixed
     {
-        // TODO: Implement parameter resolution and method call
-        throw new RuntimeException('Not implemented yet.');
+        return (new ReflectionClass($this->getClass()))
+            ->getMethod($this->getName())
+            ->invokeArgs(
+                null,
+                $this->getArgumentsValue($container)->toArray(),
+            );
     }
 
     public function getTarget(): string
     {
-        $type = (new ReflectionClass($this->class))
-            ->getMethod($this->method)
+        $type = (new ReflectionClass($this->getClass()))
+            ->getMethod($this->getName())
             ->getReturnType();
 
         return $type === null ? 'mixed' : (string) $type;

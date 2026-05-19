@@ -21,7 +21,7 @@ final class Fallback implements Provider
 {
     public function __construct(
         private Binding $primary,
-        private Binding $secondary,
+        private Provider $secondary,
     ) {
     }
 
@@ -29,12 +29,12 @@ final class Fallback implements Provider
     {
         return $container->has($this->primary)
             ? $container->get($this->primary)
-            : $container->get($this->secondary);
+            : $this->secondary->provide($container);
     }
 
     public function getTarget(): string
     {
-        return $this->primary->getType() . '|' . $this->secondary->getType();
+        return $this->primary->getType() . '|' . $this->secondary->getTarget();
     }
 
     public function getCapabilities(): Set

@@ -14,5 +14,12 @@ use Vivarium\Container\Binding\Binder;
 
 interface Module
 {
-    public function configure(Binder $binder) : Binder;
+    /**
+     * @template T of Binder
+     *
+     * @param T $binder
+     *
+     * @return T
+     */
+    public function configure(Binder $binder): Binder;
 }

@@ -10,37 +10,43 @@ declare(strict_types=1);
 
 namespace Vivarium\Container\Provider;
 
-use Vivarium\Assertion\Object\HasMethod;
-use Vivarium\Assertion\Type\IsClass;
-use Vivarium\Collection\Map\HashMap;
+use ReflectionClass;
+use Vivarium\Collection\Sequence\ArraySequence;
+use Vivarium\Collection\Sequence\Sequence;
 use Vivarium\Collection\Set\HashSet;
 use Vivarium\Collection\Set\Set;
-use Vivarium\Container\Binding\ArgumentBinder;
+use Vivarium\Container\BaseMethod;
 use Vivarium\Container\Capability;
 use Vivarium\Container\Container;
 use Vivarium\Container\Provider;
 
-final class Constructor implements Method
+final class Constructor extends BaseMethod implements Provider
 {
-    /** @var HashMap<string, Provider> */
-    private HashMap $arguments;
-
-    public function __construct(private string $class)
+    public function __construct(string $class)
     {
-        (new IsClass())
-            ->assert($class);
+        parent::__construct($class, '__construct');
+    }
 
-        (new HasMethod('__construct'))
-            ->assert($class);
+    public function getArguments(string|null $class = null): Sequence
+    {
+        if (! (new ReflectionClass($this->getClass()))->hasMethod('__construct')) {
+            return ArraySequence::fromArray([]);
+        }
+
+        return parent::getArguments($class);
     }
 
     public function provide(Container $container): mixed
     {
+        return (new ReflectionClass($this->getClass()))
+            ->newInstanceArgs(
+                $this->getArgumentsValue($container)->toArray(),
+            );
     }
 
     public function getTarget(): string
     {
-        return $this->class;
+        return $this->getClass();
     }
 
     public function getCapabilities(): Set
@@ -50,19 +56,5 @@ final class Constructor implements Method
             Capability::INTERCEPTABLE,
             Capability::DECORABLE,
         ]);
-    }
-
-    /** @return ArgumentBinder<Constructor> */
-    public function bind(string $parameter): ArgumentBinder
-    {
-        return new ArgumentBinder(function (Provider $provider) use ($parameter) {
-            $constructor            = clone $this;
-            $constructor->arguments = $this->arguments->put(
-                $parameter,
-                $provider,
-            );
-
-            return $constructor;
-        });
     }
 }

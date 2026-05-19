@@ -11,9 +11,12 @@ declare(strict_types=1);
 namespace Vivarium\Container;
 
 use Vivarium\Collection\Map\HashMap;
+use Vivarium\Collection\Map\Map;
 use Vivarium\Collection\MultiMap\MultiMap;
 use Vivarium\Collection\MultiMap\MultiValueMap;
 use Vivarium\Collection\Queue\PriorityQueue;
+use Vivarium\Collection\Set\Set;
+use Vivarium\Collection\Set\SortedSet;
 use Vivarium\Comparator\SortableComparator;
 use Vivarium\Comparator\ValueAndPriority;
 use Vivarium\Container\Binding\Binder;
@@ -21,185 +24,160 @@ use Vivarium\Container\Binding\DecoratorBinder;
 use Vivarium\Container\Binding\EnhancementBinder;
 use Vivarium\Container\Binding\ProviderBinder;
 use Vivarium\Container\Binding\ScopeBinder;
+use Vivarium\Container\Decorator;
+use Vivarium\Container\Interception;
+use Vivarium\Container\Provider\Constructor;
 use Vivarium\Container\Provider\ContainerCall;
 
 final class EagerRegistry implements Registry, Binder
 {
-    /** @var HashMap<string, Provider> */
-    private HashMap $providers;
+    /** @var Map<Binding, Provider> */
+    private Map $providers;
 
-    /** @var HashMap<string, Binding> */
-    private HashMap $chains;
+    /** @var MultiMap<Binding, SortedSet<ValueAndPriority<Interception>>> */
+    private MultiMap $interceptions;
 
-    /** @var HashMap<string, Scope> */
-    private HashMap $scopes;
+    /** @var MultiMap<Binding, Set<ValueAndPriority<Decorator>>> */
+    private MultiMap $decorators;
 
-    /** @var MultiMap<string, ValueAndPriority<Enhancement>> */
-    private MultiMap $enhancements;
+    /** @var Map<Binding, Scope> */
+    private Map $scopes;
 
     public function __construct()
     {
-        $this->providers    = new HashMap();
-        $this->chains       = new HashMap();
-        $this->scopes       = new HashMap();
-        $this->enhancements = new MultiValueMap(function (): PriorityQueue {
+        $this->providers = new HashMap();
+
+        $this->interceptions = new MultiValueMap(static function (): PriorityQueue {
             return new PriorityQueue(new SortableComparator());
+        });
+        
+        $this->decorators    = new MultiValueMap(static function (): SortedSet {
+            return new SortedSet(new SortableComparator());
+        });
+
+        $this->scopes = new HashMap();
+    }
+
+    /** @return ProviderBinder<EagerRegistry> */
+    public function bind(
+        string $type, 
+        string $tag = Binding::DEFAULT, 
+        string $context = Binding::GLOBAL
+    ): ProviderBinder
+    {
+        $binding = new Binding($type, $tag, $context);
+
+        return new ProviderBinder($binding, function (Binding $source, Provider $provider): Registry {
+            $registry            = clone $this;
+            $registry->providers = $registry->providers->put($source, $provider);
+
+            return $registry;
         });
     }
 
-    public function withProvider(Binding $source, Provider $provider): self
+    /**
+     * @param class-string     $class
+     * @param non-empty-string $tag
+     * @param non-empty-string $context
+     *
+     * @return ProviderBinder<Registry,Definition>
+     */
+    public function define(
+        string $class,
+        string $tag = Binding::DEFAULT,
+        string $context = Binding::GLOBAL,
+    ): ScopeBinder 
     {
-        $registry            = clone $this;
-        $registry->providers = $registry->providers->put($source->hash(), $provider);
+        $binding = new Binding($class, $tag, $context);
 
-        return $registry;
+
     }
 
-    public function withChain(Binding $source, Binding $target): self
-    {
-        $registry         = clone $this;
-        $registry->chains = $registry->chains->put($source->hash(), $target);
-
-        return $registry;
-    }
-
-    public function withScope(Binding $binding, Scope $scope): self
-    {
-        $registry         = clone $this;
-        $registry->scopes = $registry->scopes->put($binding->hash(), $scope);
-
-        return $registry;
-    }
-
-    public function withEnhancement(Binding $target, Enhancement $enhancement, int $priority): self
-    {
-        $registry               = clone $this;
-        $registry->enhancements = $registry->enhancements->put(
-            $target->hash(),
-            new ValueAndPriority($enhancement, $priority)
-        );
-
-        return $registry;
-    }
-
-    public function install(Module $module): self
-    {
-        $binder = $module->configure($this);
-
-        assert($binder instanceof self);
-
-        return $binder;
-    }
-
-    // Binder
-
-    public function bind(
+    /** @return ProviderBinder<Registry,Provider> */
+    public function extend(
         string $type,
         string $tag = Binding::DEFAULT,
         string $context = Binding::GLOBAL,
     ): ProviderBinder {
-        $binding = new Binding($type, $tag, $context);
+        $binding = new TypeBinding($type, $tag, $context);
+
+        (new IsTrue())
+            ->assert(
+                $this->providers->containsKey($binding),
+                sprintf('Binding (%s, %s, %s) does not exists.', $type, $tag, $context),
+            );
 
         return new ProviderBinder(
-            function (Binding $b, Provider $provider): ScopeBinder {
-                return new ScopeBinder(
-                    function (Scope $scope) use ($b, $provider): self {
-                        return $this->withProvider($b, $provider)->withScope($b, $scope);
-                    }
-                );
+            $this->providers->get($binding),
+            function (Provider $provider) use ($binding): Registry {
+                $registry            = clone $this;
+                $registry->providers = $registry->providers->put($binding, $provider);
+
+                return $registry;
             },
-            $binding
         );
     }
 
-    public function inject(
-        string $type,
-        string $tag = Binding::DEFAULT,
-        string $context = Binding::GLOBAL,
-    ): EnhancementBinder {
-        return new EnhancementBinder(new Binding($type, $tag, $context));
-    }
-
-    public function enhance(
-        string $type,
-        string $tag = Binding::DEFAULT,
-        string $context = Binding::GLOBAL,
-    ): EnhancementBinder {
-        return new EnhancementBinder(new Binding($type, $tag, $context));
-    }
-
-    public function decorate(
-        string $type,
-        string $tag = Binding::DEFAULT,
-        string $context = Binding::GLOBAL,
-    ): DecoratorBinder {
-        return new DecoratorBinder(new Binding($type, $tag, $context));
-    }
-
+    /** @return ScopeBinder<Registry> */
     public function scope(
         string $type,
         string $tag = Binding::DEFAULT,
         string $context = Binding::GLOBAL,
     ): ScopeBinder {
-        $binding = new Binding($type, $tag, $context);
+        $binding = new TypeBinding($type, $tag, $context);
 
-        return new ScopeBinder(
-            function (Scope $scope) use ($binding): self {
-                return $this->withScope($binding, $scope);
-            }
+        return new ScopeBinder(function (Scope $scope) use ($binding): Registry {
+            $registry         = clone $this;
+            $registry->scopes = $registry->scopes->put($binding, $scope);
+
+            return $registry;
+        });
+    }
+
+    /** @return InterceptionBinder<Registry> */
+    public function intercept(
+        string $type,
+        string $tag = Binding::DEFAULT,
+        string $context = Binding::GLOBAL,
+    ): InterceptionBinder {
+        $binding = $this->createBinding($type, $tag, $context);
+
+        return new InterceptionBinder(
+            $binding->getId(),
+            function (Interception $interception, int $priority) use ($binding): Registry {
+                $registry                = clone $this;
+                $registry->interceptions = $registry->interceptions->put(
+                    $binding,
+                    new ValueAndPriority(
+                        $interception,
+                        $priority,
+                    ),
+                );
+
+                return $registry;
+            },
         );
     }
 
-    // Registry
+    /** @return DecoratorBinder<Registry> */
+    public function decorate(
+        string $type,
+        string $tag = Binding::DEFAULT,
+        string $context = Binding::GLOBAL,
+    ): DecoratorBinder {
+        $binding = new ClassBinding($type, $tag, $context);
 
-    public function findProvider(Binding $binding): Provider
-    {
-        foreach ($binding->hierarchy() as $candidate) {
-            if ($this->providers->containsKey($candidate)) {
-                return $this->providers->get($candidate);
-            }
+        return new DecoratorBinder(function (Decorator $decorator, int $priority) use ($binding): Registry {
+            $registry             = clone $this;
+            $registry->decorators = $registry->decorators->put(
+                $binding,
+                new ValueAndPriority(
+                    $decorator,
+                    $priority,
+                ),
+            );
 
-            if ($this->chains->containsKey($candidate)) {
-                return new ContainerCall($this->chains->get($candidate));
-            }
-        }
-    }
-
-    public function hasProvider(Binding $binding): bool
-    {
-        return $this->providers->containsKey($binding);
-    }
-
-    public function findScope(Binding $binding): Scope
-    {
-        foreach ($binding->hierarchy() as $candidate) {
-            $hash = $candidate->hash();
-
-            if ($this->scopes->containsKey($hash)) {
-                return $this->scopes->get($hash);
-            }
-        }
-
-        return Scope::TRANSIENT;
-    }
-
-    /** @return iterable<Enhancement> */
-    public function findEnhancements(Binding $binding): iterable
-    {
-        $result = [];
-
-        foreach ($binding->hierarchy() as $candidate) {
-            $hash = $candidate->hash();
-
-            if (! $this->enhancements->containsKey($hash)) {
-                continue;
-            }
-
-            foreach ($this->enhancements->get($hash) as $wrapper) {
-                $result[] = $wrapper;
-            }
-        }
-
-        return $result;
+            return $registry;
+        });
     }
 }

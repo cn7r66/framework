@@ -11,37 +11,40 @@ declare(strict_types=1);
 namespace Vivarium\Container\Provider;
 
 use ReflectionClass;
-use RuntimeException;
-use Vivarium\Assertion\Object\HasMethod;
 use Vivarium\Collection\Set\HashSet;
 use Vivarium\Collection\Set\Set;
+use Vivarium\Container\BaseMethod;
 use Vivarium\Container\Binding;
 use Vivarium\Container\Capability;
 use Vivarium\Container\Container;
 use Vivarium\Container\Provider;
 use Vivarium\Type\Type;
 
-final class Factory implements Provider
+final class Factory extends BaseMethod implements Provider
 {
     public function __construct(
         private Binding $factory,
-        private string $method,
+        string $method,
     ) {
-        (new HasMethod($method))
-            ->assert($factory->getType());
+        parent::__construct($factory->getType(), $method);
     }
 
     public function provide(Container $container): mixed
     {
-        $factory = $container->get($this->factory);
+        $instance = $container->get($this->factory);
 
-        throw new RuntimeException('Not implemented yet.');
+        return (new ReflectionClass($this->getClass()))
+            ->getMethod($this->getName())
+            ->invokeArgs(
+                $instance,
+                $this->getArgumentsValue($container)->toArray(),
+            );
     }
 
     public function getTarget(): string
     {
-        $type = (new ReflectionClass($this->factory->getType()))
-            ->getMethod($this->method)
+        $type = (new ReflectionClass($this->getClass()))
+            ->getMethod($this->getName())
             ->getReturnType();
 
         return $type === null ? Type::MIXED : $type->getName();

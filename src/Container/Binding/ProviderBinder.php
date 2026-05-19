@@ -22,12 +22,14 @@ use Vivarium\Container\Provider\ContainerCall;
 use Vivarium\Container\Provider\Factory;
 use Vivarium\Container\Provider\StaticFactory;
 use Vivarium\Container\Provider\Instance;
+use Vivarium\Container\Provider\ClassConstant;
 use Vivarium\Container\Provider\Enum;
-
+use Vivarium\Assertion\Object\HasMethod;
+use Vivarium\Container\Method;
 use \ReflectionFunction;
 
 /**
- * @template T of Bindable
+ * @template T
  */
 final class ProviderBinder
 {
@@ -36,10 +38,10 @@ final class ProviderBinder
 
     private Binding $source;
 
-    /** 
-     * @param callable(Binding, Provider):T $name
+    /**
+     * @param callable(Binding, Provider): T $create
      */
-    public function __construct(callable $create, Binding $source)
+    public function __construct(Binding $source, callable $create)
     {
         (new IsNotNull())
             ->assert(
@@ -47,8 +49,8 @@ final class ProviderBinder
                 '"Missing type hint on callback function."',
             );
 
-        $this->create = $create;
         $this->source = $source;
+        $this->create = $create;
     }
 
     /**
@@ -70,17 +72,22 @@ final class ProviderBinder
     }
     
     /**
-     * @return ScopeBinder<T>
+     * @param callable(Constructor): Constructor|null $configure
+     *
+     * @return T
      */
-    public function toConstructor() : ScopeBinder
+    public function toConstructor(callable|null $configure = null)
     {
-        return $this
-            ->toProvider(
-                new Constructor()
-            )
-            ->scope(
-                $this->source
-            );
+        $class = $this->source->getType();
+
+        (new HasMethod('__construct'))
+            ->assert($class);
+
+        if ($configure === null) {
+            $configure = static fn (Method $method) => $method;
+        }
+        
+        return $this->toProvider($configure(new Constructor($class)));
     }
 
     /**
@@ -95,12 +102,7 @@ final class ProviderBinder
 
         return new MethodBinder(function (string $method, callable $configure) use ($binding) {
             return $this->toProvider(
-                $configure(
-                    new Factory(
-                        $binding,
-                        $method
-                    )
-                )
+                $configure(new Factory($binding, $method))
             );
         });
     }
@@ -109,20 +111,12 @@ final class ProviderBinder
      * @return MethodBinder<T>
      */    
     public function toStaticFactory(
-        string $class,
-        string $tag = Binding::DEFAULT,
-        string $context = Binding::GLOBAL,
+        string $class
     ): MethodBinder {
-        $binding = new Binding($class, $tag, $context);
 
-        return new MethodBinder(function (string $method, callable $configure) use ($binding) {
+        return new MethodBinder(function (string $method, callable $configure) use ($class) {
             return $this->toProvider(
-                $configure(
-                    new StaticFactory(
-                        $binding,
-                        $method
-                    )
-                )
+                $configure(new StaticFactory($class, $method))
             );
         });
     }
@@ -159,17 +153,27 @@ final class ProviderBinder
     /** 
      * @return T
      */
-    public function toEnum(string $enum)
+    public function toEnum(string $enum, string $case)
     {
         (new IsTrue())
-            ->assert(\enum_exists($enum));
+            ->assert(enum_exists($enum));
 
         return $this->toProvider(
-            new Enum($enum)
+            new Enum($enum, $case)
         );
     }
 
-    /** 
+    /**
+     * @return T
+     */
+    public function toClassConstant(string $class, string $constant)
+    {
+        return $this->toProvider(
+            new ClassConstant($class, $constant)
+        );
+    }
+
+    /**
      * @return T
      */
     public function toProvider(Provider $provider) : mixed
