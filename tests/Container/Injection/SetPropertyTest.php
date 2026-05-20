@@ -8,7 +8,7 @@
 
 declare(strict_types=1);
 
-namespace Vivarium\Test\Container\Enhancement;
+namespace Vivarium\Test\Container\Injection;
 
 use PHPUnit\Framework\TestCase;
 use Vivarium\Assertion\Exception\AssertionFailed;
@@ -16,11 +16,11 @@ use Vivarium\Collection\Set\HashSet;
 use Vivarium\Container\Binding;
 use Vivarium\Container\Capability;
 use Vivarium\Container\Container;
-use Vivarium\Container\Enhancement\SetProperty;
+use Vivarium\Container\Injection\SetProperty;
 use Vivarium\Container\Provider;
 use Vivarium\Test\Container\Stub\ClassWithProperty;
 
-/** @coversDefaultClass \Vivarium\Container\Enhancement\SetProperty */
+/** @coversDefaultClass \Vivarium\Container\Injection\SetProperty */
 final class SetPropertyTest extends TestCase
 {
     /**

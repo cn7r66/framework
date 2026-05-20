@@ -8,16 +8,16 @@ declare(strict_types=1);
  * Copyright (c) The Vivarium Project
  */
 
-namespace Vivarium\Container\Enhancement;
+namespace Vivarium\Container\Injection;
 
 use ReflectionClass;
 use Vivarium\Assertion\Type\IsAssignableTo;
 use Vivarium\Container\BaseMethod;
 use Vivarium\Container\Container;
-use Vivarium\Container\Enhancement;
+use Vivarium\Container\Injection;
 use Vivarium\Container\Provider;
 
-final class ImmutableMethodCall extends BaseMethod implements Enhancement
+final class MethodCall extends BaseMethod implements Injection
 {
     public function __construct(string $class, string $method)
     {
@@ -29,17 +29,14 @@ final class ImmutableMethodCall extends BaseMethod implements Enhancement
         (new IsAssignableTo($this->getClass()))
             ->assert($instance::class);
 
-        $result = (new ReflectionClass($instance::class))
+        (new ReflectionClass($instance::class))
             ->getMethod($this->getName())
             ->invokeArgs(
                 $instance,
                 $this->getArgumentsValue($container, $instance::class)->toArray(),
             );
 
-        (new IsAssignableTo($instance::class))
-            ->assert($result::class);
-
-        return $result;
+        return $instance;
     }
 
     public function accept(Provider $provider): bool

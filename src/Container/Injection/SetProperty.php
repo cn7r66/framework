@@ -8,7 +8,7 @@
 
 declare(strict_types=1);
 
-namespace Vivarium\Container\Enhancement;
+namespace Vivarium\Container\Injection;
 
 use ReflectionClass;
 use Vivarium\Assertion\Object\HasProperty;
@@ -18,10 +18,10 @@ use Vivarium\Check\CheckIfObject;
 use Vivarium\Container\Binding;
 use Vivarium\Container\Capability;
 use Vivarium\Container\Container;
-use Vivarium\Container\Enhancement;
+use Vivarium\Container\Injection;
 use Vivarium\Container\Provider;
 
-final class SetProperty implements Enhancement
+final class SetProperty implements Injection
 {
     private string $property;
 

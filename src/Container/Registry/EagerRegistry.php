@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace Vivarium\Container;
 
+use Vivarium\Assertion\Boolean\IsTrue;
 use Vivarium\Collection\Map\HashMap;
 use Vivarium\Collection\Map\Map;
 use Vivarium\Collection\MultiMap\MultiMap;
@@ -21,20 +22,17 @@ use Vivarium\Comparator\SortableComparator;
 use Vivarium\Comparator\ValueAndPriority;
 use Vivarium\Container\Binding\Binder;
 use Vivarium\Container\Binding\DecoratorBinder;
-use Vivarium\Container\Binding\EnhancementBinder;
+use Vivarium\Container\Binding\InjectionBinder;
 use Vivarium\Container\Binding\ProviderBinder;
 use Vivarium\Container\Binding\ScopeBinder;
 use Vivarium\Container\Decorator;
-use Vivarium\Container\Interception;
-use Vivarium\Container\Provider\Constructor;
-use Vivarium\Container\Provider\ContainerCall;
 
 final class EagerRegistry implements Registry, Binder
 {
     /** @var Map<Binding, Provider> */
     private Map $providers;
 
-    /** @var MultiMap<Binding, SortedSet<ValueAndPriority<Interception>>> */
+    /** @var MultiMap<Binding, SortedSet<ValueAndPriority<Injection>>> */
     private MultiMap $interceptions;
 
     /** @var MultiMap<Binding, Set<ValueAndPriority<Decorator>>> */
@@ -67,7 +65,7 @@ final class EagerRegistry implements Registry, Binder
     {
         $binding = new Binding($type, $tag, $context);
 
-        return new ProviderBinder($binding, function (Binding $source, Provider $provider): Registry {
+        return new ProviderBinder($binding, function (Binding $source, Provider $provider): EagerRegistry {
             $registry            = clone $this;
             $registry->providers = $registry->providers->put($source, $provider);
 
@@ -75,22 +73,13 @@ final class EagerRegistry implements Registry, Binder
         });
     }
 
-    /**
-     * @param class-string     $class
-     * @param non-empty-string $tag
-     * @param non-empty-string $context
-     *
-     * @return ProviderBinder<Registry,Definition>
-     */
     public function define(
         string $class,
         string $tag = Binding::DEFAULT,
         string $context = Binding::GLOBAL,
-    ): ScopeBinder 
+    ): Registry
     {
-        $binding = new Binding($class, $tag, $context);
-
-
+        return $this->bind($class, $tag, $context)->toConstructor();
     }
 
     /** @return ProviderBinder<Registry,Provider> */
@@ -99,7 +88,7 @@ final class EagerRegistry implements Registry, Binder
         string $tag = Binding::DEFAULT,
         string $context = Binding::GLOBAL,
     ): ProviderBinder {
-        $binding = new TypeBinding($type, $tag, $context);
+        $binding = new Binding($type, $tag, $context);
 
         (new IsTrue())
             ->assert(
@@ -108,8 +97,8 @@ final class EagerRegistry implements Registry, Binder
             );
 
         return new ProviderBinder(
-            $this->providers->get($binding),
-            function (Provider $provider) use ($binding): Registry {
+            $binding,
+            function (Provider $provider) use ($binding): EagerRegistry {
                 $registry            = clone $this;
                 $registry->providers = $registry->providers->put($binding, $provider);
 
@@ -124,9 +113,9 @@ final class EagerRegistry implements Registry, Binder
         string $tag = Binding::DEFAULT,
         string $context = Binding::GLOBAL,
     ): ScopeBinder {
-        $binding = new TypeBinding($type, $tag, $context);
+        $binding = new Binding($type, $tag, $context);
 
-        return new ScopeBinder(function (Scope $scope) use ($binding): Registry {
+        return new ScopeBinder(function (Scope $scope) use ($binding): EagerRegistry {
             $registry         = clone $this;
             $registry->scopes = $registry->scopes->put($binding, $scope);
 
@@ -134,17 +123,17 @@ final class EagerRegistry implements Registry, Binder
         });
     }
 
-    /** @return InterceptionBinder<Registry> */
+    /** @return InjectionBinder<Registry> */
     public function intercept(
         string $type,
         string $tag = Binding::DEFAULT,
         string $context = Binding::GLOBAL,
-    ): InterceptionBinder {
-        $binding = $this->createBinding($type, $tag, $context);
+    ): InjectionBinder {
+        $binding = new Binding($type, $tag, $context);
 
-        return new InterceptionBinder(
-            $binding->getId(),
-            function (Interception $interception, int $priority) use ($binding): Registry {
+        return new InjectionBinder(
+            $binding,
+            function (Injection $interception, int $priority) use ($binding): EagerRegistry {
                 $registry                = clone $this;
                 $registry->interceptions = $registry->interceptions->put(
                     $binding,
@@ -165,9 +154,9 @@ final class EagerRegistry implements Registry, Binder
         string $tag = Binding::DEFAULT,
         string $context = Binding::GLOBAL,
     ): DecoratorBinder {
-        $binding = new ClassBinding($type, $tag, $context);
+        $binding = new Binding($type, $tag, $context);
 
-        return new DecoratorBinder(function (Decorator $decorator, int $priority) use ($binding): Registry {
+        return new DecoratorBinder(function (Decorator $decorator, int $priority) use ($binding): EagerRegistry {
             $registry             = clone $this;
             $registry->decorators = $registry->decorators->put(
                 $binding,

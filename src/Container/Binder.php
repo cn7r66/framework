@@ -24,13 +24,13 @@ interface Binder
         string $type,
         string $tag = Binding::DEFAULT,
         string $context = Binding::GLOBAL,
-    ): EnhancementBinder;
+    ): InjectionBinder;
 
-    public function enhance(
+    public function intercept(
         string $type,
         string $tag = Binding::DEFAULT,
         string $context = Binding::GLOBAL,
-    ): EnhancementBinder;
+    ): InjectionBinder;
 
     public function decorate(
         string $type,
