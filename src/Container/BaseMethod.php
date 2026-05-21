@@ -14,7 +14,7 @@ use ReflectionClass;
 use ReflectionMethod;
 use ReflectionParameter;
 use Vivarium\Assertion\Conditional\NullOr;
-use Vivarium\Assertion\Object\HasMethod;
+use Vivarium\Assertion\Object\HasPublicMethod;
 use Vivarium\Assertion\Type\IsAssignableTo;
 use Vivarium\Collection\Map\HashMap;
 use Vivarium\Collection\Map\Map;
@@ -36,7 +36,7 @@ abstract class BaseMethod implements Method
 
     public function __construct(private string $class, private string $method)
     {
-        (new HasMethod($method))
+        (new HasPublicMethod($method))
             ->assert($class);
 
         $this->parameters = new HashMap();
