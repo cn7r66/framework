@@ -13,7 +13,7 @@ use Throwable;
 use Vivarium\Assertion\Conditional\Not;
 use Vivarium\Assertion\Hierarchy\IsAssignableTo;
 use Vivarium\Assertion\String\IsEmpty;
-use Vivarium\Container\EagerRegistry;
+use Vivarium\Container\Registry\EagerRegistry;
 use Vivarium\Container\FileCache;
 use Vivarium\Container\Injector;
 use Vivarium\Container\JsonCollector;

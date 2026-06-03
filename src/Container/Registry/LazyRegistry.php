@@ -26,6 +26,13 @@ final class LazyRegistry implements Registry
         $this->factory  = $factory;
     }
 
+    public function hasProvider(Binding $binding): bool
+    {
+        return $this
+            ->getRealRegistry()
+            ->hasProvider($binding);
+    }
+
     public function findProvider(Binding $binding): Provider
     {
         return $this

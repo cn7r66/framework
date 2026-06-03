@@ -8,9 +8,12 @@ declare(strict_types=1);
  * Copyright (c) The Vivarium Project
  */
 
-namespace Vivarium\Container\Binding;
+namespace Vivarium\Container;
 
-use Vivarium\Container\Binding;
+use Vivarium\Container\Binding\ProviderBinder;
+use Vivarium\Container\Binding\InjectionBinder;
+use Vivarium\Container\Binding\DecoratorBinder;
+use Vivarium\Container\Binding\ScopeBinder;
 
 interface Binder
 {

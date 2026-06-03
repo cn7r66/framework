@@ -8,7 +8,7 @@ declare(strict_types=1);
  * Copyright (c) The Vivarium Project
  */
 
-namespace Vivarium\Container;
+namespace Vivarium\Container\Registry;
 
 use Vivarium\Assertion\Boolean\IsTrue;
 use Vivarium\Collection\Map\HashMap;
@@ -20,12 +20,18 @@ use Vivarium\Collection\Set\Set;
 use Vivarium\Collection\Set\SortedSet;
 use Vivarium\Comparator\SortableComparator;
 use Vivarium\Comparator\ValueAndPriority;
-use Vivarium\Container\Binding\Binder;
+use Vivarium\Container\Binder;
 use Vivarium\Container\Binding\DecoratorBinder;
 use Vivarium\Container\Binding\InjectionBinder;
 use Vivarium\Container\Binding\ProviderBinder;
 use Vivarium\Container\Binding\ScopeBinder;
 use Vivarium\Container\Decorator;
+use Vivarium\Container\Exception\BindingNotFound;
+use Vivarium\Container\Registry;
+use Vivarium\Container\Binding;
+use Vivarium\Container\Provider;
+use Vivarium\Container\Injection;
+use Vivarium\Container\Scope;
 
 final class EagerRegistry implements Registry, Binder
 {
@@ -168,5 +174,59 @@ final class EagerRegistry implements Registry, Binder
 
             return $registry;
         });
+    }
+
+    /** @return InjectionBinder<Registry> */
+    public function inject(
+        string $type,
+        string $tag = Binding::DEFAULT,
+        string $context = Binding::GLOBAL,
+    ): InjectionBinder {
+        return $this->intercept($type, $tag, $context);
+    }
+
+    public function hasProvider(Binding $binding): bool
+    {
+        foreach ($binding->hierarchy() as $candidate) {
+            if ($this->providers->containsKey($candidate)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function findProvider(Binding $binding): Provider
+    {
+        $found = null;
+        foreach ($binding->hierarchy() as $candidate) {
+            if ($this->providers->containsKey($candidate)) {
+                $found = $this->providers->get($candidate);
+            }
+        }
+
+        if ($found === null) {
+            throw new BindingNotFound();
+        }
+
+        return $found;
+    }
+
+    public function findScope(Binding $binding): Scope
+    {
+        $found = null;
+        foreach ($binding->hierarchy() as $candidate) {
+            if ($this->scopes->containsKey($candidate)) {
+                $found = $this->scopes->get($candidate);
+            }
+        }
+
+        return $found ?? Scope::TRANSIENT;
+    }
+
+    /** @return iterable<Enhancement> */
+    public function findEnhancements(Binding $binding): iterable
+    {
+        return [];
     }
 }
