@@ -24,6 +24,13 @@ use Vivarium\Equality\Equality;
 use Vivarium\Equality\EqualsBuilder;
 use Vivarium\Equality\HashBuilder;
 
+use function array_merge;
+use function array_reverse;
+use function class_implements;
+use function get_parent_class;
+use function strrpos;
+use function substr;
+
 final class Binding implements Equality
 {
     public const GLOBAL = '$GLOBAL';
@@ -70,10 +77,10 @@ final class Binding implements Equality
     {
         $types = [$this];
         if (CheckIfType::IsClassOrInterface($this->type)) {
-            $types = \array_merge(
+            $types = array_merge(
                 $types,
                 $this->extends(),
-                $this->interfaces()
+                $this->interfaces(),
             );
         }
 
@@ -88,7 +95,7 @@ final class Binding implements Equality
 
         if ($this->tag !== self::DEFAULT) {
             $binding      = clone $this;
-            $binding->tag = Binding::DEFAULT;
+            $binding->tag = self::DEFAULT;
 
             return $binding;
         }
@@ -137,10 +144,10 @@ final class Binding implements Equality
     }
 
         /**
-     * @param array<Binding> $bindings
-     *
-     * @return Sequence<Binding>
-     */
+         * @param array<Binding> $bindings
+         *
+         * @return Sequence<Binding>
+         */
     private function expand(array $bindings): Sequence
     {
         $hierarchy = [];
@@ -166,7 +173,7 @@ final class Binding implements Equality
         while ($extend !== false) {
             $extends[] = new Binding(
                 $extend,
-                Binding::DEFAULT,
+                self::DEFAULT,
                 $this->getContext(),
             );
 
@@ -183,7 +190,7 @@ final class Binding implements Equality
         foreach (class_implements($this->type) as $interface) {
             $interfaces[] = new Binding(
                 $interface,
-                Binding::DEFAULT,
+                self::DEFAULT,
                 $this->getContext(),
             );
         }

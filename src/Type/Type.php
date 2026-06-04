@@ -37,7 +37,7 @@ final class Type
         'integer' => self::INT,
         'double'  => self::FLOAT,
         'boolean' => self::BOOL,
-        'NULL'    => self::NULL
+        'NULL'    => self::NULL,
     ];
 
     /** @return list<string> */

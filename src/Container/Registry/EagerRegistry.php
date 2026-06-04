@@ -21,17 +21,19 @@ use Vivarium\Collection\Set\SortedSet;
 use Vivarium\Comparator\SortableComparator;
 use Vivarium\Comparator\ValueAndPriority;
 use Vivarium\Container\Binder;
+use Vivarium\Container\Binding;
 use Vivarium\Container\Binding\DecoratorBinder;
 use Vivarium\Container\Binding\InjectionBinder;
 use Vivarium\Container\Binding\ProviderBinder;
 use Vivarium\Container\Binding\ScopeBinder;
 use Vivarium\Container\Decorator;
 use Vivarium\Container\Exception\BindingNotFound;
-use Vivarium\Container\Registry;
-use Vivarium\Container\Binding;
-use Vivarium\Container\Provider;
 use Vivarium\Container\Injection;
+use Vivarium\Container\Provider;
+use Vivarium\Container\Registry;
 use Vivarium\Container\Scope;
+
+use function sprintf;
 
 final class EagerRegistry implements Registry, Binder
 {
@@ -54,8 +56,8 @@ final class EagerRegistry implements Registry, Binder
         $this->interceptions = new MultiValueMap(static function (): PriorityQueue {
             return new PriorityQueue(new SortableComparator());
         });
-        
-        $this->decorators    = new MultiValueMap(static function (): SortedSet {
+
+        $this->decorators = new MultiValueMap(static function (): SortedSet {
             return new SortedSet(new SortableComparator());
         });
 
@@ -64,11 +66,10 @@ final class EagerRegistry implements Registry, Binder
 
     /** @return ProviderBinder<EagerRegistry> */
     public function bind(
-        string $type, 
-        string $tag = Binding::DEFAULT, 
-        string $context = Binding::GLOBAL
-    ): ProviderBinder
-    {
+        string $type,
+        string $tag = Binding::DEFAULT,
+        string $context = Binding::GLOBAL,
+    ): ProviderBinder {
         $binding = new Binding($type, $tag, $context);
 
         return new ProviderBinder($binding, function (Binding $source, Provider $provider): EagerRegistry {
@@ -83,8 +84,7 @@ final class EagerRegistry implements Registry, Binder
         string $class,
         string $tag = Binding::DEFAULT,
         string $context = Binding::GLOBAL,
-    ): Registry
-    {
+    ): Registry {
         return $this->bind($class, $tag, $context)->toConstructor();
     }
 
@@ -200,9 +200,11 @@ final class EagerRegistry implements Registry, Binder
     {
         $found = null;
         foreach ($binding->hierarchy() as $candidate) {
-            if ($this->providers->containsKey($candidate)) {
-                $found = $this->providers->get($candidate);
+            if (! $this->providers->containsKey($candidate)) {
+                continue;
             }
+
+            $found = $this->providers->get($candidate);
         }
 
         if ($found === null) {
@@ -216,9 +218,11 @@ final class EagerRegistry implements Registry, Binder
     {
         $found = null;
         foreach ($binding->hierarchy() as $candidate) {
-            if ($this->scopes->containsKey($candidate)) {
-                $found = $this->scopes->get($candidate);
+            if (! $this->scopes->containsKey($candidate)) {
+                continue;
             }
+
+            $found = $this->scopes->get($candidate);
         }
 
         return $found ?? Scope::TRANSIENT;

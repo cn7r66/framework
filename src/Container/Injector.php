@@ -14,13 +14,12 @@ use ReflectionClass;
 use Vivarium\Check\CheckIfType;
 use Vivarium\Collection\Map\HashMap;
 use Vivarium\Collection\Map\Map;
-use Vivarium\Container\Cache;
 use Vivarium\Container\Cache\NoOpCache;
+use Vivarium\Container\Collector\NoOpCollector;
 use Vivarium\Container\Definition\Cloneable;
 use Vivarium\Container\Definition\Service;
 use Vivarium\Container\Definition\Transient;
 use Vivarium\Container\Exception\BindingNotFound;
-use Vivarium\Container\Collector\NoOpCollector;
 use Vivarium\Container\Provider\Constructor;
 
 final class Injector implements Container
@@ -46,7 +45,7 @@ final class Injector implements Container
         if ($this->cache->lookup($binding)) {
             $this->solved = $this->solved->put(
                 $binding,
-                $this->cache->restore($binding)
+                $this->cache->restore($binding),
             );
         }
 
@@ -65,7 +64,7 @@ final class Injector implements Container
         return $definition->solve($this);
     }
 
-    public function has(Binding|string $request) : bool
+    public function has(Binding|string $request): bool
     {
         $binding = $this->makeBinding($request);
 
@@ -136,7 +135,7 @@ final class Injector implements Container
         };
     }
 
-    private function applyEnhancements(Binding $binding, Definition $definition): Definition    
+    private function applyEnhancements(Binding $binding, Definition $definition): Definition
     {
         return $definition;
     }

@@ -18,6 +18,7 @@ use Vivarium\Container\Provider;
 use Vivarium\Test\Container\Stub\StubService;
 use Vivarium\Test\Container\Stub\StubWithMethodInjection;
 use Vivarium\Test\Container\Stub\StubWithPrivateMethodInjection;
+use Vivarium\Test\Container\Stub\StubWithWrongReturn;
 
 /** @coversDefaultClass \Vivarium\Container\Injection\ImmutableMethodCall */
 final class ImmutableMethodCallTest extends TestCase
@@ -127,13 +128,5 @@ final class ImmutableMethodCallTest extends TestCase
         static::assertFalse(
             (new ImmutableMethodCall(StubWithMethodInjection::class, 'withService'))->accept($provider),
         );
-    }
-}
-
-class StubWithWrongReturn
-{
-    public function withSomething(StubService $service): StubService
-    {
-        return $service;
     }
 }

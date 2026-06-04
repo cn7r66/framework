@@ -12,5 +12,4 @@ namespace Vivarium\Container\Binding;
 
 final class DecoratorBinder
 {
-
 }

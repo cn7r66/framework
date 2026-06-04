@@ -20,11 +20,6 @@ use Vivarium\Container\Provider;
 
 final class StaticFactory extends BaseMethod implements Provider
 {
-    public function __construct(string $class, string $method)
-    {
-        parent::__construct($class, $method);
-    }
-
     public function provide(Container $container): mixed
     {
         return (new ReflectionClass($this->getClass()))

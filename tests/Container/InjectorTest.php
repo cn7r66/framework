@@ -47,14 +47,12 @@ final class InjectorTest extends TestCase
         static::assertInstanceOf(StubService::class, $result->service);
     }
 
-    /**
-     * @covers ::get
-     */
+    /** @covers ::get */
     public function testExplicitBindingOverridesAutoWiring(): void
     {
         $instance = new StubWithNoArgs();
 
-        $registry  = (new EagerRegistry())
+        $registry = (new EagerRegistry())
             ->bind(StubWithNoArgs::class)
             ->toInstance($instance);
 
@@ -63,9 +61,7 @@ final class InjectorTest extends TestCase
         static::assertSame($instance, $container->get(StubWithNoArgs::class));
     }
 
-    /**
-     * @covers ::get
-     */
+    /** @covers ::get */
     public function testServiceScopeReturnsSameInstance(): void
     {
         $registry = (new EagerRegistry())
@@ -80,9 +76,7 @@ final class InjectorTest extends TestCase
         );
     }
 
-    /**
-     * @covers ::get
-     */
+    /** @covers ::get */
     public function testTransientScopeReturnsDifferentInstances(): void
     {
         $registry = (new EagerRegistry())
@@ -97,9 +91,7 @@ final class InjectorTest extends TestCase
         );
     }
 
-    /**
-     * @covers ::has
-     */
+    /** @covers ::has */
     public function testHasReturnsFalseForUnknownInterface(): void
     {
         $container = new Injector(new EagerRegistry());

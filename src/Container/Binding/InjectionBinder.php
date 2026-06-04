@@ -18,7 +18,6 @@ use Vivarium\Container\Injection;
 
 final class InjectionBinder
 {
-    /** @param callable(Injection) $create */
     public function __construct(private Binding $binding, callable $create)
     {
     }

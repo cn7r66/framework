@@ -15,5 +15,4 @@ use RuntimeException;
 
 final class CannotBeWidened extends RuntimeException implements ContainerExceptionInterface
 {
-
 }

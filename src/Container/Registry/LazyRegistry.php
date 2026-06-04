@@ -10,9 +10,6 @@ declare(strict_types=1);
 
 namespace Vivarium\Container;
 
-use Vivarium\Container\Provider;
-use Vivarium\Container\Scope;
-
 final class LazyRegistry implements Registry
 {
     private Registry|null $registry;

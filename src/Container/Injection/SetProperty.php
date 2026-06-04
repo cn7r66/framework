@@ -23,14 +23,8 @@ use Vivarium\Container\Provider;
 
 final class SetProperty implements Injection
 {
-    private string $property;
-
-    private Binding $dependency;
-
-    public function __construct(string $property, Binding $dependency)
+    public function __construct(private string $property, private Binding $dependency)
     {
-        $this->property   = $property;
-        $this->dependency = $dependency;
     }
 
     public function enhance(mixed $instance, Container $container): mixed
@@ -44,7 +38,7 @@ final class SetProperty implements Injection
         $property = (new ReflectionClass($instance))
             ->getProperty($this->property);
 
-        $type = $property->hasType() ? 
+        $type = $property->hasType() ?
             (string) $property->getType() :
             'mixed';
 
@@ -52,8 +46,8 @@ final class SetProperty implements Injection
             ->assert($this->dependency->getType());
 
         $property->setValue(
-            $instance, 
-            $container->get($this->dependency)
+            $instance,
+            $container->get($this->dependency),
         );
 
         return $instance;
@@ -63,7 +57,7 @@ final class SetProperty implements Injection
     {
         $hasProperty = CheckIfObject::hasProperty(
             $provider->getTarget(),
-            $this->property
+            $this->property,
         );
 
         $isEnhanceable =

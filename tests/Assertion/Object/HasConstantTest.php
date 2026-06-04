@@ -82,7 +82,7 @@ final class HasConstantTest extends TestCase
             [
                 StubClassWithConstants::class,
                 'NON_EXISTENT',
-                'Expected "Vivarium\Test\Container\Stub\StubClassWithConstants" to have a constant named "NON_EXISTENT".',
+                'Expected "' . StubClassWithConstants::class . '" to have a constant named "NON_EXISTENT".',
             ],
         ];
     }
@@ -92,9 +92,9 @@ final class HasConstantTest extends TestCase
     {
         return [
             [
-                'RandomString', 
-                'INT_CONSTANT', 
-                'Value must be either class, interface or object. Got "RandomString"'
+                'RandomString',
+                'INT_CONSTANT',
+                'Value must be either class, interface or object. Got "RandomString"',
             ],
         ];
     }

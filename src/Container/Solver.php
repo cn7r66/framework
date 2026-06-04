@@ -27,9 +27,7 @@ use Vivarium\Container\Definition\Service;
 use Vivarium\Container\Definition\Transient;
 use Vivarium\Container\Provider\Constructor;
 
-/**
- * @template T
- */
+/** @template T */
 final class Solver implements ResolutionNode, Bindable
 {
     /** @var Map<string, Pair<Provider, Scope>> */
@@ -42,13 +40,11 @@ final class Solver implements ResolutionNode, Bindable
     {
         $this->bindings     = new HashMap();
         $this->enhancements = new PriorityQueue(
-            new SortableComparator()
+            new SortableComparator(),
         );
     }
 
-    /**
-     * @param Closure(): Definition $next
-     */
+    /** @param Closure(): Definition $next */
     public function resolve(Binding $binding, Closure $next): Definition
     {
         $pair = $this->findBinding($binding);
@@ -58,18 +54,16 @@ final class Solver implements ResolutionNode, Bindable
         }
 
         return $this->buildDefinition(
-            $pair->getKey(), 
-            $pair->getValue()
+            $pair->getKey(),
+            $pair->getValue(),
         );
     }
 
-    /**
-     * @return ProviderBinder<T>
-     */
+    /** @return ProviderBinder<T> */
     public function bind(
         string $type,
         string $tag = Binding::DEFAULT,
-        string $context = Binding::GLOBAL
+        string $context = Binding::GLOBAL,
     ): ProviderBinder {
         $binding = new Binding($type, $tag, $context);
 
@@ -79,81 +73,71 @@ final class Solver implements ResolutionNode, Bindable
                     function (Scope $scope) use ($binding, $provider): self {
                         $this->bindings = $this->bindings->put(
                             $binding->hash(),
-                            new Pair($provider, $scope)
+                            new Pair($provider, $scope),
                         );
 
                         return $this;
-                    }
+                    },
                 );
             },
-            $binding
+            $binding,
         );
     }
 
-    /**
-     * @return EnhancementBinder<T>
-     */
+    /** @return EnhancementBinder<T> */
     public function inject(
         string $type,
         string $tag = Binding::DEFAULT,
-        string $context = Binding::GLOBAL
+        string $context = Binding::GLOBAL,
     ): EnhancementBinder {
         return new EnhancementBinder(new Binding($type, $tag, $context));
     }
 
-    /**
-     * @return EnhancementBinder<T>
-     */
+    /** @return EnhancementBinder<T> */
     public function enhance(
         string $type,
         string $tag = Binding::DEFAULT,
-        string $context = Binding::GLOBAL
+        string $context = Binding::GLOBAL,
     ): EnhancementBinder {
         return new EnhancementBinder(new Binding($type, $tag, $context));
     }
 
-    /**
-     * @return DecoratorBinder<T>
-     */
+    /** @return DecoratorBinder<T> */
     public function decorate(
         string $type,
         string $tag = Binding::DEFAULT,
-        string $context = Binding::GLOBAL
+        string $context = Binding::GLOBAL,
     ): DecoratorBinder {
         $binding = new Binding($type, $tag, $context);
 
         return new DecoratorBinder($binding);
     }
 
-    /**
-     * @return ScopeBinder<T>
-     */
+    /** @return ScopeBinder<T> */
     public function scope(
         string $type,
         string $tag = Binding::DEFAULT,
-        string $context = Binding::GLOBAL
+        string $context = Binding::GLOBAL,
     ): ScopeBinder {
         $binding = new Binding($type, $tag, $context);
 
         return new ScopeBinder(
             function (Scope $scope) use ($binding): self {
                 if ($this->bindings->containsKey($binding->hash())) {
-                    $pair = $this->bindings->get($binding->hash());
+                    $pair           = $this->bindings->get($binding->hash());
                     $this->bindings = $this->bindings->put(
                         $binding->hash(),
-                        new Pair($pair->getKey(), $scope)
+                        new Pair($pair->getKey(), $scope),
                     );
                 }
 
                 return $this;
-            }
+            },
         );
     }
 
-    /**
-     * @return Pair<Provider, Scope>|null
-     */
-    private function findBinding(Binding $binding): ?Pair
+    /** @return Pair<Provider, Scope>|null */
+    private function findBinding(Binding $binding): Pair|null
     {
         foreach ($binding->hierarchy() as $candidate) {
             if ($this->bindings->containsKey($candidate->hash())) {
@@ -178,12 +162,14 @@ final class Solver implements ResolutionNode, Bindable
 
         foreach ($this->enhancements as $wrapper) {
             $enhancement = $wrapper->getValue();
-            if ($enhancement->accept($provider)) {
-                $definition = $definition->withEnhancement(
-                    $enhancement, 
-                    $wrapper->getPriority()
-                );
+            if (! $enhancement->accept($provider)) {
+                continue;
             }
+
+            $definition = $definition->withEnhancement(
+                $enhancement,
+                $wrapper->getPriority(),
+            );
         }
 
         return $definition;

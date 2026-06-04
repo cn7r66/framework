@@ -15,5 +15,4 @@ use RuntimeException;
 
 final class BindingNotFound extends RuntimeException implements ContainerExceptionInterface
 {
-
 }

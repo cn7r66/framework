@@ -12,6 +12,7 @@ namespace Vivarium\Test\Container\Binding;
 
 use PHPUnit\Framework\TestCase;
 use Vivarium\Container\Binding;
+use Vivarium\Container\Binding\ProviderBinder;
 use Vivarium\Container\Provider;
 use Vivarium\Container\Provider\ClassConstant;
 use Vivarium\Container\Provider\Constant;
@@ -21,7 +22,6 @@ use Vivarium\Container\Provider\Enum;
 use Vivarium\Container\Provider\Factory;
 use Vivarium\Container\Provider\Instance;
 use Vivarium\Container\Provider\StaticFactory;
-use Vivarium\Container\Binding\ProviderBinder;
 use Vivarium\Container\Scope;
 use Vivarium\Test\Container\Stub\StubClassWithConstants;
 use Vivarium\Test\Container\Stub\StubFactory;

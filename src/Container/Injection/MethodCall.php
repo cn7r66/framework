@@ -17,13 +17,10 @@ use Vivarium\Container\Container;
 use Vivarium\Container\Injection;
 use Vivarium\Container\Provider;
 
+use function class_exists;
+
 final class MethodCall extends BaseMethod implements Injection
 {
-    public function __construct(string $class, string $method)
-    {
-        parent::__construct($class, $method);
-    }
-
     public function enhance(mixed $instance, Container $container): mixed
     {
         (new IsAssignableTo($this->getClass()))

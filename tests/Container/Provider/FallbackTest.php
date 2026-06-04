@@ -79,7 +79,7 @@ final class FallbackTest extends TestCase
         $primary   = new Binding('string');
         $secondary = $this->createMock(Provider::class);
         $secondary->method('getTarget')->willReturn('int');
-        $provider  = new Fallback($primary, $secondary);
+        $provider = new Fallback($primary, $secondary);
 
         static::assertSame('string|int', $provider->getTarget());
     }

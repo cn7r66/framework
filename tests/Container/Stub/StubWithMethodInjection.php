@@ -12,7 +12,7 @@ namespace Vivarium\Test\Container\Stub;
 
 final class StubWithMethodInjection
 {
-    private ?StubService $service = null;
+    private StubService|null $service = null;
 
     public function setService(StubService $service): void
     {
@@ -27,7 +27,7 @@ final class StubWithMethodInjection
         return $clone;
     }
 
-    public function getService(): ?StubService
+    public function getService(): StubService|null
     {
         return $this->service;
     }

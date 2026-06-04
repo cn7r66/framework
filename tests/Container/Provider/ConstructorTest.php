@@ -183,9 +183,7 @@ final class ConstructorTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Vivarium\Container\BaseMethod::getClass
-     */
+    /** @covers \Vivarium\Container\BaseMethod::getClass */
     public function testGetClassReturnsClassName(): void
     {
         static::assertSame(
@@ -194,9 +192,7 @@ final class ConstructorTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Vivarium\Container\BaseMethod::getName
-     */
+    /** @covers \Vivarium\Container\BaseMethod::getName */
     public function testGetNameReturnsMethodName(): void
     {
         static::assertSame(
@@ -221,9 +217,7 @@ final class ConstructorTest extends TestCase
         static::assertSame($custom, $modified->getArgument('service'));
     }
 
-    /**
-     * @covers \Vivarium\Container\BaseMethod::bindArgumentAtPosition
-     */
+    /** @covers \Vivarium\Container\BaseMethod::bindArgumentAtPosition */
     public function testBindArgumentAtPositionOverridesParameterProvider(): void
     {
         $custom   = $this->createMock(Provider::class);
@@ -259,9 +253,7 @@ final class ConstructorTest extends TestCase
         new Constructor(NotInstantiableStub::class);
     }
 
-    /**
-     * @covers \Vivarium\Container\BaseMethod::bindArgument
-     */
+    /** @covers \Vivarium\Container\BaseMethod::bindArgument */
     public function testBindArgumentAcceptsUntypedParameter(): void
     {
         $custom   = $this->createMock(Provider::class);
@@ -272,9 +264,7 @@ final class ConstructorTest extends TestCase
         static::assertSame($custom, $modified->getArgument('value'));
     }
 
-    /**
-     * @covers \Vivarium\Container\BaseMethod::bindArgument
-     */
+    /** @covers \Vivarium\Container\BaseMethod::bindArgument */
     public function testBindArgumentThrowsForUnknownParameterName(): void
     {
         static::expectException(ParameterNotFound::class);
@@ -282,9 +272,7 @@ final class ConstructorTest extends TestCase
         (new Constructor(StubWithConstructor::class))->bindArgument('nonExistent');
     }
 
-    /**
-     * @covers \Vivarium\Container\BaseMethod::getArgument
-     */
+    /** @covers \Vivarium\Container\BaseMethod::getArgument */
     public function testGetArgumentThrowsWhenNotBound(): void
     {
         static::expectException(ParameterNotFound::class);
@@ -292,9 +280,7 @@ final class ConstructorTest extends TestCase
         (new Constructor(StubWithConstructor::class))->getArgument('service');
     }
 
-    /**
-     * @covers \Vivarium\Container\BaseMethod::equals
-     */
+    /** @covers \Vivarium\Container\BaseMethod::equals */
     public function testEqualsReturnsTrueForSameClassAndMethod(): void
     {
         $a = new Constructor(StubWithConstructor::class);
@@ -304,9 +290,7 @@ final class ConstructorTest extends TestCase
         static::assertTrue($a->equals($a));
     }
 
-    /**
-     * @covers \Vivarium\Container\BaseMethod::equals
-     */
+    /** @covers \Vivarium\Container\BaseMethod::equals */
     public function testEqualsReturnsFalseForDifferentClass(): void
     {
         $a = new Constructor(StubWithConstructor::class);
@@ -315,9 +299,7 @@ final class ConstructorTest extends TestCase
         static::assertFalse($a->equals($b));
     }
 
-    /**
-     * @covers \Vivarium\Container\BaseMethod::equals
-     */
+    /** @covers \Vivarium\Container\BaseMethod::equals */
     public function testEqualsReturnsFalseForNonMethod(): void
     {
         static::assertFalse(
@@ -325,9 +307,7 @@ final class ConstructorTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Vivarium\Container\BaseMethod::hash
-     */
+    /** @covers \Vivarium\Container\BaseMethod::hash */
     public function testHashIsConsistentForSameInstance(): void
     {
         $a = new Constructor(StubWithConstructor::class);
@@ -335,9 +315,7 @@ final class ConstructorTest extends TestCase
         static::assertSame($a->hash(), $a->hash());
     }
 
-    /**
-     * @covers \Vivarium\Container\BaseMethod::hash
-     */
+    /** @covers \Vivarium\Container\BaseMethod::hash */
     public function testHashDiffersForDifferentClasses(): void
     {
         $a = new Constructor(StubWithConstructor::class);

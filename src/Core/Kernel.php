@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of Vivarium
  * SPDX-License-Identifier: MPL-2.0
@@ -13,13 +15,28 @@ use Throwable;
 use Vivarium\Assertion\Conditional\Not;
 use Vivarium\Assertion\Hierarchy\IsAssignableTo;
 use Vivarium\Assertion\String\IsEmpty;
-use Vivarium\Container\Registry\EagerRegistry;
 use Vivarium\Container\FileCache;
 use Vivarium\Container\Injector;
 use Vivarium\Container\JsonCollector;
+use Vivarium\Container\Registry\EagerRegistry;
 use Vivarium\Core\Event\AppEnd;
 use Vivarium\Core\Event\AppStart;
 use Vivarium\Dispatcher\EventDispatcher;
+
+use function error_log;
+use function file_put_contents;
+use function header;
+use function headers_sent;
+use function implode;
+use function is_dir;
+use function mkdir;
+use function sprintf;
+
+use const DIRECTORY_SEPARATOR;
+use const FILE_APPEND;
+use const LOCK_EX;
+use const PHP_EOL;
+use const PHP_SAPI;
 
 final class Kernel
 {
@@ -33,14 +50,13 @@ final class Kernel
                 ->assert($appConfig);
 
             self::start(
-                Config::loadFromFile(join(DIRECTORY_SEPARATOR, [$appRoot, $appConfig]))
+                Config::loadFromFile(implode(DIRECTORY_SEPARATOR, [$appRoot, $appConfig])),
             );
-        } 
-        catch (Throwable $ex) {
+        } catch (Throwable $ex) {
             $error = sprintf(
                 '[%s] %s',
                 (new DateTime())->format('d/M/Y:H:i:s O'),
-                $ex->getMessage()
+                $ex->getMessage(),
             );
 
             if (! is_dir($appRoot)) {
@@ -48,9 +64,9 @@ final class Kernel
             }
 
             $result = file_put_contents(
-                join(DIRECTORY_SEPARATOR, [$appRoot, 'kernel.log']),
+                implode(DIRECTORY_SEPARATOR, [$appRoot, 'kernel.log']),
                 [$error, PHP_EOL],
-                FILE_APPEND | LOCK_EX
+                FILE_APPEND | LOCK_EX,
             );
 
             if ($result === false) {
@@ -59,7 +75,7 @@ final class Kernel
 
             if (PHP_SAPI !== 'cli' && ! headers_sent()) {
                 header(($_SERVER['SERVER_PROTOCOL'] ?? 'HTTP/1.1') . ' 503 Service Unavailable', true, 503);
-                
+
                 exit('<h1>503 Service Unavailable</h1>');
             }
 
@@ -67,16 +83,16 @@ final class Kernel
         }
     }
 
-    private static function start(Config $config) : void
+    private static function start(Config $config): void
     {
-        $injector = new Injector(function() use ($config) {
+        $injector = new Injector(static function () use ($config) {
             $registry = new EagerRegistry();
 
-            $T = \get_class($registry);
+            $class = $registry::class;
             foreach ($config->getModules() as $module) {
                 $registry = (new $module())->configure($registry);
 
-                (new IsAssignableTo($T))
+                (new IsAssignableTo($class))
                     ->assert($registry);
             }
 
@@ -85,18 +101,18 @@ final class Kernel
 
         if ($config->isMetadataEnabled()) {
             $injector = $injector->withCollector(
-                new JsonCollector($config->getMetadataPath())
+                new JsonCollector($config->getMetadataPath()),
             );
         }
 
         if ($config->isCacheEnabled()) {
             $injector = $injector->withFileCache(
-                new FileCache($config->getCachePath())
+                new FileCache($config->getCachePath()),
             );
         }
 
         $dispatcher = $injector->get(EventDispatcher::class);
-        
+
         $exitCode = $dispatcher
             ->dispatch(new AppStart())
             ->getExitCode();
