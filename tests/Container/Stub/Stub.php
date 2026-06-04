@@ -10,7 +10,7 @@ declare(strict_types=1);
 
 namespace Vivarium\Test\Container\Stub;
 
-final class StubClassWithProperty
+interface Stub
 {
-    public string $property;
+    public function getService(): StubService|null;
 }

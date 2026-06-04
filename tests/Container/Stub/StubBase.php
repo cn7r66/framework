@@ -10,9 +10,12 @@ declare(strict_types=1);
 
 namespace Vivarium\Test\Container\Stub;
 
-final class StubWithConstructor
+abstract class StubBase implements Stub
 {
-    public function __construct(public readonly StubService $service)
+    public StubService|null $service = null;
+
+    public function getService(): StubService|null
     {
+        return $this->service;
     }
 }

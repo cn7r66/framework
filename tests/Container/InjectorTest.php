@@ -14,8 +14,8 @@ use PHPUnit\Framework\TestCase;
 use Vivarium\Container\Injector;
 use Vivarium\Container\Registry;
 use Vivarium\Container\Registry\EagerRegistry;
+use Vivarium\Test\Container\Stub\StubClass;
 use Vivarium\Test\Container\Stub\StubService;
-use Vivarium\Test\Container\Stub\StubWithConstructor;
 use Vivarium\Test\Container\Stub\StubWithNoArgs;
 
 /** @coversDefaultClass \Vivarium\Container\Injector */
@@ -41,9 +41,9 @@ final class InjectorTest extends TestCase
     {
         $container = new Injector(new EagerRegistry());
 
-        $result = $container->get(StubWithConstructor::class);
+        $result = $container->get(StubClass::class);
 
-        static::assertInstanceOf(StubWithConstructor::class, $result);
+        static::assertInstanceOf(StubClass::class, $result);
         static::assertInstanceOf(StubService::class, $result->service);
     }
 

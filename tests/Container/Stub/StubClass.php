@@ -10,9 +10,21 @@ declare(strict_types=1);
 
 namespace Vivarium\Test\Container\Stub;
 
-final class StubWithMethodInjection
+final class StubClass extends StubBase
 {
-    private StubService|null $service = null;
+    public const INT_CONSTANT    = 42;
+    public const STRING_CONSTANT = 'hello';
+    public const FLOAT_CONSTANT  = 3.14;
+    public const BOOL_CONSTANT   = true;
+    public const NULL_CONSTANT   = null;
+    public const ARRAY_CONSTANT  = ['foo', 'bar'];
+
+    public string $property;
+
+    public function __construct(StubService $service)
+    {
+        $this->service = $service;
+    }
 
     public function setService(StubService $service): void
     {
@@ -25,10 +37,5 @@ final class StubWithMethodInjection
         $clone->service = $service;
 
         return $clone;
-    }
-
-    public function getService(): StubService|null
-    {
-        return $this->service;
     }
 }

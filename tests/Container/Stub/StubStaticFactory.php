@@ -12,8 +12,8 @@ namespace Vivarium\Test\Container\Stub;
 
 final class StubStaticFactory
 {
-    public static function create(StubService $service): StubWithConstructor
+    public static function create(StubService $service): StubClass
     {
-        return new StubWithConstructor($service);
+        return new StubClass($service);
     }
 }

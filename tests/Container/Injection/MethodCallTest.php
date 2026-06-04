@@ -15,8 +15,8 @@ use Vivarium\Assertion\Exception\AssertionFailed;
 use Vivarium\Container\Container;
 use Vivarium\Container\Injection\MethodCall;
 use Vivarium\Container\Provider;
+use Vivarium\Test\Container\Stub\StubClass;
 use Vivarium\Test\Container\Stub\StubService;
-use Vivarium\Test\Container\Stub\StubWithMethodInjection;
 use Vivarium\Test\Container\Stub\StubWithPrivateMethodInjection;
 
 /** @coversDefaultClass \Vivarium\Container\Injection\MethodCall */
@@ -27,7 +27,7 @@ final class MethodCallTest extends TestCase
     {
         static::expectException(AssertionFailed::class);
 
-        new MethodCall(StubWithMethodInjection::class, 'nonExistent');
+        new MethodCall(StubClass::class, 'nonExistent');
     }
 
     /** @covers ::__construct */
@@ -48,8 +48,8 @@ final class MethodCallTest extends TestCase
         $container = $this->createMock(Container::class);
         $container->method('get')->willReturn($service);
 
-        $instance  = new StubWithMethodInjection();
-        $injection = new MethodCall(StubWithMethodInjection::class, 'setService');
+        $instance  = new StubClass(new StubService());
+        $injection = new MethodCall(StubClass::class, 'setService');
         $result    = $injection->enhance($instance, $container);
 
         static::assertSame($instance, $result);
@@ -65,7 +65,7 @@ final class MethodCallTest extends TestCase
         static::expectException(AssertionFailed::class);
 
         $container = $this->createMock(Container::class);
-        $injection = new MethodCall(StubWithMethodInjection::class, 'setService');
+        $injection = new MethodCall(StubClass::class, 'setService');
         $injection->enhance(new StubService(), $container);
     }
 
@@ -76,10 +76,10 @@ final class MethodCallTest extends TestCase
     public function testAcceptReturnsTrueWhenTargetHasMethod(): void
     {
         $provider = $this->createMock(Provider::class);
-        $provider->method('getTarget')->willReturn(StubWithMethodInjection::class);
+        $provider->method('getTarget')->willReturn(StubClass::class);
 
         static::assertTrue(
-            (new MethodCall(StubWithMethodInjection::class, 'setService'))->accept($provider),
+            (new MethodCall(StubClass::class, 'setService'))->accept($provider),
         );
     }
 
@@ -93,7 +93,7 @@ final class MethodCallTest extends TestCase
         $provider->method('getTarget')->willReturn(StubService::class);
 
         static::assertFalse(
-            (new MethodCall(StubWithMethodInjection::class, 'setService'))->accept($provider),
+            (new MethodCall(StubClass::class, 'setService'))->accept($provider),
         );
     }
 
@@ -107,7 +107,7 @@ final class MethodCallTest extends TestCase
         $provider->method('getTarget')->willReturn('string');
 
         static::assertFalse(
-            (new MethodCall(StubWithMethodInjection::class, 'setService'))->accept($provider),
+            (new MethodCall(StubClass::class, 'setService'))->accept($provider),
         );
     }
 }

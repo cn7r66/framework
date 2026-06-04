@@ -23,10 +23,9 @@ use Vivarium\Container\Provider\Factory;
 use Vivarium\Container\Provider\Instance;
 use Vivarium\Container\Provider\StaticFactory;
 use Vivarium\Container\Scope;
-use Vivarium\Test\Container\Stub\StubClassWithConstants;
+use Vivarium\Test\Container\Stub\StubClass;
 use Vivarium\Test\Container\Stub\StubFactory;
 use Vivarium\Test\Container\Stub\StubStaticFactory;
-use Vivarium\Test\Container\Stub\StubWithConstructor;
 use Vivarium\Test\Container\Stub\StubWithNoArgs;
 
 /** @coversDefaultClass \Vivarium\Container\Binding\ProviderBinder */
@@ -53,7 +52,7 @@ final class ProviderBinderTest extends TestCase
     /** @covers ::toFactory */
     public function testToFactoryCreatesFactoryProvider(): void
     {
-        $provider = $this->makeBinder(StubWithConstructor::class)
+        $provider = $this->makeBinder(StubClass::class)
             ->toFactory(StubFactory::class)
             ->method('create');
 
@@ -63,7 +62,7 @@ final class ProviderBinderTest extends TestCase
     /** @covers ::toStaticFactory */
     public function testToStaticFactoryCreatesStaticFactoryProvider(): void
     {
-        $provider = $this->makeBinder(StubWithConstructor::class)
+        $provider = $this->makeBinder(StubClass::class)
             ->toStaticFactory(StubStaticFactory::class)
             ->method('create');
 
@@ -99,7 +98,7 @@ final class ProviderBinderTest extends TestCase
     public function testToClassConstantCreatesClassConstantProvider(): void
     {
         $provider = $this->makeBinder('int')
-            ->toClassConstant(StubClassWithConstants::class, 'INT_CONSTANT');
+            ->toClassConstant(StubClass::class, 'INT_CONSTANT');
 
         static::assertInstanceOf(ClassConstant::class, $provider);
     }

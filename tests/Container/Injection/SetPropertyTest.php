@@ -18,7 +18,8 @@ use Vivarium\Container\Capability;
 use Vivarium\Container\Container;
 use Vivarium\Container\Injection\SetProperty;
 use Vivarium\Container\Provider;
-use Vivarium\Test\Container\Stub\StubClassWithProperty;
+use Vivarium\Test\Container\Stub\StubClass;
+use Vivarium\Test\Container\Stub\StubService;
 
 /** @coversDefaultClass \Vivarium\Container\Injection\SetProperty */
 final class SetPropertyTest extends TestCase
@@ -29,19 +30,17 @@ final class SetPropertyTest extends TestCase
      */
     public function testEnhanceSuccessfully(): void
     {
-        $instance = new class {
-            public string $dependency;
-        };
+        $instance = new StubClass(new StubService());
 
         $binding   = new Binding('string');
         $container = $this->createMock(Container::class);
         $container->method('get')->willReturn('injected-value');
 
-        $enhancement = new SetProperty('dependency', $binding);
+        $enhancement = new SetProperty('property', $binding);
         $result      = $enhancement->enhance($instance, $container);
 
         static::assertSame($instance, $result);
-        static::assertSame('injected-value', $instance->dependency);
+        static::assertSame('injected-value', $instance->property);
     }
 
     /**
@@ -155,9 +154,7 @@ final class SetPropertyTest extends TestCase
         static::expectException(AssertionFailed::class);
         static::expectExceptionMessage('to have a property named "nonExistent"');
 
-        $instance = new class {
-            public string $dependency;
-        };
+        $instance = new StubClass(new StubService());
 
         $binding     = new Binding('string');
         $container   = $this->createMock(Container::class);
@@ -174,13 +171,11 @@ final class SetPropertyTest extends TestCase
     {
         static::expectException(AssertionFailed::class);
 
-        $instance = new class {
-            public string $dependency;
-        };
+        $instance = new StubClass(new StubService());
 
-        $binding     = new Binding('int'); // Wrong type
+        $binding     = new Binding('int');
         $container   = $this->createMock(Container::class);
-        $enhancement = new SetProperty('dependency', $binding);
+        $enhancement = new SetProperty('property', $binding);
 
         $enhancement->enhance($instance, $container);
     }
@@ -192,7 +187,7 @@ final class SetPropertyTest extends TestCase
     public function testAcceptReturnsTrueWhenProviderHasPropertyAndIsInjectable(): void
     {
         $provider = $this->createMock(Provider::class);
-        $provider->method('getTarget')->willReturn(StubClassWithProperty::class);
+        $provider->method('getTarget')->willReturn(StubClass::class);
         $provider->method('getCapabilities')->willReturn(
             HashSet::fromArray([Capability::INJECTABLE]),
         );
@@ -210,7 +205,7 @@ final class SetPropertyTest extends TestCase
     public function testAcceptReturnsTrueWhenProviderHasPropertyAndIsInterceptable(): void
     {
         $provider = $this->createMock(Provider::class);
-        $provider->method('getTarget')->willReturn(StubClassWithProperty::class);
+        $provider->method('getTarget')->willReturn(StubClass::class);
         $provider->method('getCapabilities')->willReturn(
             HashSet::fromArray([Capability::INTERCEPTABLE]),
         );
@@ -228,7 +223,7 @@ final class SetPropertyTest extends TestCase
     public function testAcceptReturnsFalseWhenProviderDoesNotHaveProperty(): void
     {
         $provider = $this->createMock(Provider::class);
-        $provider->method('getTarget')->willReturn(StubClassWithProperty::class);
+        $provider->method('getTarget')->willReturn(StubClass::class);
         $provider->method('getCapabilities')->willReturn(
             HashSet::fromArray([Capability::INJECTABLE]),
         );
@@ -246,7 +241,7 @@ final class SetPropertyTest extends TestCase
     public function testAcceptReturnsFalseWhenProviderIsNotEnhanceable(): void
     {
         $provider = $this->createMock(Provider::class);
-        $provider->method('getTarget')->willReturn(StubClassWithProperty::class);
+        $provider->method('getTarget')->willReturn(StubClass::class);
         $provider->method('getCapabilities')->willReturn(
             HashSet::fromArray([Capability::DECORABLE]), // Wrong capability
         );
@@ -264,7 +259,7 @@ final class SetPropertyTest extends TestCase
     public function testAcceptReturnsFalseWhenProviderHasNoCapabilities(): void
     {
         $provider = $this->createMock(Provider::class);
-        $provider->method('getTarget')->willReturn(StubClassWithProperty::class);
+        $provider->method('getTarget')->willReturn(StubClass::class);
         $provider->method('getCapabilities')->willReturn(
             HashSet::fromArray([]),
         );

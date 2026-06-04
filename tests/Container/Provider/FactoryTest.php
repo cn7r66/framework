@@ -16,10 +16,10 @@ use Vivarium\Container\Binding;
 use Vivarium\Container\Capability;
 use Vivarium\Container\Container;
 use Vivarium\Container\Provider\Factory;
+use Vivarium\Test\Container\Stub\StubClass;
 use Vivarium\Test\Container\Stub\StubFactory;
 use Vivarium\Test\Container\Stub\StubFactoryWithPrivateMethod;
 use Vivarium\Test\Container\Stub\StubService;
-use Vivarium\Test\Container\Stub\StubWithConstructor;
 
 /** @coversDefaultClass \Vivarium\Container\Provider\Factory */
 final class FactoryTest extends TestCase
@@ -39,7 +39,7 @@ final class FactoryTest extends TestCase
 
         $result = (new Factory(new Binding(StubFactory::class), 'create'))->provide($container);
 
-        static::assertInstanceOf(StubWithConstructor::class, $result);
+        static::assertInstanceOf(StubClass::class, $result);
         static::assertSame($service, $result->service);
     }
 
@@ -47,7 +47,7 @@ final class FactoryTest extends TestCase
     public function testGetTargetReturnsMethodReturnType(): void
     {
         static::assertSame(
-            StubWithConstructor::class,
+            StubClass::class,
             (new Factory(new Binding(StubFactory::class), 'create'))->getTarget(),
         );
     }

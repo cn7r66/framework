@@ -15,10 +15,10 @@ use Vivarium\Assertion\Exception\AssertionFailed;
 use Vivarium\Container\Capability;
 use Vivarium\Container\Container;
 use Vivarium\Container\Provider\StaticFactory;
+use Vivarium\Test\Container\Stub\StubClass;
 use Vivarium\Test\Container\Stub\StubService;
 use Vivarium\Test\Container\Stub\StubStaticFactory;
 use Vivarium\Test\Container\Stub\StubStaticFactoryWithPrivateMethod;
-use Vivarium\Test\Container\Stub\StubWithConstructor;
 
 /** @coversDefaultClass \Vivarium\Container\Provider\StaticFactory */
 final class StaticFactoryTest extends TestCase
@@ -35,7 +35,7 @@ final class StaticFactoryTest extends TestCase
 
         $result = (new StaticFactory(StubStaticFactory::class, 'create'))->provide($container);
 
-        static::assertInstanceOf(StubWithConstructor::class, $result);
+        static::assertInstanceOf(StubClass::class, $result);
         static::assertSame($service, $result->service);
     }
 
@@ -43,7 +43,7 @@ final class StaticFactoryTest extends TestCase
     public function testGetTargetReturnsMethodReturnType(): void
     {
         static::assertSame(
-            StubWithConstructor::class,
+            StubClass::class,
             (new StaticFactory(StubStaticFactory::class, 'create'))->getTarget(),
         );
     }

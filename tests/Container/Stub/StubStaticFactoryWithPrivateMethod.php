@@ -13,8 +13,8 @@ namespace Vivarium\Test\Container\Stub;
 final class StubStaticFactoryWithPrivateMethod
 {
     // phpcs:ignore
-    private static function create(StubService $service): StubWithConstructor
+    private static function create(StubService $service): StubClass
     {
-        return new StubWithConstructor($service);
+        return new StubClass($service);
     }
 }

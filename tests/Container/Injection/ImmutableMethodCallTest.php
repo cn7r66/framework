@@ -15,8 +15,8 @@ use Vivarium\Assertion\Exception\AssertionFailed;
 use Vivarium\Container\Container;
 use Vivarium\Container\Injection\ImmutableMethodCall;
 use Vivarium\Container\Provider;
+use Vivarium\Test\Container\Stub\StubClass;
 use Vivarium\Test\Container\Stub\StubService;
-use Vivarium\Test\Container\Stub\StubWithMethodInjection;
 use Vivarium\Test\Container\Stub\StubWithPrivateMethodInjection;
 use Vivarium\Test\Container\Stub\StubWithWrongReturn;
 
@@ -28,7 +28,7 @@ final class ImmutableMethodCallTest extends TestCase
     {
         static::expectException(AssertionFailed::class);
 
-        new ImmutableMethodCall(StubWithMethodInjection::class, 'nonExistent');
+        new ImmutableMethodCall(StubClass::class, 'nonExistent');
     }
 
     /** @covers ::__construct */
@@ -49,14 +49,15 @@ final class ImmutableMethodCallTest extends TestCase
         $container = $this->createMock(Container::class);
         $container->method('get')->willReturn($service);
 
-        $instance  = new StubWithMethodInjection();
-        $injection = new ImmutableMethodCall(StubWithMethodInjection::class, 'withService');
-        $result    = $injection->enhance($instance, $container);
+        $initialService = new StubService();
+        $instance       = new StubClass($initialService);
+        $injection      = new ImmutableMethodCall(StubClass::class, 'withService');
+        $result         = $injection->enhance($instance, $container);
 
         static::assertNotSame($instance, $result);
-        static::assertInstanceOf(StubWithMethodInjection::class, $result);
+        static::assertInstanceOf(StubClass::class, $result);
         static::assertSame($service, $result->getService());
-        static::assertNull($instance->getService());
+        static::assertSame($initialService, $instance->getService());
     }
 
     /**
@@ -68,7 +69,7 @@ final class ImmutableMethodCallTest extends TestCase
         static::expectException(AssertionFailed::class);
 
         $container = $this->createMock(Container::class);
-        $injection = new ImmutableMethodCall(StubWithMethodInjection::class, 'withService');
+        $injection = new ImmutableMethodCall(StubClass::class, 'withService');
         $injection->enhance(new StubService(), $container);
     }
 
@@ -95,10 +96,10 @@ final class ImmutableMethodCallTest extends TestCase
     public function testAcceptReturnsTrueWhenTargetHasMethod(): void
     {
         $provider = $this->createMock(Provider::class);
-        $provider->method('getTarget')->willReturn(StubWithMethodInjection::class);
+        $provider->method('getTarget')->willReturn(StubClass::class);
 
         static::assertTrue(
-            (new ImmutableMethodCall(StubWithMethodInjection::class, 'withService'))->accept($provider),
+            (new ImmutableMethodCall(StubClass::class, 'withService'))->accept($provider),
         );
     }
 
@@ -112,7 +113,7 @@ final class ImmutableMethodCallTest extends TestCase
         $provider->method('getTarget')->willReturn(StubService::class);
 
         static::assertFalse(
-            (new ImmutableMethodCall(StubWithMethodInjection::class, 'withService'))->accept($provider),
+            (new ImmutableMethodCall(StubClass::class, 'withService'))->accept($provider),
         );
     }
 
@@ -126,7 +127,7 @@ final class ImmutableMethodCallTest extends TestCase
         $provider->method('getTarget')->willReturn('string');
 
         static::assertFalse(
-            (new ImmutableMethodCall(StubWithMethodInjection::class, 'withService'))->accept($provider),
+            (new ImmutableMethodCall(StubClass::class, 'withService'))->accept($provider),
         );
     }
 }
