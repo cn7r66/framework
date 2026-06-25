@@ -17,6 +17,10 @@ class StubClass implements Stub
 
     public int $prop = 42;
 
+    public Stub $stubProp;
+
+    public StubClass $classProp;
+
     protected int $protectedProp = 42;
 
     private int $privateProp = 42;
