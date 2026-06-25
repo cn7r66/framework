@@ -11,11 +11,28 @@ declare(strict_types=1);
 namespace Vivarium\Type;
 
 use Closure;
+use InvalidArgumentException;
+use ReflectionClass;
+use ReflectionFunction;
+use ReflectionIntersectionType;
+use ReflectionNamedType;
+use ReflectionType;
+use ReflectionUnionType;
+use Vivarium\Type\Exception\NoSuchParameter;
 use Vivarium\Type\Exception\NotAType;
+use Vivarium\Type\Exception\UnsupportedReflectionType;
 
+use function array_filter;
 use function array_keys;
+use function array_map;
+use function array_merge;
+use function array_unique;
+use function array_values;
+use function class_exists;
 use function gettype;
+use function implode;
 use function in_array;
+use function interface_exists;
 use function is_array;
 use function is_callable;
 use function is_object;
@@ -32,6 +49,8 @@ final class Type
     public const CALLABLE = 'callable';
     public const MIXED    = 'mixed';
     public const NULL     = 'null';
+    public const NEVER    = 'never';
+    public const VOID     = 'void';
 
     private const ALIASES = [
         'integer' => self::INT,
@@ -52,6 +71,9 @@ final class Type
             self::OBJECT,
             self::CALLABLE,
             self::MIXED,
+            self::NULL,
+            self::NEVER,
+            self::VOID,
         ];
     }
 
@@ -66,11 +88,63 @@ final class Type
 
     public static function normalize(string $type): string
     {
-        if (! in_array($type, self::expanded())) {
+        if (class_exists($type) || interface_exists($type)) {
+            return $type;
+        }
+
+        if (! in_array($type, self::expanded(), true)) {
             throw new NotAType($type);
         }
 
         return self::ALIASES[$type] ?? $type;
+    }
+
+    public static function union(string $type, string ...$types): string
+    {
+        $all = array_values(array_unique(array_map(
+            static fn (string $item): string => self::normalize($item),
+            array_merge([$type], $types),
+        )));
+
+        if (in_array(self::VOID, $all, true)) {
+            throw new InvalidArgumentException('void is not allowed in union types.');
+        }
+
+        if (in_array(self::MIXED, $all, true)) {
+            return self::MIXED;
+        }
+
+        $all = array_values(array_filter(
+            $all,
+            static fn (string $item): bool => $item !== self::NEVER,
+        ));
+
+        return implode('|', $all);
+    }
+
+    public static function intersection(string $type, string ...$types): string
+    {
+        $all = array_values(array_unique(array_map(
+            static fn (string $item): string => self::normalize($item),
+            array_merge([$type], $types),
+        )));
+
+        if (in_array(self::NEVER, $all, true)) {
+            return self::NEVER;
+        }
+
+        $forbidden = array_values(array_filter(
+            self::canonical(),
+            static fn (string $item): bool => $item !== self::NEVER,
+        ));
+
+        foreach ($all as $item) {
+            if (in_array($item, $forbidden, true)) {
+                throw new InvalidArgumentException('"' . $item . '" is not allowed in intersection types');
+            }
+        }
+
+        return implode('&', $all);
     }
 
     public static function toLiteral(mixed $value): string
@@ -115,5 +189,119 @@ final class Type
         }
 
         return self::normalize($type);
+    }
+
+    /** @param class-string $class */
+    public static function ofProperty(string $class, string $property): string
+    {
+        return self::fromReflectionType(
+            (new ReflectionClass($class))
+                ->getProperty($property)
+                ->getType(),
+        );
+    }
+
+    /** @param class-string $class */
+    public static function ofMethod(string $class, string $method): string
+    {
+        return self::fromReflectionType(
+            (new ReflectionClass($class))
+                ->getMethod($method)
+                ->getReturnType(),
+        );
+    }
+
+    /** @param class-string $class */
+    public static function ofMethodParameter(string $class, string $method, string $parameter): string
+    {
+        $params = (new ReflectionClass($class))
+            ->getMethod($method)
+            ->getParameters();
+
+        foreach ($params as $param) {
+            if ($param->getName() !== $parameter) {
+                continue;
+            }
+
+            return self::fromReflectionType($param->getType());
+        }
+
+        throw new NoSuchParameter($parameter);
+    }
+
+    public static function ofFunction(string|callable $function): string
+    {
+        return self::fromReflectionType(
+            (new ReflectionFunction(Closure::fromCallable($function)))
+                ->getReturnType(),
+        );
+    }
+
+    public static function ofFunctionParameter(string|callable $function, string $parameter): string
+    {
+        $params = (new ReflectionFunction(Closure::fromCallable($function)))
+            ->getParameters();
+
+        foreach ($params as $param) {
+            if ($param->getName() !== $parameter) {
+                continue;
+            }
+
+            return self::fromReflectionType($param->getType());
+        }
+
+        throw new NoSuchParameter($parameter);
+    }
+
+    public static function fromReflectionType(ReflectionType|null $type): string
+    {
+        if ($type === null) {
+            return self::MIXED;
+        }
+
+        if ($type instanceof ReflectionUnionType) {
+            return self::fromReflectionUnionType($type);
+        }
+
+        if ($type instanceof ReflectionIntersectionType) {
+            return self::fromReflectionIntersectionType($type);
+        }
+
+        if ($type instanceof ReflectionNamedType) {
+            return self::fromReflectionNamedType($type);
+        }
+
+        throw new UnsupportedReflectionType($type::class);
+    }
+
+    public static function fromReflectionUnionType(ReflectionUnionType $type): string
+    {
+        $types = [];
+        foreach ($type->getTypes() as $reflector) {
+            $types[] = self::fromReflectionType($reflector);
+        }
+
+        return implode('|', $types);
+    }
+
+    public static function fromReflectionIntersectionType(ReflectionIntersectionType $type): string
+    {
+        $types = [];
+        foreach ($type->getTypes() as $reflector) {
+            $types[] = self::fromReflectionType($reflector);
+        }
+
+        return implode('&', $types);
+    }
+
+    public static function fromReflectionNamedType(ReflectionNamedType $type): string
+    {
+        $name = $type->getName();
+
+        if ($type->allowsNull() && $name !== self::MIXED && $name !== self::NULL) {
+            return $name . '|' . self::NULL;
+        }
+
+        return $name;
     }
 }
