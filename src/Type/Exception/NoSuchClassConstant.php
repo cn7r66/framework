@@ -14,12 +14,12 @@ use InvalidArgumentException;
 
 use function sprintf;
 
-final class NoSuchParameter extends InvalidArgumentException
+final class NoSuchClassConstant extends InvalidArgumentException
 {
-    public function __construct(string $parameter)
+    public function __construct(string $class, string $constant)
     {
         parent::__construct(
-            sprintf('No parameter "$%s" found.', $parameter),
+            sprintf('No constant "$%s" found in class "$%s".', $constant, $class),
         );
     }
 }

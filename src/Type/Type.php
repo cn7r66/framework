@@ -18,6 +18,8 @@ use ReflectionIntersectionType;
 use ReflectionNamedType;
 use ReflectionType;
 use ReflectionUnionType;
+use Vivarium\Type\Exception\NoSuchClassConstant;
+use Vivarium\Type\Exception\NoSuchConstant;
 use Vivarium\Type\Exception\NoSuchParameter;
 use Vivarium\Type\Exception\NotAType;
 use Vivarium\Type\Exception\UnsupportedReflectionType;
@@ -29,6 +31,8 @@ use function array_merge;
 use function array_unique;
 use function array_values;
 use function class_exists;
+use function constant;
+use function defined;
 use function gettype;
 use function implode;
 use function in_array;
@@ -189,6 +193,33 @@ final class Type
         }
 
         return self::normalize($type);
+    }
+
+    public static function of(mixed $value): string
+    {
+        return is_object($value) ?
+            $value::class : self::normalize(gettype($value));
+    }
+
+    public static function ofConstant(string $constant): string
+    {
+        if (! defined($constant)) {
+            throw new NoSuchConstant($constant);
+        }
+
+        return self::of(constant($constant));
+    }
+
+    public static function ofClassConstant(string $class, string $name): string
+    {
+        $constant = (new ReflectionClass($class))
+            ->getReflectionConstant($name);
+
+        if ($constant === false) {
+            throw new NoSuchClassConstant($class, $name);
+        }
+
+        return self::of($constant->getValue());
     }
 
     /** @param class-string $class */
