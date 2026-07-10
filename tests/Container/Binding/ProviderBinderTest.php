@@ -41,6 +41,30 @@ final class ProviderBinderTest extends TestCase
         );
     }
 
+    /**
+     * @covers ::__construct
+     * @covers ::toProvider
+     */
+    public function testToProviderForwardsProviderToCreateAndReturnsResult(): void
+    {
+        $provider = $this->createMock(Provider::class);
+        $captured = null;
+
+        $binder = new ProviderBinder(
+            new Binding(StubWithNoArgs::class),
+            static function (Binding $binding, Provider $p) use (&$captured): Provider {
+                $captured = $p;
+
+                return $p;
+            },
+        );
+
+        $result = $binder->toProvider($provider);
+
+        static::assertSame($provider, $captured);
+        static::assertSame($provider, $result);
+    }
+
     /** @covers ::toConstructor */
     public function testToConstructorCreatesConstructorProvider(): void
     {

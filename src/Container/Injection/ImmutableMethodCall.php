@@ -21,6 +21,11 @@ use function class_exists;
 
 final class ImmutableMethodCall extends BaseMethod implements Injection
 {
+    public function getSlot(): string
+    {
+        return $this->getName();
+    }
+
     public function enhance(mixed $instance, Container $container): mixed
     {
         (new IsAssignableTo($this->getClass()))

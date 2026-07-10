@@ -49,10 +49,7 @@ final class Fun implements Provider
 
     public function getTarget(): string
     {
-        $type = (new ReflectionFunction($this->fn))
-            ->getReturnType();
-
-        return $type === null ? Type::MIXED : (string) $type;
+        return Type::ofFunction($this->fn);
     }
 
     public function getCapabilities(): Set

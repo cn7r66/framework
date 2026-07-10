@@ -16,6 +16,8 @@ use Vivarium\Equality\Equality;
 
 interface Method extends Equality
 {
+    public const CONSTRUCT = '__construct';
+
     public function getClass(): string;
 
     public function getName(): string;

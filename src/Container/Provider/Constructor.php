@@ -18,18 +18,19 @@ use Vivarium\Collection\Set\Set;
 use Vivarium\Container\BaseMethod;
 use Vivarium\Container\Capability;
 use Vivarium\Container\Container;
+use Vivarium\Container\Method;
 use Vivarium\Container\Provider;
 
 final class Constructor extends BaseMethod implements Provider
 {
     public function __construct(string $class)
     {
-        parent::__construct($class, '__construct');
+        parent::__construct($class, Method::CONSTRUCT);
     }
 
     public function getArguments(string|null $class = null): Sequence
     {
-        if (! (new ReflectionClass($this->getClass()))->hasMethod('__construct')) {
+        if (! (new ReflectionClass($this->getClass()))->hasMethod(Method::CONSTRUCT)) {
             return ArraySequence::fromArray([]);
         }
 

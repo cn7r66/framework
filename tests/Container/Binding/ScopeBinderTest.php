@@ -24,7 +24,10 @@ final class ScopeBinderTest extends TestCase
         });
     }
 
-    /** @covers ::transient */
+    /**
+     * @covers ::__construct
+     * @covers ::transient
+     */
     public function testTransientReturnsTransientScope(): void
     {
         static::assertSame(Scope::TRANSIENT, $this->makeBinder()->transient());

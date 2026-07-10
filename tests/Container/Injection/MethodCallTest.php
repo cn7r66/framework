@@ -110,4 +110,15 @@ final class MethodCallTest extends TestCase
             (new MethodCall(StubClass::class, 'setService'))->accept($provider),
         );
     }
+
+    /**
+     * @covers ::__construct
+     * @covers ::getSlot
+     */
+    public function testGetSlotReturnsMethodName(): void
+    {
+        $injection = new MethodCall(StubClass::class, 'setService');
+
+        static::assertSame('setService', $injection->getSlot());
+    }
 }

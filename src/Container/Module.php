@@ -10,8 +10,6 @@ declare(strict_types=1);
 
 namespace Vivarium\Container;
 
-use Vivarium\Container\Binding\Binder;
-
 interface Module
 {
     /**

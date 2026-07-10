@@ -25,7 +25,6 @@ use Vivarium\Equality\EqualsBuilder;
 use Vivarium\Equality\HashBuilder;
 
 use function array_merge;
-use function array_reverse;
 use function class_implements;
 use function get_parent_class;
 use function strrpos;
@@ -45,6 +44,9 @@ final class Binding implements Equality
         (new IsType())
             ->assert($type);
 
+        (new IsNotEmpty())
+            ->assert($tag);
+
         (new Either(
             new IsSameOf(self::GLOBAL),
             new Either(
@@ -52,9 +54,6 @@ final class Binding implements Equality
                 new IsNamespace(),
             ),
         ))->assert($context, 'Expected string to be $GLOBAL, class, interface or namespace. Got %s.');
-
-        (new IsNotEmpty())
-            ->assert($tag);
     }
 
     public function getType(): string
@@ -90,7 +89,9 @@ final class Binding implements Equality
     public function widen(): Binding
     {
         if (! $this->couldBeWidened()) {
-            throw new CannotBeWidened($this);
+            throw new CannotBeWidened(
+                'Binding(' . $this->type . ', ' . $this->tag . ', ' . $this->context . ') cannot be widened further.',
+            );
         }
 
         if ($this->tag !== self::DEFAULT) {
@@ -117,37 +118,11 @@ final class Binding implements Equality
                $this->context !== self::GLOBAL;
     }
 
-    public function equals(object $object): bool
-    {
-        if ($object === $this) {
-            return true;
-        }
-
-        if (! $object instanceof Binding) {
-            return false;
-        }
-
-        return (new EqualsBuilder())
-            ->append($this->type, $object->getType())
-            ->append($this->tag, $object->getTag())
-            ->append($this->context, $object->getContext())
-            ->isEquals();
-    }
-
-    public function hash(): string
-    {
-        return (new HashBuilder())
-            ->append($this->type)
-            ->append($this->tag)
-            ->append($this->context)
-            ->getHashCode();
-    }
-
-        /**
-         * @param array<Binding> $bindings
-         *
-         * @return Sequence<Binding>
-         */
+    /**
+     * @param array<Binding> $bindings
+     *
+     * @return Sequence<Binding>
+     */
     private function expand(array $bindings): Sequence
     {
         $hierarchy = [];
@@ -159,12 +134,10 @@ final class Binding implements Equality
             }
         }
 
-        return ArraySequence::fromArray(
-            array_reverse($hierarchy),
-        );
+        return ArraySequence::fromArray($hierarchy);
     }
 
-        /** @return array<Binding> */
+    /** @return array<Binding> */
     private function extends(): array
     {
         $extends = [];
@@ -196,5 +169,31 @@ final class Binding implements Equality
         }
 
         return $interfaces;
+    }
+
+    public function equals(object $object): bool
+    {
+        if ($object === $this) {
+            return true;
+        }
+
+        if (! $object instanceof Binding) {
+            return false;
+        }
+
+        return (new EqualsBuilder())
+            ->append($this->type, $object->getType())
+            ->append($this->tag, $object->getTag())
+            ->append($this->context, $object->getContext())
+            ->isEquals();
+    }
+
+    public function hash(): string
+    {
+        return (new HashBuilder())
+            ->append($this->type)
+            ->append($this->tag)
+            ->append($this->context)
+            ->getHashCode();
     }
 }

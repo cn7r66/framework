@@ -10,6 +10,8 @@ declare(strict_types=1);
 
 namespace Vivarium\Container;
 
+use Vivarium\Comparator\ValueAndPriority;
+
 interface Registry
 {
     public function hasProvider(Binding $binding): bool;
@@ -18,6 +20,6 @@ interface Registry
 
     public function findScope(Binding $binding): Scope;
 
-    /** @return iterable<Enhancement> */
+    /** @return iterable<ValueAndPriority<Enhancement>> */
     public function findEnhancements(Binding $binding): iterable;
 }

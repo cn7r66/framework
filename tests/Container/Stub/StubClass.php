@@ -21,6 +21,8 @@ final class StubClass extends StubBase
 
     public string $property;
 
+    public mixed $untypedProperty;
+
     public function __construct(StubService $service)
     {
         $this->service = $service;

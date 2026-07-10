@@ -22,6 +22,7 @@ use Vivarium\Container\Provider\Constructor;
 use Vivarium\Test\Container\Stub\NotInstantiableStub;
 use Vivarium\Test\Container\Stub\StubClass;
 use Vivarium\Test\Container\Stub\StubService;
+use Vivarium\Test\Container\Stub\StubWithMultipleArgs;
 use Vivarium\Test\Container\Stub\StubWithNoArgs;
 use Vivarium\Test\Container\Stub\StubWithNoConstructor;
 use Vivarium\Test\Container\Stub\StubWithOptionalArg;
@@ -229,6 +230,55 @@ final class ConstructorTest extends TestCase
         static::assertSame($custom, $modified->getArgument('service'));
     }
 
+    /** @covers \Vivarium\Container\BaseMethod::bindArgumentAtPosition */
+    public function testBindArgumentAtPositionBindsFirstParameter(): void
+    {
+        $custom   = $this->createMock(Provider::class);
+        $modified = (new Constructor(StubWithMultipleArgs::class))
+            ->bindArgumentAtPosition(0)
+            ->toProvider($custom);
+
+        static::assertTrue($modified->hasArgument('service'));
+    }
+
+    /** @covers \Vivarium\Container\BaseMethod::bindArgumentAtPosition */
+    public function testBindArgumentAtPositionBindsMiddleParameter(): void
+    {
+        $custom   = $this->createMock(Provider::class);
+        $modified = (new Constructor(StubWithMultipleArgs::class))
+            ->bindArgumentAtPosition(1)
+            ->toProvider($custom);
+
+        static::assertTrue($modified->hasArgument('name'));
+    }
+
+    /** @covers \Vivarium\Container\BaseMethod::bindArgumentAtPosition */
+    public function testBindArgumentAtPositionBindsLastParameter(): void
+    {
+        $custom   = $this->createMock(Provider::class);
+        $modified = (new Constructor(StubWithMultipleArgs::class))
+            ->bindArgumentAtPosition(2)
+            ->toProvider($custom);
+
+        static::assertTrue($modified->hasArgument('count'));
+    }
+
+    /** @covers \Vivarium\Container\BaseMethod::bindArgumentAtPosition */
+    public function testBindArgumentAtPositionThrowsForOutOfBoundsPosition(): void
+    {
+        static::expectException(AssertionFailed::class);
+
+        (new Constructor(StubWithMultipleArgs::class))->bindArgumentAtPosition(3);
+    }
+
+    /** @covers \Vivarium\Container\BaseMethod::bindArgumentAtPosition */
+    public function testBindArgumentAtPositionThrowsForNegativePosition(): void
+    {
+        static::expectException(AssertionFailed::class);
+
+        (new Constructor(StubWithMultipleArgs::class))->bindArgumentAtPosition(-1);
+    }
+
     /**
      * @covers ::__construct
      * @covers ::provide
@@ -267,9 +317,17 @@ final class ConstructorTest extends TestCase
     /** @covers \Vivarium\Container\BaseMethod::bindArgument */
     public function testBindArgumentThrowsForUnknownParameterName(): void
     {
-        static::expectException(ParameterNotFound::class);
+        static::expectException(AssertionFailed::class);
 
         (new Constructor(StubClass::class))->bindArgument('nonExistent');
+    }
+
+    /** @covers \Vivarium\Container\BaseMethod::bindArgument */
+    public function testBindArgumentThrowsForImplicitConstructor(): void
+    {
+        static::expectException(AssertionFailed::class);
+
+        (new Constructor(StubWithNoConstructor::class))->bindArgument('value');
     }
 
     /** @covers \Vivarium\Container\BaseMethod::getArgument */

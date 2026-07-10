@@ -27,9 +27,8 @@ final class Fallback implements Provider
 
     public function provide(Container $container): mixed
     {
-        return $container->has($this->primary)
-            ? $container->get($this->primary)
-            : $this->secondary->provide($container);
+        return $container->has($this->primary) ?
+            $container->get($this->primary) : $this->secondary->provide($container);
     }
 
     public function getTarget(): string

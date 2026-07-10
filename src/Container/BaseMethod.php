@@ -14,6 +14,8 @@ use ReflectionClass;
 use ReflectionMethod;
 use ReflectionParameter;
 use Vivarium\Assertion\Conditional\NullOr;
+use Vivarium\Assertion\Numeric\IsInHalfOpenRightRange;
+use Vivarium\Assertion\Object\HasParameter;
 use Vivarium\Assertion\Object\HasPublicMethod;
 use Vivarium\Assertion\Type\IsAssignableTo;
 use Vivarium\Collection\Map\HashMap;
@@ -28,18 +30,26 @@ use Vivarium\Container\Provider\Fallback;
 use Vivarium\Container\Provider\Instance;
 use Vivarium\Equality\EqualsBuilder;
 use Vivarium\Equality\HashBuilder;
+use Vivarium\Type\Type;
+
+use function count;
 
 abstract class BaseMethod implements Method
 {
     /** @var Map<string, Provider> */
-    private Map $parameters;
+    private Map $arguments;
 
     public function __construct(private string $class, private string $method)
     {
-        (new HasPublicMethod($method))
-            ->assert($class);
+        $reflectionClass = new ReflectionClass($class);
+        $isImplicitConstructor = $this->method === '__construct' && ! $reflectionClass->hasMethod($this->method);
 
-        $this->parameters = new HashMap();
+        if (! $isImplicitConstructor) {
+            (new HasPublicMethod($method))
+                ->assert($class);
+        }
+
+        $this->arguments = new HashMap();
     }
 
     public function getClass(): string
@@ -52,31 +62,20 @@ abstract class BaseMethod implements Method
         return $this->method;
     }
 
-    public function bindArgument(string $name): ProviderBinder
+    public function bindArgument(string $parameter): ProviderBinder
     {
-        $reflectionParams = (new ReflectionClass($this->class))
-            ->getMethod($this->method)
-            ->getParameters();
+        (new HasParameter($this->class, $this->method))
+            ->assert($parameter);
 
-        $paramType = null;
-        foreach ($reflectionParams as $parameter) {
-            if ($parameter->getName() === $name) {
-                $paramType = $parameter->hasType()
-                    ? (string) $parameter->getType()
-                    : 'mixed';
-                break;
-            }
-        }
-
-        if ($paramType === null) {
-            throw new ParameterNotFound($name, $this->method);
-        }
+        $binding = new Binding(
+            Type::ofMethodParameter($this->class, $this->method, $parameter),
+        );
 
         return new ProviderBinder(
-            new Binding($paramType),
-            function (Binding $source, Provider $provider) use ($name): static {
-                $method             = clone $this;
-                $method->parameters = $this->parameters->put($name, $provider);
+            $binding,
+            function (Binding $source, Provider $provider) use ($parameter): static {
+                $method            = clone $this;
+                $method->arguments = $this->arguments->put($parameter, $provider);
 
                 return $method;
             },
@@ -85,25 +84,28 @@ abstract class BaseMethod implements Method
 
     public function bindArgumentAtPosition(int $position): ProviderBinder
     {
-        $parameter = (new ReflectionClass($this->class))
+        $parameters = (new ReflectionClass($this->class))
             ->getMethod($this->method)
-            ->getParameters()[$position];
+            ->getParameters();
 
-        return $this->bindArgument($parameter->getName());
+        (new IsInHalfOpenRightRange(0, count($parameters)))
+            ->assert($position, 'Parameter at position %s does not exist.');
+
+        return $this->bindArgument($parameters[$position]->getName());
     }
 
-    public function getArgument(string $name): Provider
+    public function getArgument(string $parameter): Provider
     {
-        if (! $this->hasArgument($name)) {
-            throw new ParameterNotFound($name, $this->method);
+        if (! $this->hasArgument($parameter)) {
+            throw new ParameterNotFound($parameter, $this->method);
         }
 
-        return $this->parameters->get($name);
+        return $this->arguments->get($parameter);
     }
 
-    public function hasArgument(string $name): bool
+    public function hasArgument(string $parameter): bool
     {
-        return $this->parameters->containsKey($name);
+        return $this->arguments->containsKey($parameter);
     }
 
     /** @return Sequence<Provider> */
@@ -139,44 +141,48 @@ abstract class BaseMethod implements Method
 
     private function solveParameter(ReflectionMethod $method, ReflectionParameter $parameter): Provider
     {
-        if ($this->parameters->containsKey($parameter->getName())) {
-            return $this->parameters->get($parameter->getName());
+        if ($this->arguments->containsKey($parameter->getName())) {
+            return $this->arguments->get($parameter->getName());
         }
 
-        if ($parameter->hasType()) {
-            $binding = new Binding(
-                $parameter->isVariadic() ? 'array' : (string) $parameter->getType(),
-                Binding::DEFAULT,
-                $method->getDeclaringClass()->getName(),
-            );
-
-            return $parameter->isOptional()
-                ? new Fallback($binding, new Instance($parameter->getDefaultValue()))
-                : new ContainerCall($binding);
+        if ($parameter->getType() === null && ! $parameter->isOptional()) {
+            throw new ParameterNotSolvable($this->method, $parameter->getName());
         }
+
+        $type = $parameter->isVariadic() ?
+            Type::ARRAY : Type::fromReflectionType($parameter->getType());
+
+        $binding = new Binding(
+            $type,
+            Binding::DEFAULT,
+            $method->getDeclaringClass()->getName(),
+        );
 
         if ($parameter->isOptional()) {
-            return new Instance(
-                $parameter->isVariadic() ? [] : $parameter->getDefaultValue(),
+            return new Fallback(
+                $binding,
+                new Instance($parameter->isVariadic() ? [] : $parameter->getDefaultValue()),
             );
         }
 
-        throw new ParameterNotSolvable($method->getName(), $parameter->getName());
+        return new ContainerCall($binding);
     }
 
     public function equals(object $object): bool
     {
-        if (! $object instanceof Method) {
-            return false;
-        }
-
         if ($object === $this) {
             return true;
         }
 
+        if ($object::class !== $this::class) {
+            return false;
+        }
+
+        $other = $object;
+
         return (new EqualsBuilder())
-            ->append($this->class, $object->getClass())
-            ->append($this->method, $object->getName())
+            ->append($this->class, $other->getClass())
+            ->append($this->method, $other->getName())
             ->isEquals();
     }
 

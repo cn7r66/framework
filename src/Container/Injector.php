@@ -57,7 +57,7 @@ final class Injector implements Container
 
         $provider   = $this->getProvider($binding);
         $definition = $this->applyScope($binding, $provider);
-        $definition = $this->applyEnhancements($binding, $definition);
+        $definition = $this->applyEnhancements($binding, $provider, $definition);
 
         $this->solved = $this->solved->put($binding, $definition);
 
@@ -135,8 +135,19 @@ final class Injector implements Container
         };
     }
 
-    private function applyEnhancements(Binding $binding, Definition $definition): Definition
+    private function applyEnhancements(Binding $binding, Provider $provider, Definition $definition): Definition
     {
+        foreach ($this->registry->findEnhancements($binding) as $entry) {
+            if (! $entry->getValue()->accept($provider)) {
+                continue;
+            }
+
+            $definition = $definition->withEnhancement(
+                $entry->getValue(),
+                $entry->getPriority(),
+            );
+        }
+
         return $definition;
     }
 }

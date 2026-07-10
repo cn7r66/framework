@@ -130,4 +130,15 @@ final class ImmutableMethodCallTest extends TestCase
             (new ImmutableMethodCall(StubClass::class, 'withService'))->accept($provider),
         );
     }
+
+    /**
+     * @covers ::__construct
+     * @covers ::getSlot
+     */
+    public function testGetSlotReturnsMethodName(): void
+    {
+        $injection = new ImmutableMethodCall(StubClass::class, 'withService');
+
+        static::assertSame('withService', $injection->getSlot());
+    }
 }

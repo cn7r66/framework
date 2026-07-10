@@ -16,7 +16,6 @@ use Vivarium\Collection\Map\Map;
 use Vivarium\Collection\MultiMap\MultiMap;
 use Vivarium\Collection\MultiMap\MultiValueMap;
 use Vivarium\Collection\Queue\PriorityQueue;
-use Vivarium\Collection\Set\Set;
 use Vivarium\Collection\Set\SortedSet;
 use Vivarium\Comparator\SortableComparator;
 use Vivarium\Comparator\ValueAndPriority;
@@ -40,10 +39,13 @@ final class EagerRegistry implements Registry, Binder
     /** @var Map<Binding, Provider> */
     private Map $providers;
 
-    /** @var MultiMap<Binding, SortedSet<ValueAndPriority<Injection>>> */
+    /** @var MultiMap<Binding, ValueAndPriority<Injection>> */
+    private MultiMap $injections;
+
+    /** @var MultiMap<Binding, ValueAndPriority<Injection>> */
     private MultiMap $interceptions;
 
-    /** @var MultiMap<Binding, Set<ValueAndPriority<Decorator>>> */
+    /** @var MultiMap<Binding, ValueAndPriority<Decorator>> */
     private MultiMap $decorators;
 
     /** @var Map<Binding, Scope> */
@@ -52,6 +54,10 @@ final class EagerRegistry implements Registry, Binder
     public function __construct()
     {
         $this->providers = new HashMap();
+
+        $this->injections = new MultiValueMap(static function (): PriorityQueue {
+            return new PriorityQueue(new SortableComparator());
+        });
 
         $this->interceptions = new MultiValueMap(static function (): PriorityQueue {
             return new PriorityQueue(new SortableComparator());
@@ -104,9 +110,9 @@ final class EagerRegistry implements Registry, Binder
 
         return new ProviderBinder(
             $binding,
-            function (Provider $provider) use ($binding): EagerRegistry {
+            function (Binding $source, Provider $provider): EagerRegistry {
                 $registry            = clone $this;
-                $registry->providers = $registry->providers->put($binding, $provider);
+                $registry->providers = $registry->providers->put($source, $provider);
 
                 return $registry;
             },
@@ -127,31 +133,6 @@ final class EagerRegistry implements Registry, Binder
 
             return $registry;
         });
-    }
-
-    /** @return InjectionBinder<Registry> */
-    public function intercept(
-        string $type,
-        string $tag = Binding::DEFAULT,
-        string $context = Binding::GLOBAL,
-    ): InjectionBinder {
-        $binding = new Binding($type, $tag, $context);
-
-        return new InjectionBinder(
-            $binding,
-            function (Injection $interception, int $priority) use ($binding): EagerRegistry {
-                $registry                = clone $this;
-                $registry->interceptions = $registry->interceptions->put(
-                    $binding,
-                    new ValueAndPriority(
-                        $interception,
-                        $priority,
-                    ),
-                );
-
-                return $registry;
-            },
-        );
     }
 
     /** @return DecoratorBinder<Registry> */
@@ -176,21 +157,58 @@ final class EagerRegistry implements Registry, Binder
         });
     }
 
-    /** @return InjectionBinder<Registry> */
+    /** @return InjectionBinder<EagerRegistry> */
     public function inject(
         string $type,
         string $tag = Binding::DEFAULT,
         string $context = Binding::GLOBAL,
     ): InjectionBinder {
-        return $this->intercept($type, $tag, $context);
+        $binding = new Binding($type, $tag, $context);
+
+        return new InjectionBinder(
+            $binding,
+            function (Injection $injection, int $priority) use ($binding): EagerRegistry {
+                $registry             = clone $this;
+                $registry->injections = $registry->injections->put(
+                    $binding,
+                    new ValueAndPriority($injection, $priority),
+                );
+
+                return $registry;
+            },
+        );
+    }
+
+    /** @return InjectionBinder<EagerRegistry> */
+    public function call(
+        string $type,
+        string $tag = Binding::DEFAULT,
+        string $context = Binding::GLOBAL,
+    ): InjectionBinder {
+        $binding = new Binding($type, $tag, $context);
+
+        return new InjectionBinder(
+            $binding,
+            function (Injection $injection, int $priority) use ($binding): EagerRegistry {
+                $registry                = clone $this;
+                $registry->interceptions = $registry->interceptions->put(
+                    $binding,
+                    new ValueAndPriority($injection, $priority),
+                );
+
+                return $registry;
+            },
+        );
     }
 
     public function hasProvider(Binding $binding): bool
     {
-        foreach ($binding->hierarchy() as $candidate) {
-            if ($this->providers->containsKey($candidate)) {
-                return true;
-            }
+        if ($this->providers->containsKey($binding)) {
+            return true;
+        }
+
+        if ($binding->couldBeWidened()) {
+            return $this->hasProvider($binding->widen());
         }
 
         return false;
@@ -198,39 +216,60 @@ final class EagerRegistry implements Registry, Binder
 
     public function findProvider(Binding $binding): Provider
     {
-        $found = null;
-        foreach ($binding->hierarchy() as $candidate) {
-            if (! $this->providers->containsKey($candidate)) {
-                continue;
-            }
-
-            $found = $this->providers->get($candidate);
+        if ($this->providers->containsKey($binding)) {
+            return $this->providers->get($binding);
         }
 
-        if ($found === null) {
-            throw new BindingNotFound();
+        if ($binding->couldBeWidened()) {
+            return $this->findProvider($binding->widen());
         }
 
-        return $found;
+        throw new BindingNotFound();
     }
 
     public function findScope(Binding $binding): Scope
     {
-        $found = null;
+        if ($this->scopes->containsKey($binding)) {
+            return $this->scopes->get($binding);
+        }
+
+        return Scope::TRANSIENT;
+    }
+
+    /** @return iterable<ValueAndPriority<Enhancement>> */
+    public function findEnhancements(Binding $binding): iterable
+    {
+        $enhancements = new PriorityQueue(new SortableComparator());
+
+        $seen = [];
         foreach ($binding->hierarchy() as $candidate) {
-            if (! $this->scopes->containsKey($candidate)) {
+            if (! $this->injections->containsKey($candidate)) {
                 continue;
             }
 
-            $found = $this->scopes->get($candidate);
+            foreach ($this->injections->get($candidate) as $entry) {
+                $slot = $entry->getValue()->getSlot();
+                if (isset($seen[$slot])) {
+                    continue;
+                }
+
+                $seen[$slot]  = true;
+                $enhancements = $enhancements->enqueue($entry);
+            }
         }
 
-        return $found ?? Scope::TRANSIENT;
-    }
+        if ($this->interceptions->containsKey($binding)) {
+            foreach ($this->interceptions->get($binding) as $entry) {
+                $enhancements = $enhancements->enqueue($entry);
+            }
+        }
 
-    /** @return iterable<Enhancement> */
-    public function findEnhancements(Binding $binding): iterable
-    {
-        return [];
+        if ($this->decorators->containsKey($binding)) {
+            foreach ($this->decorators->get($binding) as $entry) {
+                $enhancements = $enhancements->enqueue($entry);
+            }
+        }
+
+        return $enhancements;
     }
 }

@@ -47,6 +47,28 @@ final class SetPropertyTest extends TestCase
      * @covers ::__construct
      * @covers ::enhance
      */
+    public function testEnhanceOnUntypedPropertyTreatsDependencyAsMixed(): void
+    {
+        // phpcs:ignore SlevomatCodingStandard.TypeHints.PropertyTypeHint
+        $instance = new class {
+            public $untypedProperty; // phpcs:ignore
+        };
+
+        $binding   = new Binding('string');
+        $container = $this->createMock(Container::class);
+        $container->method('get')->willReturn('injected-value');
+
+        $enhancement = new SetProperty('untypedProperty', $binding);
+        $result      = $enhancement->enhance($instance, $container);
+
+        static::assertSame($instance, $result);
+        static::assertSame('injected-value', $instance->untypedProperty);
+    }
+
+    /**
+     * @covers ::__construct
+     * @covers ::enhance
+     */
     public function testEnhanceWithPrivateProperty(): void
     {
         $instance = new class {
@@ -250,6 +272,17 @@ final class SetPropertyTest extends TestCase
         $enhancement = new SetProperty('property', $binding);
 
         static::assertFalse($enhancement->accept($provider));
+    }
+
+    /**
+     * @covers ::__construct
+     * @covers ::getSlot
+     */
+    public function testGetSlotReturnsPropertyName(): void
+    {
+        $enhancement = new SetProperty('property', new Binding('string'));
+
+        static::assertSame('property', $enhancement->getSlot());
     }
 
     /**

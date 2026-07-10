@@ -12,4 +12,5 @@ namespace Vivarium\Container;
 
 interface Injection extends Enhancement
 {
+    public function getSlot(): string;
 }

@@ -8,7 +8,14 @@ declare(strict_types=1);
  * Copyright (c) The Vivarium Project
  */
 
-namespace Vivarium\Container;
+namespace Vivarium\Container\Registry;
+
+use Vivarium\Comparator\ValueAndPriority;
+use Vivarium\Container\Binding;
+use Vivarium\Container\Enhancement;
+use Vivarium\Container\Provider;
+use Vivarium\Container\Registry;
+use Vivarium\Container\Scope;
 
 final class LazyRegistry implements Registry
 {
@@ -44,7 +51,7 @@ final class LazyRegistry implements Registry
             ->findScope($binding);
     }
 
-    /** @return iterable<Enhancement> */
+    /** @return iterable<ValueAndPriority<Enhancement>> */
     public function findEnhancements(Binding $binding): iterable
     {
         return $this

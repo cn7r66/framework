@@ -29,7 +29,7 @@ interface Binder
         string $context = Binding::GLOBAL,
     ): InjectionBinder;
 
-    public function intercept(
+    public function call(
         string $type,
         string $tag = Binding::DEFAULT,
         string $context = Binding::GLOBAL,
