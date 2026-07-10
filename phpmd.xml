@@ -14,7 +14,7 @@
     <rule ref="rulesets/cleancode.xml/StaticAccess">
         <properties>
             <property name="ignorepattern">
-                <value>(^(create|from))i</value>
+                <value>(^(create|from|of|empty))i</value>
             </property>
             <property name="exceptions">
                 <value>
@@ -57,7 +57,16 @@
 
     <rule ref="rulesets/naming.xml">
         <exclude name="LongVariable"/>
+        <exclude name="ShortMethodName"/>
         <exclude name="ShortVariable"/>
+    </rule>
+
+    <rule ref="rulesets/naming.xml/ShortMethodName">
+        <properties>
+            <property name="exceptions">
+                <value>of,to</value>
+            </property>
+        </properties>
     </rule>
 
     <rule ref="rulesets/naming.xml/LongVariable">
